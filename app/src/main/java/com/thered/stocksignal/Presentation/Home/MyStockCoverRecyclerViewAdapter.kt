@@ -39,7 +39,7 @@ class MyStockCoverRecyclerViewAdapter(
         holder.idView.text = item.id
         holder.contentView.text = item.content
         holder.priceView.text = item.price.toString()
-        holder.earnRateView.text = item.earnRate.toString()
+        holder.earnRateView.text = item.earnRate
 
         Glide.with(holder.imageView.context)
             .load("https://previews.123rf.com/images/vectorchef/vectorchef1506/vectorchef150610882/41187816-금융-주식-아이콘.jpg")

@@ -15,6 +15,9 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".Presentation.MyStock.MyStockActivity"
+            android:exported="false" />
+        <activity
             android:name=".Presentation.ChatBot.ChatBotActivity"
             android:exported="false" />
         <activity

@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        supportFragmentManager.beginTransaction().add(main_container.id, StockCoverFragment()).commit()
+        supportFragmentManager.beginTransaction().add(main_container.id, HomeFragment()).commit()
         navigation.menu.findItem(R.id.fragment_home).setChecked(true)
 
         navigation.run {
