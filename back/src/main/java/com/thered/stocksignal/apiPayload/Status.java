@@ -28,7 +28,9 @@ public enum Status {
      */
 
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
-  
+
+    NEWS_SEARCH_SUCCESS("200", "SUCCESS", "뉴스 검색에 성공하였습니다."),
+
     COMPANY_INFO_SUCCESS("200", "SUCCESS", "회사 정보 조회에 성공하였습니다."),
 
     STOCK_CODE_SUCCESS("200", "SUCCESS", "종목 코드 조회에 성공했습니다."),
