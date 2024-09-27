@@ -1,5 +1,6 @@
 package com.thered.stocksignal.Presentation.Home.placeholder
 
+import com.thered.stocksignal.Presentation.Home.HomeViewModel
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -16,6 +17,8 @@ object PlaceholderContent {
      */
     val ITEMS: MutableList<PlaceholderItem> = ArrayList()
 
+    private var viewModel = HomeViewModel()
+    private var data = viewModel.loadData()
     /**
      * A map of sample (placeholder) items, by ID.
      */
@@ -36,7 +39,7 @@ object PlaceholderContent {
     }
 
     private fun createPlaceholderItem(position: Int): PlaceholderItem {
-        return PlaceholderItem(position.toString(), "Item " + position, "10,000", "+12.3%", makeDetails(position))
+        return PlaceholderItem(position.toString(), data[position-1][0], data[position-1][1], data[position-1][2], makeDetails(position))
     }
 
     private fun makeDetails(position: Int): String {

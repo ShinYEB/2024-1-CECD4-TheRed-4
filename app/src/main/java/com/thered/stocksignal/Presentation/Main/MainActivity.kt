@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.thered.stocksignal.Presentation.Alarm.AlarmActivity
+import com.thered.stocksignal.Presentation.Chart.ChartFragment
 import com.thered.stocksignal.Presentation.ChatBot.ChatBotActivity
 import com.thered.stocksignal.Presentation.Home.HomeFragment
 import com.thered.stocksignal.Presentation.Home.StockCoverFragment
