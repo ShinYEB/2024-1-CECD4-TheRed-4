@@ -27,7 +27,8 @@ public enum Status {
      * ...
      */
 
-    LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다.");
+    LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
+    QUESTION_FOUND("200", "SUCCESS", "답변 정보를 찾았습니다.");
 
     private final String code;
     private final String result;
