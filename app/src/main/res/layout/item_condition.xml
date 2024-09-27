@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp">
+
+    <!-- 첫 번째 조건명과 수익률 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"> <!-- 간격을 주기 위해 추가 -->
+
+        <TextView
+            android:id="@+id/condition_name_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="조건명 1"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp" />
+
+        <TextView
+            android:id="@+id/profit_rate_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="수익률"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginRight="20dp" />
+    </LinearLayout>
+
+    <!-- 두 번째 조건명과 수익률 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"> <!-- 간격을 주기 위해 추가 -->
+
+        <TextView
+            android:id="@+id/condition_name_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="삼성전자"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dp" />
+
+        <TextView
+            android:id="@+id/profit_rate_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+15%"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/red"
+            android:layout_marginRight="20dp" />
+    </LinearLayout>
+
+</LinearLayout>
+

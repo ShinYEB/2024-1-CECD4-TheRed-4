@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 상단 타이틀 및 추가/제거 버튼 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|end"> <!-- 오른쪽 정렬 -->
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="삼성전자 조건"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- 조건 추가 버튼 -->
+        <ImageButton
+            android:id="@+id/add_condition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/add_condition"
+            android:src="@drawable/plus"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="8dp" /> <!-- 여백 추가 -->
+
+        <!-- 조건 제거 버튼 -->
+        <ImageButton
+            android:id="@+id/remove_condition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/remove_condition"
+            android:src="@drawable/minus"
+            android:scaleType="fitCenter"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- RecyclerView for showing the conditions -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/conditions_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:scrollbars="vertical" />  <!-- 스크롤바 추가 -->
+
+    <!-- 적용하기 버튼 -->
+    <Button
+        android:id="@+id/apply_button"
+        android:layout_width="155dp"
+        android:layout_height="44dp"
+        android:text="적용하기"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/gray"
+        android:layout_gravity="center"
+        android:textColor="@android:color/white" />
+</LinearLayout>

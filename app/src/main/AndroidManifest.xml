@@ -14,6 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
+
+        <activity
+            android:name=".Presentation.StockInfoActivity"
+            android:exported="true"> <!-- StockInfoActivity를 LAUNCHER로 설정 -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".Presentation.Alarm.AlarmActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Presentation.Intro.IntroActivity"
+            android:exported="false" /> <!-- IntroActivity는 더 이상 LAUNCHER가 아님 -->
+        <activity android:name=".Presentation.Login.LoginActivity" />
         <activity
             android:name=".Presentation.NewScenario.NewScenarioActivity"
             android:exported="false" />
@@ -24,17 +41,8 @@
             android:name=".Presentation.ChatBot.ChatBotActivity"
             android:exported="false" />
         <activity
-            android:name=".Presentation.Alarm.AlarmActivity"
-            android:exported="false" />
-        <activity
             android:name=".Presentation.Main.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
     </application>
 
 </manifest>
