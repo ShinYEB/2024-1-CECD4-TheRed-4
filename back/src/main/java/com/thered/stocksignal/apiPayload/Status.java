@@ -28,7 +28,26 @@ public enum Status {
      */
 
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
-    COMPANY_INFO_SUCCESS("200", "SUCCESS", "회사 정보 조회에 성공하였습니다.");
+  
+    COMPANY_INFO_SUCCESS("200", "SUCCESS", "회사 정보 조회에 성공하였습니다."),
+
+    STOCK_CODE_SUCCESS("200", "SUCCESS", "종목 코드 조회에 성공했습니다."),
+    CURRENT_DATA_SUCCESS("200", "SUCCESS", "현재가 조회에 성공했습니다."),
+    MINUTE_DATA_SUCCESS("200", "SUCCESS", "분봉 조회에 성공했습니다."),
+    PERIOD_DATA_SUCCESS("200", "SUCCESS", "기간별 조회에 성공했습니다."),
+    AI_PREDICTION_SUCCESS("200", "SUCCESS", "AI 예상 주가 조회에 성공했습니다.");
+
+    MY_BALANCE_SUCCESS("200", "SUCCESS", "잔고 조회에 성공했습니다."),
+
+    GET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 조회되었습니다."),
+    SET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 수정되었습니다."),
+    NICKNAME_SUCCESS("200", "SUCCESS", "사용 가능한 닉네임입니다."),
+  
+    TRADE_BUY_SUCCESS("200", "SUCCESS", "매수를 성공했습니다."),
+    TRADE_SELL_SUCCESS("200", "SUCCESS", "매도를 성공했습니다."),
+  
+    MYSTOCK_SUCCESS("200", "SUCCESS", "나의 전체 주식현황을 읽는데 성공했습니다."),
+    MYSTOCK_SHORT_SUCCESS("200", "SUCCESS", "나의 주식현황 요약을 읽는데 성공했습니다.");
 
     private final String code;
     private final String result;
