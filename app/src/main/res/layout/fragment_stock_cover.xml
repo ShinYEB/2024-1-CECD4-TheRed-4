@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="103dp"
+    android:layout_height="103sp"
     android:orientation="vertical">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="80sp"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/item_number"
-            android:layout_width="20dp"
+            android:layout_width="20sp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/text_margin"
             android:textSize="16sp"
@@ -21,17 +21,16 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-
+            android:layout_width="50sp"
+            android:layout_height="50sp"
             android:adjustViewBounds="true"
             android:layout_gravity="center" />
 
         <TextView
             android:id="@+id/content"
-            android:layout_width="110dp"
+            android:layout_width="90sp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
+            android:layout_margin="10sp"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textAppearance="?attr/textAppearanceListItem"
@@ -39,9 +38,9 @@
 
         <TextView
             android:id="@+id/price"
-            android:layout_width="60dp"
+            android:layout_width="60sp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
+            android:layout_margin="10sp"
             android:textSize="12sp"
             android:textStyle="bold"
             android:textAppearance="?attr/textAppearanceListItem"
@@ -49,9 +48,9 @@
 
         <TextView
             android:id="@+id/earn_rate"
-            android:layout_width="45dp"
+            android:layout_width="45sp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/text_margin"
+            android:layout_margin="10sp"
             android:textSize="12sp"
             android:textStyle="bold"
             android:textColor="@color/red"
@@ -61,6 +60,6 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="3sp"
         android:background="#DDDDDD" />
 </LinearLayout>

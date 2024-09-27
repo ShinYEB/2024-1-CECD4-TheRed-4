@@ -14,10 +14,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.replace
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.thered.stocksignal.Presentation.Alarm.AlarmActivity
+import com.thered.stocksignal.Presentation.Chart.ChartFragment
 import com.thered.stocksignal.Presentation.ChatBot.ChatBotActivity
 import com.thered.stocksignal.Presentation.Home.HomeFragment
 import com.thered.stocksignal.Presentation.Home.StockCoverFragment
 import com.thered.stocksignal.Presentation.Mypage.MypageFragment
+import com.thered.stocksignal.Presentation.NewScenario.NewScenarioActivity
 import com.thered.stocksignal.Presentation.Search.SearchFragment
 import com.thered.stocksignal.R
 
@@ -48,6 +50,8 @@ class MainActivity : AppCompatActivity() {
                 true
             }
         }
+//        val intent = Intent(this, NewScenarioActivity::class.java)
+//        startActivity(intent)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

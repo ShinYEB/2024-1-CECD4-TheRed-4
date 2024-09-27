@@ -1,6 +1,8 @@
-package com.thered.stocksignal.Presentation.Home.placeholder
+package com.thered.stocksignal.Presentation.MyStock.placeholder
 
 import com.thered.stocksignal.Presentation.Home.HomeViewModel
+import com.thered.stocksignal.Presentation.Home.placeholder.PlaceholderContent
+import com.thered.stocksignal.Presentation.Home.placeholder.PlaceholderContent.PlaceholderItem
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -19,6 +21,7 @@ object PlaceholderContent {
 
     private var viewModel = HomeViewModel()
     private var data = viewModel.loadData()
+
     /**
      * A map of sample (placeholder) items, by ID.
      */
