@@ -29,6 +29,8 @@ public enum Status {
 
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
 
+    QUESTION_FOUND("200", "SUCCESS", "답변 정보를 찾았습니다."),
+
     NEWS_SEARCH_SUCCESS("200", "SUCCESS", "뉴스 검색에 성공하였습니다."),
 
     COMPANY_INFO_SUCCESS("200", "SUCCESS", "회사 정보 조회에 성공하였습니다."),
@@ -37,7 +39,7 @@ public enum Status {
     CURRENT_DATA_SUCCESS("200", "SUCCESS", "현재가 조회에 성공했습니다."),
     MINUTE_DATA_SUCCESS("200", "SUCCESS", "분봉 조회에 성공했습니다."),
     PERIOD_DATA_SUCCESS("200", "SUCCESS", "기간별 조회에 성공했습니다."),
-    AI_PREDICTION_SUCCESS("200", "SUCCESS", "AI 예상 주가 조회에 성공했습니다.");
+    AI_PREDICTION_SUCCESS("200", "SUCCESS", "AI 예상 주가 조회에 성공했습니다."),
 
     MY_BALANCE_SUCCESS("200", "SUCCESS", "잔고 조회에 성공했습니다."),
 
