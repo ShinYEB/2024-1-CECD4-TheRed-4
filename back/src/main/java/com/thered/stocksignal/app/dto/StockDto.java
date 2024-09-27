@@ -59,4 +59,16 @@ public class StockDto {
         private Integer closePrice; // 종가
     }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MyStockResponseDto{
+        public String companyName;
+        public Integer totalPrice;
+        public String rate;
+    }
+
+
 }
+

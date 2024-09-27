@@ -20,6 +20,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(status.getCode(), status.getResult(), status.getMessage(), data);
     }
 
+
     // 실패한 경우 응답 생성
 //    public static <T> ApiResponse<T> onFailure(Status status){
 //        return new ApiResponse<>(status.getCode(), status.getResult(), status.getMessage());
