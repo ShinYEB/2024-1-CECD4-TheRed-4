@@ -26,7 +26,8 @@ public enum Status {
      * 404 :
      * ...
      */
-
+    MYSTOCK_SUCCESS("200", "SUCCESS", "나의 전체 주식현황을 읽는데 성공했습니다."),
+    MYSTOCK_SHORT_SUCCESS("200", "SUCCESS", "나의 주식현황 요약을 읽는데 성공했습니다."),
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다.");
 
     private final String code;
