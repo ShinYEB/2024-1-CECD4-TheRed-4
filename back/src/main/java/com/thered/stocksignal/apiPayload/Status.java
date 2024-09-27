@@ -27,7 +27,9 @@ public enum Status {
      * ...
      */
 
-    LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다.");
+    LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
+
+    MY_BALANCE_SUCCESS("200", "SUCCESS", "잔고 조회에 성공했습니다.");
 
     private final String code;
     private final String result;
