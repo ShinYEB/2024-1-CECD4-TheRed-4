@@ -65,9 +65,8 @@ class AutoTradeFragment : Fragment() {
 
     // 임의 데이터를 리스트에 추가하는 함수
     private fun setupInitialConditions() {
-        conditionList.add(Condition("삼성전자1", "+23.15%"))
-        conditionList.add(Condition("삼성전자2", "+15.30%"))
-        conditionList.add(Condition("삼성전자3", "+5.40%"))
+        conditionList.add(Condition("조건명", "수익률"))
+        conditionList.add(Condition("조건명", "수익률"))
         conditionAdapter.notifyDataSetChanged()  // 데이터가 추가되었음을 어댑터에 알림
     }
 }

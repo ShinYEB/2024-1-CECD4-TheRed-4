@@ -7,8 +7,6 @@
     android:padding="16dp">
 
     <!-- 타이틀 (삼성전자 분석) -->
-
-    <!-- 시작가 정보 -->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
@@ -18,90 +16,114 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
+    <!-- 시작가 정보 -->
     <LinearLayout
-        android:gravity="center"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_gravity="center"> <!-- 부모 레이아웃에서 가운데 정렬 -->
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:layout_weight="1"
             android:text="시작가"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:gravity="start" /> <!-- 왼쪽 정렬 -->
 
-        <!-- 종가 정보 -->
         <TextView
             android:id="@+id/start_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-
             android:text="84,700원"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="end" />
+
     </LinearLayout>
 
+
+    <!-- 종가 정보 -->
     <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="종가"
-        android:textSize="16sp" />
+        android:orientation="horizontal"
+        android:layout_gravity="center"> <!-- 부모 레이아웃에서 가운데 정렬 -->
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="종가"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/end_price"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="84,400원"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="end" />
     </LinearLayout>
 
-    <LinearLayout
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
     <!-- 거래량 정보 -->
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="거래량"
-        android:textSize="16sp" />
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_gravity="center"> <!-- 부모 레이아웃에서 가운데 정렬 -->
 
-    <TextView
-        android:id="@+id/volume"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="9,212,890주"
-        android:textSize="16sp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="거래량"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/volume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9,212,890주"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="end" />
     </LinearLayout>
 
     <!-- 거래대금 정보 -->
     <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="거래대금"
-        android:textSize="16sp" />
+        android:orientation="horizontal"
+        android:layout_gravity="center"> <!-- 부모 레이아웃에서 가운데 정렬 -->
 
-    <TextView
-        android:id="@+id/trade_amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="7,793억 원"
-        android:textSize="16sp" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="거래대금"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/trade_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7,793억 원"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="end" />
     </LinearLayout>
-    <!-- 1일 최저가 슬라이더 -->
 
+    <!-- 1일 최저가 슬라이더 -->
     <SeekBar
         android:id="@+id/day_seekbar"
         android:layout_width="match_parent"
@@ -115,42 +137,50 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"> <!-- 세로 중앙 정렬 -->
+        android:gravity="center_vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:textColor="#000000"
+
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="1일 최저가"
-            android:textSize="16sp"
-            android:layout_weight="1" /> <!-- 왼쪽에 위치 -->
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1일 최고가"
             android:textSize="16sp"
-            android:layout_gravity="end" /> <!-- 오른쪽 정렬 -->
+            android:textColor="#000000"
+            android:layout_gravity="end" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"> <!-- 세로 중앙 정렬 -->
+        android:gravity="center_vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#000000"
             android:text="84,100원"
-            android:textSize="16sp"
-            android:layout_weight="1" /> <!-- 왼쪽에 위치 -->
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="85,200원"
             android:textSize="16sp"
-            android:layout_gravity="end" /> <!-- 오른쪽 정렬 -->
+            android:textColor="#000000"
+            android:layout_gravity="end" />
     </LinearLayout>
+
+    <!-- 1년 최저가 슬라이더 -->
     <SeekBar
         android:id="@+id/year_seekbar"
         android:layout_width="match_parent"
@@ -159,46 +189,51 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/seekbar_background"
         android:thumb="@drawable/seekbar_thumb" />
-    <!-- 1년 최저가 슬라이더 -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"> <!-- 세로 중앙 정렬 -->
+        android:gravity="center_vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:textColor="#000000"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="1년 최저가"
-            android:textSize="16sp"
-            android:layout_weight="1" /> <!-- 왼쪽에 위치 -->
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="1년 최고가"
+            android:textColor="#000000"
             android:textSize="16sp"
-            android:layout_gravity="end" /> <!-- 오른쪽 정렬 -->
+            android:layout_gravity="end" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"> <!-- 세로 중앙 정렬 -->
+        android:gravity="center_vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:layout_weight="1"
             android:text="84,100원"
-            android:textSize="16sp"
-            android:layout_weight="1" /> <!-- 왼쪽에 위치 -->
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="85,200원"
+            android:textColor="#000000"
             android:textSize="16sp"
-            android:layout_gravity="end" /> <!-- 오른쪽 정렬 -->
+            android:layout_gravity="end" />
     </LinearLayout>
 
 </LinearLayout>
