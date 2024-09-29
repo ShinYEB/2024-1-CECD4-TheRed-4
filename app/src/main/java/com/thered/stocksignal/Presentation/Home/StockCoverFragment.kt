@@ -1,5 +1,6 @@
 package com.thered.stocksignal.Presentation.Home
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -8,8 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.thered.stocksignal.R
 import com.thered.stocksignal.Presentation.Home.placeholder.PlaceholderContent
+import com.thered.stocksignal.Presentation.MyStock.MyStockActivity
+import com.thered.stocksignal.Presentation.StockInfoActivity
 
 /**
  * A fragment representing a list of Items.
@@ -32,14 +36,22 @@ class StockCoverFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stock_cover_list, container, false)
 
+        val recyclerView: RecyclerView = view.findViewById(R.id.list)
+
         // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
+        if (recyclerView is RecyclerView) {
+            with(recyclerView) {
                 layoutManager = when {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = MyStockCoverRecyclerViewAdapter(PlaceholderContent.ITEMS)
+
+                // 어댑터 설정 시 클릭 리스너 추가
+                adapter = MyStockCoverRecyclerViewAdapter(PlaceholderContent.ITEMS) { clickedItem ->
+                    // 클릭된 항목에 대해 처리
+                    val intent = Intent(requireContext(), StockInfoActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
         return view

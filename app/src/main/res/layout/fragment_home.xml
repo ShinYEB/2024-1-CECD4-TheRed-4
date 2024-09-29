@@ -8,12 +8,12 @@
     android:background="@color/background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Presentation.Home.HomeFragment"
-    android:padding="30dp">
+    android:padding="30sp">
 
     <TextView
         android:id="@+id/top_label"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="주식 현황 요약"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -23,7 +23,7 @@
     <TextView
         android:id="@+id/update_time"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="20sp"
         android:text="24.09.22 14:21 기준"
         android:textSize="12sp"
         android:textStyle="bold"
@@ -32,21 +32,21 @@
 
     <Button
         android:id="@+id/mystock_button"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
+        android:layout_width="100sp"
+        android:layout_height="20sp"
         android:text="MY STOCK >"
         android:textSize="12sp"
         android:textStyle="bold"
         android:textColor="@color/black"
         android:background="@android:color/transparent"
-        android:layout_marginEnd="0dp"
+        android:layout_marginEnd="0sp"
         app:layout_constraintTop_toBottomOf="@id/update_time"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <FrameLayout
         android:id="@+id/stock_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="0sp"
         app:layout_constraintTop_toBottomOf="@id/mystock_button"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

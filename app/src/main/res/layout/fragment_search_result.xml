@@ -11,7 +11,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="50sp"
         android:text="인기 검색어 TOP 10"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -19,7 +19,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="1. 삼성전자"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -27,7 +27,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="2. 롯데칠성"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -35,7 +35,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="3. 하이브"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -43,7 +43,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="4. 현대차"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -51,7 +51,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="5. LG전자"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -59,7 +59,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="6. 이마트"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -67,7 +67,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="7. 넥슨게임즈"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -75,7 +75,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="8. NAVER"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -83,7 +83,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="9. 카카오"
         android:textSize="18sp"
         android:textColor="@color/gray"
@@ -91,7 +91,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="40sp"
         android:text="10. SK하이닉스"
         android:textSize="18sp"
         android:textColor="@color/gray"

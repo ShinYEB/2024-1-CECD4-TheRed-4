@@ -1,5 +1,6 @@
 package com.thered.stocksignal.Presentation.StockInfo
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.thered.stocksignal.Presentation.MyStock.MyStockActivity
+import com.thered.stocksignal.Presentation.NewScenario.NewScenarioActivity
 import com.thered.stocksignal.Presentation.StockInfo.Condition
 import com.thered.stocksignal.R
 
@@ -44,6 +47,8 @@ class AutoTradeFragment : Fragment() {
 
         // 조건 추가 버튼 클릭 시
         addButton.setOnClickListener {
+            val intent = Intent(requireContext(), NewScenarioActivity::class.java)
+            startActivity(intent)
             conditionList.add(Condition("새 조건", "+0.00%"))  // 새로운 조건 추가
             conditionAdapter.notifyItemInserted(conditionList.size - 1)
         }

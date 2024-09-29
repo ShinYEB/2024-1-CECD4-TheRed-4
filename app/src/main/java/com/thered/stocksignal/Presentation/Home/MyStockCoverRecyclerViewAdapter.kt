@@ -1,5 +1,6 @@
 package com.thered.stocksignal.Presentation.Home
 
+import android.graphics.Color
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,8 @@ import com.thered.stocksignal.databinding.FragmentStockCoverBinding
  * TODO: Replace the implementation with code for your data type.
  */
 class MyStockCoverRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<PlaceholderItem>,
+    private val onItemClick: (PlaceholderItem) -> Unit  // 클릭 리스너 추가
 ) : RecyclerView.Adapter<MyStockCoverRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,8 +43,11 @@ class MyStockCoverRecyclerViewAdapter(
         holder.priceView.text = item.price.toString()
         holder.earnRateView.text = item.earnRate
 
+        if (item.earnRate[0] == '-')
+            holder.earnRateView.setTextColor(Color.parseColor("#0080FF"))
+
         Glide.with(holder.imageView.context)
-            .load("https://previews.123rf.com/images/vectorchef/vectorchef1506/vectorchef150610882/41187816-금융-주식-아이콘.jpg")
+            .load(item.imgUrl)
             .apply(RequestOptions().transform(RoundedCorners(80)))
             .into(holder.imageView)
     }
@@ -59,6 +64,16 @@ class MyStockCoverRecyclerViewAdapter(
 
         override fun toString(): String {
             return super.toString() + " '" + contentView.text + "'"
+        }
+
+        // 초기화 블록에서 클릭 이벤트 처리
+        init {
+            binding.root.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(values[position])  // 클릭된 아이템 전달
+                }
+            }
         }
     }
 

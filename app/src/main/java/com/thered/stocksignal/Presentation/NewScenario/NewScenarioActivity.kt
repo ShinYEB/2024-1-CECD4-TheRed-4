@@ -22,6 +22,7 @@ class NewScenarioActivity : AppCompatActivity() {
 
     private var buySellIndex: Int = 0
     private var standardIndex: Int = 0
+    private var tradeStandardIndex: Int = 0
     private var optionIndex: Int = 0
     private var amountIndex: Int = 0
 
@@ -32,6 +33,9 @@ class NewScenarioActivity : AppCompatActivity() {
     private val rateButton: Button by lazy { findViewById(R.id.new_scenario_rate_button) }
     private val targetButton: Button by lazy { findViewById(R.id.new_scenario_target_button) }
     private val tradingButton: Button by lazy { findViewById(R.id.new_scenario_trading_button) }
+
+    private val standard1Button: Button by lazy { findViewById(R.id.new_scenario_standard1_button) }
+    private val standard2Button: Button by lazy { findViewById(R.id.new_scenario_standard2_button) }
 
     private val setAmountButton: Button by lazy { findViewById(R.id.set_amount_button)}
     private val setRateButton: Button by lazy { findViewById(R.id.set_rate_button)}
@@ -78,6 +82,18 @@ class NewScenarioActivity : AppCompatActivity() {
             setFragment()
         }
 
+        standard1Button.setOnClickListener {
+            tradeStandardIndex = 1
+            setButton(standard1Button, 0, buySellIndex + 1)
+            setButton(standard2Button, 1, 0)
+        }
+
+        standard2Button.setOnClickListener {
+            tradeStandardIndex = 2
+            setButton(standard1Button, 1, 0)
+            setButton(standard2Button, 0, buySellIndex + 1)
+        }
+
         setAmountButton.setOnClickListener {
             amountIndex = 1
             setCheckButton(setAmountButton, buySellIndex + 1)
@@ -118,9 +134,6 @@ class NewScenarioActivity : AppCompatActivity() {
                 1 -> setButton(targetButton, 0, 1)
                 2 ->setButton(tradingButton, 0, 1)
             }
-
-            if (amountIndex == 1) setCheckButton(setAmountButton, 1)
-            if (amountIndex == 2) setCheckButton(setRateButton, 1)
         }
         else {
             setButton(buyButton, 1, 0)
@@ -135,10 +148,12 @@ class NewScenarioActivity : AppCompatActivity() {
                 1 -> setButton(targetButton, 0, 2)
                 2 ->setButton(tradingButton, 0, 2)
             }
-
-            if (amountIndex == 1) setCheckButton(setAmountButton, 2)
-            if (amountIndex == 2) setCheckButton(setRateButton, 2)
         }
+
+        if (amountIndex == 1) setCheckButton(setAmountButton, buySellIndex + 1)
+        if (amountIndex == 2) setCheckButton(setRateButton, buySellIndex + 1)
+        if (tradeStandardIndex == 1) setButton(standard1Button, 0, buySellIndex + 1)
+        if (tradeStandardIndex == 2) setButton(standard2Button, 0, buySellIndex + 1)
         optionIndex = 0
         setAddButton()
     }
@@ -199,7 +214,7 @@ class NewScenarioActivity : AppCompatActivity() {
     }
 
     private fun setAddButton() {
-        if (optionIndex != 0 && amountIndex != 0)
+        if (optionIndex != 0 && amountIndex != 0 && tradeStandardIndex != 0)
             setButton(addButton, 0, buySellIndex + 1)
         else
             setButton(addButton, 1, 0)

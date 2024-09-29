@@ -1,12 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.StockSignal" parent="android:Theme.Material.Light.NoActionBar" />
-    <!-- Base application theme. -->
-    <style name="Base.Theme.AppCompat.Light.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    <style name="Widget.Theme.AppCompat.Light.NoActionBar.MyView." parent="">
+        <item name="android:background">@color/gray_400</item>
     </style>
-
-    <style name="Theme.AppCompat.Light.NoActionBar" parent="Base.Theme.AppCompat.Light.NoActionBar" />
 </resources>

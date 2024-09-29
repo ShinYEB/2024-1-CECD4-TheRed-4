@@ -12,14 +12,14 @@
         android:id="@+id/mystock_summary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginTop="60sp"
+        android:layout_marginBottom="0sp"
         android:orientation="vertical"
-        android:elevation="5dp"
+        android:elevation="5sp"
         app:layout_constraintTop_toTopOf="parent"
-        android:paddingTop="15dp"
-        android:paddingBottom="30dp"
-        android:layout_margin="30dp"
+        android:paddingTop="15sp"
+        android:paddingBottom="30sp"
+        android:layout_margin="30sp"
         android:background="@drawable/square_background_border_white">
 
         <TextView
@@ -31,7 +31,7 @@
             android:textStyle="bold"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:paddingTop="10dp"
+            android:paddingTop="10sp"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
@@ -67,8 +67,8 @@
             android:textStyle="bold"
             android:textAlignment="center"
             android:textColor="@color/red"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginStart="10sp"
+            android:layout_marginBottom="5sp"
             app:layout_constraintStart_toEndOf="@id/my_balance"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -77,8 +77,8 @@
     <FrameLayout
         android:id="@+id/my_stock_list"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_margin="30dp"
+        android:layout_height="0sp"
+        android:layout_margin="30sp"
         app:layout_constraintTop_toBottomOf="@id/mystock_summary"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
