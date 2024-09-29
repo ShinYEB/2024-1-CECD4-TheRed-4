@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Presentation.Search.SearchFragment">
+
+    <EditText
+        android:id="@+id/textInput"
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:hint="  관심있는 주식 종목을 검색하세요"
+        android:textSize="18sp"
+        android:textColor="#C9C8CD"
+        android:background="@android:color/transparent"
+        android:inputType="text"
+        android:padding="10sp"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:layout_width="25sp"
+        android:layout_height="25sp"
+        android:layout_marginEnd="20sp"
+        app:layout_constraintTop_toTopOf="@id/textInput"
+        app:layout_constraintBottom_toBottomOf="@id/textInput"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/ic_search_black"
+        />
+
+    <FrameLayout
+        android:id="@+id/search_result_list"
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        app:layout_constraintTop_toBottomOf="@id/textInput"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

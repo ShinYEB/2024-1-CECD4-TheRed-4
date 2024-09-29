@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="103sp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="80sp">
+
+        <TextView
+            android:id="@+id/item_number"
+            android:layout_width="22sp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/text_margin"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/item_number"
+            app:layout_constraintEnd_toStartOf="@id/content"/>
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="90sp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageView"
+            app:layout_constraintEnd_toStartOf="@id/price"/>
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/content"
+            app:layout_constraintEnd_toStartOf="@id/earn_rate"/>
+
+        <TextView
+            android:id="@+id/earn_rate"
+            android:layout_width="50sp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/red"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/price"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3sp"
+        android:background="#DDDDDD" />
+</LinearLayout>

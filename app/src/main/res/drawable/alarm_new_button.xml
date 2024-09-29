@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/red" />  <!-- 버튼의 배경 색상 -->
+    <corners android:radius="10dp" />      <!-- 둥글기 반지름 조정 -->
+</shape>

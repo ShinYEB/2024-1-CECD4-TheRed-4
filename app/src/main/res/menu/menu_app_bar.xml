@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_bar_chatbot"
+        android:title="chatbot"
+        android:icon="@drawable/ic_chatbot_topbar"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_bar_alarm"
+        android:title="alarm"
+        android:icon="@drawable/ic_bell_off"
+        app:showAsAction="always"/>
+
+</menu>

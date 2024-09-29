@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20sp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/background"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Presentation.Mypage.MypageFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5sp"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="더블루 님"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_margin="30sp"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/balance_link_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="한국투자증권 연동하기"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginHorizontal="10sp"
+            android:layout_marginVertical="30sp"
+            android:gravity="center"
+            android:elevation="10sp"
+            android:background="@drawable/rounded_button_blue"
+            app:layout_constraintTop_toBottomOf="@id/user_name"/>
+
+        <Button
+            android:id="@+id/edit_user_information"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원정보 수정하기"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/blue"
+            android:layout_marginHorizontal="10sp"
+            android:layout_marginVertical="30sp"
+            android:gravity="center"
+            android:elevation="10sp"
+            android:background="@drawable/rounded_button_gray"
+            app:layout_constraintTop_toBottomOf="@id/balance_link_button"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10sp"
+        android:background="@color/white">
+
+        <Button
+            android:id="@+id/unsubscribe"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:text="탈퇴하기"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:background="#6C6C6C"
+            android:layout_marginTop="40sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/logout"/>
+
+        <Button
+            android:id="@+id/logout"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:text="로그아웃"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:background="@color/red"
+            android:layout_marginTop="40sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/unsubscribe"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
