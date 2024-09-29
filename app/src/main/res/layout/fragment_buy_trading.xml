@@ -17,10 +17,10 @@
 
         <Button
             android:id="@+id/set_option1_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="24sp"
+            android:layout_height="24sp"
             android:background="@drawable/baseline_check_box_gray"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="10sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
@@ -179,10 +179,10 @@
 
         <Button
             android:id="@+id/set_option2_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="24sp"
+            android:layout_height="24sp"
             android:background="@drawable/baseline_check_box_gray"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="30sp"
             app:layout_constraintTop_toBottomOf="@id/set_option1_input3"
             app:layout_constraintStart_toStartOf="parent"/>
 
