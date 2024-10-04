@@ -1,7 +1,9 @@
 package com.thered.stocksignal.app.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 //날짜에 따라 종가 or 현재가 등 조금씩 필드가 달라져서 가격 클래스를 전부 개별적으로 분리했습니다.
 
