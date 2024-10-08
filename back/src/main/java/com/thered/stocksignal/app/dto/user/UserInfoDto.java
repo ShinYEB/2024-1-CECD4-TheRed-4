@@ -1,4 +1,4 @@
-package com.thered.stocksignal.app.dto;
+package com.thered.stocksignal.app.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

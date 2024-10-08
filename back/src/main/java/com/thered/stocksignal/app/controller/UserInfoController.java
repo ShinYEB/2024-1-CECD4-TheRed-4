@@ -2,7 +2,7 @@ package com.thered.stocksignal.app.controller;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
-import com.thered.stocksignal.app.dto.UserInfoDto;
+import com.thered.stocksignal.app.dto.user.UserInfoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
