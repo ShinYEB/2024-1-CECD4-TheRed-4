@@ -7,5 +7,5 @@ public interface KakaoLoginService {
     String getKakaoToken(String code);
     KakaoLoginDto.KakaoUserInfoDto getKakaoUserInfo(String token);
     void isValidToken(String token);
-    Boolean isExistsUser(String email);
+    
 }

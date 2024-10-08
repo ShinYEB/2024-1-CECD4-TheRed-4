@@ -4,17 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thered.stocksignal.app.dto.kakao.KakaoLoginDto;
-import com.thered.stocksignal.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
 
@@ -23,9 +21,7 @@ import org.springframework.http.*;
 @Transactional
 public class KakaoLoginServiceImpl implements KakaoLoginService{
 
-    private final UserRepository userRepository;
-
-    @Value("${security.kakao.client_id}")
+    @Value("${security.kakao.client_id:default_client_id}")
     String clientId;
 
     @Value("${security.kakao.redirect_uri:default_redirect_id}")
@@ -118,11 +114,5 @@ public class KakaoLoginServiceImpl implements KakaoLoginService{
                 rtToken.exchange(tokenReqUrl, HttpMethod.GET, kakaoProfileRequestToken, String.class);
 
         System.out.println("responseToken = " + responseToken);
-    }
-
-    @Override
-    public Boolean isExistsUser(String email) {
-        if(userRepository.findByEmail(email) != null) return true;
-        return false;
     }
 }
