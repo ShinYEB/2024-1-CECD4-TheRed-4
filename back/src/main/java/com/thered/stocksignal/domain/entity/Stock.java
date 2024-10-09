@@ -1,4 +1,4 @@
-package com.thered.stocksignal.domain;
+package com.thered.stocksignal.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

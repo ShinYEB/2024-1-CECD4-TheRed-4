@@ -3,9 +3,10 @@ package com.thered.stocksignal.service;
 import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.MyBalanceDto;
 import com.thered.stocksignal.apiPayload.ApiResponse;
-import com.thered.stocksignal.domain.Stock;
-import com.thered.stocksignal.domain.User;
-import com.thered.stocksignal.domain.UserStock;
+import com.thered.stocksignal.domain.entity.Stock;
+import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.domain.entity.UserStock;
+import com.thered.stocksignal.domain.enums.OauthType;
 import com.thered.stocksignal.kisApi.KisApiRequest;
 import com.thered.stocksignal.repository.UserStockRepository;
 import okhttp3.OkHttpClient;
@@ -148,7 +149,7 @@ public class MyBalanceService {
             // 존재하지 않으면 새로 생성
             // TODO : 아래 예시를 실제 User 및 Stock 객체로 변경
             UserStock newUserStock = UserStock.builder()
-                    .user(new User(1L,"삼성전자","닉네임",true, User.OauthType.KAKAO,"1","1","1",true)) // userId를 꺼내옴
+                    .user(new User(1L,"삼성전자","닉네임", OauthType.KAKAO,"1","1","1",true)) // userId를 꺼내옴
                     .stock(new Stock(1L,9900L)) // stockId를 꺼내옴
                     .stockCount(10L)
                     .totalPrice(99000L)

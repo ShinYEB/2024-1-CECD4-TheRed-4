@@ -2,7 +2,7 @@ package com.thered.stocksignal.service;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.app.dto.MyBalanceDto;
-import com.thered.stocksignal.domain.UserStock;
+import com.thered.stocksignal.domain.entity.UserStock;
 import com.thered.stocksignal.repository.UserStockRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
