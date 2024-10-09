@@ -7,9 +7,15 @@ public class CompanyDto {
 
     @Getter
     @Builder
-    public static class CompanyResponseDto {
-        private String companyName; // 회사명
-        private Long marketCap;     // 시가총액
+    public static class CompanyCodeResponseDto {
+        private String companyCode;  // 종목 코드
+    }
+
+    @Getter
+    @Builder
+    public static class CompanyLogoResponseDto {
+        private String logoImage;     // 로고 이미지 URL
     }
 }
+
 

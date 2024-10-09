@@ -3,7 +3,7 @@ package com.thered.stocksignal.service;
 import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.MyBalanceDto;
 import com.thered.stocksignal.apiPayload.ApiResponse;
-import com.thered.stocksignal.domain.entity.Stock;
+import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.domain.entity.UserStock;
 import com.thered.stocksignal.domain.enums.OauthType;
@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.thered.stocksignal.app.dto.MyBalanceDto.*;
+
 @Service
 public class MyBalanceService {
 
@@ -40,7 +42,7 @@ public class MyBalanceService {
     }
 
     // 내 잔고 조회
-    public ApiResponse<MyBalanceDto> getMyBalance(String accountNumber, String accessToken, String appKey, String appSecret) {
+    public MyBalanceResponseDto getMyBalance(String accountNumber, String accessToken, String appKey, String appSecret) {
 
         /*
         TODO : JWT토큰에서 액세스토큰, User테이블에서 앱키, 앱시크릿을 가져오도록 변경
@@ -83,13 +85,13 @@ public class MyBalanceService {
             String jsonResponse = Objects.requireNonNull(response.body()).string();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
 
-            MyBalanceDto myBalanceDto = new MyBalanceDto();
-            List<MyBalanceDto.Stock> stocks = new ArrayList<>(); // 주식 리스트
+            MyBalanceResponseDto myBalanceDto = new MyBalanceResponseDto();
+            List<StockResponseDto> stocks = new ArrayList<>(); // 주식 리스트
 
             // output1 : 보유 주식 개별 정보
             for (JsonNode stockNode : jsonNode.path("output1")) {
 
-                MyBalanceDto.Stock stock = new MyBalanceDto.Stock();
+                StockResponseDto stock = new StockResponseDto();
 
                 stock.setStockName(stockNode.path("prdt_name").asText());   // 종목명
                 stock.setQuantity(stockNode.path("hldg_qty").asLong());  // 수량
@@ -111,7 +113,7 @@ public class MyBalanceService {
             myBalanceDto.setTotalStockPrice(jsonNode.path("output2").get(0).path("evlu_amt_smtl_amt").asLong()); // 보유 주식 전체 가치
             myBalanceDto.setTotalStockPL(jsonNode.path("output2").get(0).path("evlu_pfls_smtl_amt").asLong());    // 보유 주식 전체 손익
 
-            return ApiResponse.onSuccess(Status.MY_BALANCE_SUCCESS, myBalanceDto);
+            return myBalanceDto;
 
         } catch (IOException e) {
             return null;
@@ -123,20 +125,20 @@ public class MyBalanceService {
     // UserStock 테이블 업데이트
     public void updateUserStock(Long userId, JsonNode stockNode, Long quantity, Long currentPrice) {
 
-        Long stockId = 1L; // 주식 ID 가져오기
+        Long companyId = 1L; // 종목 ID 가져오기
 
-        // TODO : 실제 stockId를 가져오도록 변경
-        // Long stockId = stockNode.path("stock_id").asLong();
+        // TODO : 실제 companyId를 가져오도록 변경
+        // Long companyId = stockNode.path("company_id").asLong();
 
-        UserStock userStock = null; // 사용자 ID와 주식 ID로 UserStock 가져오기
+        UserStock userStock = null; // 사용자 ID와 종목 ID로 UserStock 가져오기
 
         // TODO : 실제 UserStock을 가져오도록 변경
-        // UserStock userStock = userStockRepository.findByUserIdAndStockId(userId, stockId);
+        // UserStock userStock = userStockRepository.findByUserIdAndComapnyId(userId, companyId);
 
         /*
-        TODO : User와 Stock 객체를 DB에서 조회하도록 변경
+        TODO : User와 Company 객체를 DB에서 조회하도록 변경
         User user = userRepository.findById(userId);
-        Stock stock = stockRepository.findById(stockId);
+        Company company = companyRepository.findById(companyId);
         */
 
         if (userStock != null) {
@@ -147,10 +149,10 @@ public class MyBalanceService {
         }
         else {
             // 존재하지 않으면 새로 생성
-            // TODO : 아래 예시를 실제 User 및 Stock 객체로 변경
+            // TODO : 아래 예시를 실제 User 및 Company 객체로 변경
             UserStock newUserStock = UserStock.builder()
-                    .user(new User(1L,"삼성전자","닉네임", OauthType.KAKAO,"1","1","1",true)) // userId를 꺼내옴
-                    .stock(new Stock(1L,9900L)) // stockId를 꺼내옴
+                    .user(new User(1L,"삼성전자","닉네임", OauthType.KAKAO,"1","1","1",true))
+                    .company(new Company(1L,"065824", "삼성전자", "image"))
                     .stockCount(10L)
                     .totalPrice(99000L)
                     .build();
