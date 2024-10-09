@@ -33,6 +33,8 @@ jobs:
 
     # Gradle Build (test 제외)
     - name: Build with Gradle
+      env:
+        SPRING_PROFILES_ACTIVE: prod  # 원하는 프로파일 설정
       run: ./gradlew clean build --exclude-task test
 
     # DockerHub 로그인
