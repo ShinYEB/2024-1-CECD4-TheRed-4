@@ -1,9 +1,9 @@
 package com.thered.stocksignal.service;
 
-import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.app.dto.MyBalanceDto;
 import com.thered.stocksignal.domain.entity.UserStock;
 import com.thered.stocksignal.repository.UserStockRepository;
+import com.thered.stocksignal.service.myBalance.MyBalanceService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -36,4 +36,20 @@ public class CompanyController {
                 .build();
         return ApiResponse.onSuccess(Status.COMPANY_LOGO_SUCCESS, responseDto);
     }
+
+    @GetMapping("/{companyCode}")
+    @Operation(summary = "회사 정보 조회(분석 탭)", description = "종목 코드로 회사 정보 조회")
+    public ApiResponse<CompanyInfoResponseDto> getCompanyInfo(
+            @PathVariable String companyCode,
+
+            // TODO : 아래정보는 토큰 및 User테이블에서 받게변경할것
+            @RequestParam String accessToken,
+            @RequestParam String appKey,
+            @RequestParam String appSecret
+    ) {
+
+        CompanyInfoResponseDto responseDto = companyService.findCompanyInfoByCode(companyCode,accessToken, appKey, appSecret);
+
+        return ApiResponse.onSuccess(Status.COMPANY_INFO_SUCCESS, responseDto);
+    }
 }

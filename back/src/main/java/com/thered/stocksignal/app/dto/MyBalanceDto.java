@@ -11,6 +11,7 @@ public class MyBalanceDto {
 
     @Getter
     @Setter
+    @Builder
     @ToString
     public static class StockResponseDto {
         private String stockName;  // 종목명
@@ -22,6 +23,7 @@ public class MyBalanceDto {
 
     @Getter
     @Setter
+    @Builder
     @ToString
     public static class MyBalanceResponseDto {
         private Long cash;  // 예수금 총 금액
