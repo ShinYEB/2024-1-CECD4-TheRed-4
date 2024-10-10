@@ -7,6 +7,8 @@ import com.thered.stocksignal.app.dto.CompanyDto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 
+import static com.thered.stocksignal.app.dto.StockDto.*;
+
 @RestController
 @RequestMapping("/api/company")
 public class CompanyController {
@@ -20,20 +22,16 @@ public class CompanyController {
     @GetMapping("/code/{companyName}")
     @Operation(summary = "종목 코드 조회", description = "회사명으로 종목 코드를 가져옵니다.")
     public ApiResponse<CompanyCodeResponseDto> getCompanyCode(@PathVariable String companyName) {
-        String companyCode = companyService.findCodeByName(companyName);
-        CompanyCodeResponseDto responseDto = CompanyCodeResponseDto.builder()
-                .companyCode(companyCode)
-                .build();
+        CompanyCodeResponseDto responseDto = companyService.findCodeByName(companyName);
+
         return ApiResponse.onSuccess(Status.COMPANY_CODE_SUCCESS, responseDto);
     }
 
     @GetMapping("/logo/{companyName}")
     @Operation(summary = "로고 이미지 URL 조회", description = "회사명으로 로고 이미지 URL을 가져옵니다.")
     public ApiResponse<CompanyLogoResponseDto> getCompanyLogo(@PathVariable String companyName) {
-        String companyLogo = companyService.findLogoByName(companyName);
-        CompanyLogoResponseDto responseDto = CompanyLogoResponseDto.builder()
-                .logoImage(companyLogo)
-                .build();
+        CompanyLogoResponseDto responseDto = companyService.findLogoByName(companyName);
+
         return ApiResponse.onSuccess(Status.COMPANY_LOGO_SUCCESS, responseDto);
     }
 
@@ -51,5 +49,39 @@ public class CompanyController {
         CompanyInfoResponseDto responseDto = companyService.findCompanyInfoByCode(companyCode,accessToken, appKey, appSecret);
 
         return ApiResponse.onSuccess(Status.COMPANY_INFO_SUCCESS, responseDto);
+    }
+
+    @GetMapping("/current-price/{companyCode}")
+    @Operation(summary = "현재가 조회", description = "종목 코드로 현재가 조회")
+    public ApiResponse<CurrentPriceResponseDto> getCurrentPrice(
+            @PathVariable String companyCode,
+
+            // TODO : 아래정보는 토큰 및 User테이블에서 받게변경할것
+            @RequestParam String accessToken,
+            @RequestParam String appKey,
+            @RequestParam String appSecret
+    ){
+
+        CurrentPriceResponseDto responseDto = companyService.findCurrentPriceByCode(companyCode,accessToken, appKey, appSecret);
+
+        return ApiResponse.onSuccess(Status.CURRENT_PRICE_SUCCESS, responseDto);
+    }
+
+    @GetMapping("/period-price")
+    @Operation(summary = "일봉 조회", description = "종목 코드로 일봉 조회")
+    public ApiResponse<PeriodPriceResponseDto> getPeriodPrice(
+            @RequestParam  String companyCode,
+            @RequestParam  String startDate,
+            @RequestParam  String endDate,
+
+            // TODO : 아래정보는 토큰 및 User테이블에서 받게변경할것
+            @RequestParam String accessToken,
+            @RequestParam String appKey,
+            @RequestParam String appSecret
+    ){
+
+        PeriodPriceResponseDto responseDto = companyService.findPeriodPriceByCode(companyCode, startDate, endDate, accessToken, appKey, appSecret);
+
+        return ApiResponse.onSuccess(Status.PERIOD_PRICE_SUCCESS, responseDto);
     }
 }

@@ -7,12 +7,14 @@ import lombok.Setter;
 public class CompanyDto {
 
     @Getter
+    @Setter
     @Builder
     public static class CompanyCodeResponseDto {
         private String companyCode;  // 종목 코드
     }
 
     @Getter
+    @Setter
     @Builder
     public static class CompanyLogoResponseDto {
         private String logoImage;     // 로고 이미지 URL
@@ -31,6 +33,7 @@ public class CompanyDto {
         private Long oneYearLowPrice;
         private Long oneYearHighPrice;
     }
+
 }
 
 

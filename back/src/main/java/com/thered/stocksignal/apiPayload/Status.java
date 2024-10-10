@@ -37,8 +37,8 @@ public enum Status {
     COMPANY_CODE_SUCCESS("200", "SUCCESS", "종목 코드 조회에 성공했습니다."),
     COMPANY_LOGO_SUCCESS("200", "SUCCESS", "회사 로고 조회에 성공했습니다."),
 
-    CURRENT_DATA_SUCCESS("200", "SUCCESS", "현재가 조회에 성공했습니다."),
-    PERIOD_DATA_SUCCESS("200", "SUCCESS", "기간별 조회에 성공했습니다."),
+    CURRENT_PRICE_SUCCESS("200", "SUCCESS", "현재가 조회에 성공했습니다."),
+    PERIOD_PRICE_SUCCESS("200", "SUCCESS", "기간별 조회에 성공했습니다."),
     AI_PREDICTION_SUCCESS("200", "SUCCESS", "AI 예상 주가 조회에 성공했습니다."),
 
     MY_BALANCE_SUCCESS("200", "SUCCESS", "잔고 조회에 성공했습니다."),
