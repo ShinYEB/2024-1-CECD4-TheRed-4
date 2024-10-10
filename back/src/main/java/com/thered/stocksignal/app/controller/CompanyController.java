@@ -5,19 +5,17 @@ import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.CompanyDto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import static com.thered.stocksignal.app.dto.StockDto.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/company")
 public class CompanyController {
 
     private final CompanyService companyService;
-
-    public CompanyController(CompanyService companyService) {
-        this.companyService = companyService;
-    }
 
     @GetMapping("/code/{companyName}")
     @Operation(summary = "종목 코드 조회", description = "회사명으로 종목 코드를 가져옵니다.")
