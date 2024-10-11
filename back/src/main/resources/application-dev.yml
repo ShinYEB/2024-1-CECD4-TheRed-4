@@ -24,4 +24,4 @@ spring:
 security:
   kakao:
     client_id: ${REST_API_KEY}
-    redirect_uri: http://localhost:8080/api/auth/kakao/callback
+    redirect_uri: http://pposiraun.com/api/auth/kakao/callback

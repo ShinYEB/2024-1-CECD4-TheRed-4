@@ -45,10 +45,11 @@ public class KakaoLoginController {
         return ApiResponse.onSuccess(Status.LOGIN_SUCCESS, dto);
     }
 
-    @Operation(summary = "백엔드에서 인가코드 확인용으로, 사용하지 않는 API입니다.")
+    @Operation(summary = "인가코드 발급 API")
     @GetMapping("/callback")
-    public String testInga(@RequestParam("code") String code){
-        return code;
+    public ApiResponse<?> testInga(@RequestParam("code") String code){
+
+        return ApiResponse.onSuccess(Status.INGA_SUCCESS, code);
     }
 
     @Operation(summary = "백엔드에서 토큰 정보 확인용으로, 사용하지 않는 API입니다.")
