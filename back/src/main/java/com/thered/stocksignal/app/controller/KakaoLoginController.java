@@ -4,6 +4,7 @@ import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.kakao.KakaoLoginDto;
 import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.jwt.JWTUtil;
 import com.thered.stocksignal.service.kakao.KakaoLoginService;
 import com.thered.stocksignal.service.user.UserAccountService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +23,7 @@ public class KakaoLoginController {
 
     private final KakaoLoginService kakaoLoginService;
     private final UserAccountService userAccountService;
+    private final JWTUtil jwtUtil;
 
     @Operation(summary = "프론트로부터 카카오 인가코드 전달받기")
     @Parameter(name = "code", description = "카카오에서 받은 인카코드, RequestParam")
@@ -32,19 +34,22 @@ public class KakaoLoginController {
         KakaoLoginDto.KakaoUserInfoDto kakaoUserInfoDto = kakaoLoginService.getKakaoUserInfo(token);
 
         if(userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).isEmpty()) userAccountService.saveKakaoUser(kakaoUserInfoDto.getEmail());
-        Optional<User> user = userAccountService.findByEmail(kakaoUserInfoDto.getEmail());
+        User user = userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).get();
 
+        String jwtToken = jwtUtil.createJwt(user.getId(), user.getNickname(), 3600000L);
         KakaoLoginDto.LoginResponseDto dto = new KakaoLoginDto.LoginResponseDto().builder()
-                .userId(user.get().getId())
-                .token("2") // jwt 토큰
+                .userId(user.getId())
+                .token(jwtToken)
                 .build();
+
         return ApiResponse.onSuccess(Status.LOGIN_SUCCESS, dto);
     }
 
-    @Operation(summary = "백엔드에서 인가코드 확인용으로, 사용하지 않는 API입니다.")
+    @Operation(summary = "인가코드 발급 API")
     @GetMapping("/callback")
-    public String testInga(@RequestParam("code") String code){
-        return code;
+    public ApiResponse<?> testInga(@RequestParam("code") String code){
+
+        return ApiResponse.onSuccess(Status.INGA_SUCCESS, code);
     }
 
     @Operation(summary = "백엔드에서 토큰 정보 확인용으로, 사용하지 않는 API입니다.")

@@ -2,54 +2,39 @@ package com.thered.stocksignal.app.controller;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
-import com.thered.stocksignal.app.dto.MyBalanceDto.MyBalanceResponseDto;
-import com.thered.stocksignal.app.dto.MyBalanceDto.MyStockDetailResponseDto;
-import io.swagger.v3.oas.annotations.Operation;
+import com.thered.stocksignal.service.myBalance.MyBalanceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import io.swagger.v3.oas.annotations.Operation;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.thered.stocksignal.app.dto.MyBalanceDto.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/mybalance")
 public class MyBalanceController {
 
+    private final MyBalanceService myBalanceService;
+
     @GetMapping
     @Operation(summary = "주식 잔고 조회", description = "사용자의 주식 잔고 정보를 조회합니다.")
-    public ApiResponse<Object> getMyStockDetail() {
+    public ApiResponse<MyBalanceResponseDto> getMyBalance(
 
-        // 예시 데이터
-        Integer availableCash = 1000000000; // 내 예수금
-
-        List<MyStockDetailResponseDto> stocks = List.of(    // 내 보유주식
-
-                MyStockDetailResponseDto.builder()
-                        .stockName("삼성전자")
-                        .quantity(500)
-                        .avgPrice(80000)
-                        .currentPrice(85000)
-                        .PLAmount(5000)
-                        .PLRatio(0.0625).build(),
-                MyStockDetailResponseDto.builder()
-                        .stockName("SK하이닉스")
-                        .quantity(500)
-                        .avgPrice(80000)
-                        .currentPrice(85000)
-                        .PLAmount(5000)
-                        .PLRatio(0.0625).build()
-        );
-
-        // 응답
-        MyBalanceResponseDto responseDto = MyBalanceResponseDto.builder()
-                .cash(availableCash)
-                .stocks(stocks)
-                .build();
+            // TODO : 아래정보는 토큰 및 User테이블에서 받게변경할것
+            @RequestParam String accountNumber,
+            @RequestParam String accessToken,
+            @RequestParam String appKey,
+            @RequestParam String appSecret) {
+        MyBalanceResponseDto responseDto = myBalanceService.getMyBalance(accountNumber, accessToken, appKey, appSecret);
 
         return ApiResponse.onSuccess(Status.MY_BALANCE_SUCCESS, responseDto);
     }
-
 }
+
+
+
+
