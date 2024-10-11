@@ -27,7 +27,6 @@ replay_pid*
 .DS_Store
 .idea
 .vscode
-.yml
 .gradle
 backend/demo
 # front
@@ -41,7 +40,6 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 /src/main/resources/
-application.yml
 !data.sql
 ### STS ###
 .apt_generated

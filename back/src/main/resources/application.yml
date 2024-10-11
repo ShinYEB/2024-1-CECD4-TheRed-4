@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    activate: prod # 기본적으로 활성화할 프로파일
