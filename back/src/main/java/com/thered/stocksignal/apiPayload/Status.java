@@ -46,6 +46,7 @@ public enum Status {
     GET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 조회되었습니다."),
     SET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 수정되었습니다."),
     NICKNAME_SUCCESS("200", "SUCCESS", "사용 가능한 닉네임입니다."),
+    NICKNAME_INVALID("201", "SUCCESS", "이미 존재하는 닉네임입니다."),
   
     TRADE_BUY_SUCCESS("200", "SUCCESS", "매수를 성공했습니다."),
     TRADE_SELL_SUCCESS("200", "SUCCESS", "매도를 성공했습니다."),

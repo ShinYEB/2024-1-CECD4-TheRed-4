@@ -9,4 +9,6 @@ public interface UserAccountService {
     Optional<User> saveKakaoUser(String email);
 
     Optional<User> findByEmail(String email);
+
+    Boolean isExistNickname(String nickname);
 }

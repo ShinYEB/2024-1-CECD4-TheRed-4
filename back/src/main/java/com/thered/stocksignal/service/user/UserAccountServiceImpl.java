@@ -31,4 +31,10 @@ public class UserAccountServiceImpl implements UserAccountService{
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    @Override
+    public Boolean isExistNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+
+    }
 }
