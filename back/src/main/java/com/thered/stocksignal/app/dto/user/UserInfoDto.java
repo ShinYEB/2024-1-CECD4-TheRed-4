@@ -21,4 +21,11 @@ public class UserInfoDto {
     public static class InfoRequestDto{
         public String nickname;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class LoginRequestDto{
+        public String email;
+    }
 }
