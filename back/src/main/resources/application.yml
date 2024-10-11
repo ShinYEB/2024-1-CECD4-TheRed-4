@@ -1,3 +1,26 @@
+server:
+  port: 8080
+
 spring:
-  profiles:
-    activate: prod # 기본적으로 활성화할 프로파일
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  springdoc:
+    cache:
+      disabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  jwt:
+    secret: ${JWT_SECRET_KEY}
+
+security:
+  kakao:
+    client_id: ${REST_API_KEY}
+    redirect_uri: ${REDIRECT_URI}
