@@ -69,7 +69,4 @@ jobs:
           sudo docker run -p ${{ secrets.PORT }}:${{ secrets.PORT }} \
           --name ${{ secrets.PROJECT_NAME }} \
           -e SPRING_PROFILES_ACTIVE=prod \
-          -e MYSQL_URL=${{ secrets.MYSQL_URL }} \
-          -e MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }} \
-          -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
           -d ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
