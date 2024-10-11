@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: ${MYSQL_URL}
+    url: jdbc:mysql://localhost:3306/stock_signal
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
