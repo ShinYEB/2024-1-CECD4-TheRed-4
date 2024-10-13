@@ -36,12 +36,6 @@ jobs:
       working-directory: back
       env:
         SPRING_PROFILES_ACTIVE: prod  # 원하는 프로파일 설정
-        DB_URL: ${{ secrets.MYSQL_URL }}
-        DB_USER: ${{ secrets.MYSQL_USERNAME }}
-        DB_PASSWD: ${{ secrets.MYSQL_PASSWORD }}
-        JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        REST_API_KEY: ${{ secrets.REST_API_KEY }}
-        REDIRECT_URI: ${{ secrets.REDIRECT_URI }}
 
       run: ./gradlew clean build --exclude-task test
 
@@ -76,4 +70,10 @@ jobs:
           sudo docker run -p ${{ secrets.PORT }}:${{ secrets.PORT }} \
           --name ${{ secrets.PROJECT_NAME }} \
           -e SPRING_PROFILES_ACTIVE=prod \
+          -e DB_URL=${{ secrets.MYSQL_URL }} \
+          -e DB_USER=${{ secrets.MYSQL_USERNAME }} \
+          -e DB_PASSWD=${{ secrets.MYSQL_PASSWORD }} \
+          -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
+          -e REST_API_KEY=${{ secrets.REST_API_KEY }} \
+          -e REDIRECT_URI=${{ secrets.REDIRECT_URI }} \
           -d ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
