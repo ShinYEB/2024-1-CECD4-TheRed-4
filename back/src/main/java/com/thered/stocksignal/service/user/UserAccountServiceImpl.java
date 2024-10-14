@@ -31,4 +31,26 @@ public class UserAccountServiceImpl implements UserAccountService{
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
+    @Override
+    public Boolean isExistNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
+
+    }
+
+    @Override
+    public void editUserNickname(Long userId, String nickname) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user == null) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
+        User updateUser = user.get();
+        updateUser.setNickname(nickname);
+        userRepository.save(updateUser);
+    }
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user == null) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
+        return user;
+    }
 }

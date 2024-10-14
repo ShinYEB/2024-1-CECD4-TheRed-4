@@ -3,35 +3,56 @@ package com.thered.stocksignal.app.controller;
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.user.UserInfoDto;
+import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.jwt.JWTUtil;
+import com.thered.stocksignal.service.user.UserAccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserInfoController {
 
-    @Operation(summary = "회원 정보 조회")
+    private final UserAccountService userAccountService;
+    private final JWTUtil jwtUtil;
+
+    @Operation(summary = "회원 정보 조회", description = "Header에 token을 담아야 합니다.")
     @GetMapping("/info/detail")
-    public ApiResponse<?> getUserInfo(){
+    public ApiResponse<?> getUserInfo(@RequestHeader("Authorization") String token){
+        if (token == null || !token.startsWith("Bearer ")) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
+
+        String actualToken = token.replace("Bearer ", "");
+        Long userId = jwtUtil.getUserId(actualToken);
+        Optional<User> user = userAccountService.findById(userId);
         UserInfoDto.InfoResponseDto infoResponseDto = new UserInfoDto.InfoResponseDto().builder()
-                .nickname("김별명")
+                .nickname(user.get().getNickname())
                 .build();
+
         return ApiResponse.onSuccess(Status.GET_USERINFO_SUCCESS, infoResponseDto);
     }
 
     @Operation(summary = "회원 정보 수정")
     @PatchMapping("/info/edit")
-    public ApiResponse<?> setUserInfo(@RequestBody UserInfoDto.InfoRequestDto dto){
+    public ApiResponse<?> setUserInfo(@RequestBody UserInfoDto.InfoRequestDto dto, @RequestHeader("Authorization") String token){
+        if (token == null || !token.startsWith("Bearer ")) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
+
+        String actualToken = token.replace("Bearer ", "");
+        Long userId = jwtUtil.getUserId(actualToken);
+        userAccountService.editUserNickname(userId, dto.getNickname());
 
         return ApiResponse.onSuccess(Status.SET_USERINFO_SUCCESS, null);
     }
 
     @Operation(summary = "닉네임 중복 확인")
     @GetMapping("/{nickname}/exists")
-    public ApiResponse<?> isNicknameExists(@PathVariable String nickname){
-
-        return ApiResponse.onSuccess(Status.NICKNAME_SUCCESS, null);
+    public ApiResponse<?> isNicknameExists(@Parameter @PathVariable(value = "nickname") String nickname){
+        Boolean isExists = userAccountService.isExistNickname(nickname);
+        if(isExists == false) return ApiResponse.onSuccess(Status.NICKNAME_SUCCESS, null);
+        return ApiResponse.onSuccess(Status.NICKNAME_INVALID, null);
     }
 }
