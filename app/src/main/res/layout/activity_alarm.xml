@@ -6,7 +6,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Presentation.Alarm.AlarmActivity">
+    tools:context=".presentation.alarm.AlarmActivity">
 
     <!-- 상단 탭 (전체, 최근) -->
     <LinearLayout

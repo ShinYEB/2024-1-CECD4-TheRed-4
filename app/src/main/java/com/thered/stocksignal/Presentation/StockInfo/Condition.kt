@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.StockInfo
+package com.thered.stocksignal.presentation.stockinfo
 
 data class Condition(
     val name: String,

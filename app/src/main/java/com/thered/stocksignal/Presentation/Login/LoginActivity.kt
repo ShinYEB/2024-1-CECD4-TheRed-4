@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.Login
+package com.thered.stocksignal.presentation.login
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.thered.stocksignal.Presentation.Main.MainActivity
+import com.thered.stocksignal.presentation.main.MainActivity
 import com.thered.stocksignal.R
 
 class LoginActivity : AppCompatActivity() {

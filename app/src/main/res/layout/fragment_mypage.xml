@@ -8,7 +8,7 @@
     android:gravity="center"
     android:background="@color/background"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Presentation.Mypage.MypageFragment">
+    tools:context=".presentation.mypage.MypageFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

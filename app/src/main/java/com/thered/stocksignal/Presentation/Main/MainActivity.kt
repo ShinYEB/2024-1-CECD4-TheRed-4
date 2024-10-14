@@ -1,7 +1,8 @@
-package com.thered.stocksignal.Presentation.Main
+package com.thered.stocksignal.presentation.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.FrameLayout
@@ -11,17 +12,16 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.replace
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.thered.stocksignal.Presentation.Alarm.AlarmActivity
-import com.thered.stocksignal.Presentation.Chart.ChartFragment
-import com.thered.stocksignal.Presentation.ChatBot.ChatBotActivity
-import com.thered.stocksignal.Presentation.Home.HomeFragment
-import com.thered.stocksignal.Presentation.Home.StockCoverFragment
-import com.thered.stocksignal.Presentation.Mypage.MypageFragment
-import com.thered.stocksignal.Presentation.NewScenario.NewScenarioActivity
-import com.thered.stocksignal.Presentation.Search.SearchFragment
+import com.thered.stocksignal.presentation.alarm.AlarmActivity
+import com.thered.stocksignal.presentation.chatbot.ChatBotActivity
+import com.thered.stocksignal.presentation.home.HomeFragment
+import com.thered.stocksignal.presentation.mypage.MypageFragment
+import com.thered.stocksignal.presentation.search.SearchFragment
 import com.thered.stocksignal.R
+import com.thered.stocksignal.data.repositories.StockListRepository
+import com.thered.stocksignal.domain.usecases.StockListUseCase
+
 
 class MainActivity : AppCompatActivity() {
     private val toolbar: Toolbar by lazy { findViewById(R.id.toolbar)}

@@ -1,8 +1,7 @@
-package com.thered.stocksignal.Presentation.MyStock.placeholder
+package com.thered.stocksignal.presentation.home.placeholder
 
-import com.thered.stocksignal.Presentation.Home.HomeViewModel
-import com.thered.stocksignal.Presentation.Home.placeholder.PlaceholderContent
-import com.thered.stocksignal.Presentation.Home.placeholder.PlaceholderContent.PlaceholderItem
+import com.thered.stocksignal.domain.entites.Stock
+import com.thered.stocksignal.domain.entites.StockListWithTime
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -12,27 +11,28 @@ import java.util.HashMap
  *
  * TODO: Replace all uses of this class before publishing your app.
  */
-object PlaceholderContent {
+object HomePlaceholderContent {
 
     /**
      * An array of sample (placeholder) items.
      */
     val ITEMS: MutableList<PlaceholderItem> = ArrayList()
 
-    private var viewModel = HomeViewModel()
-    private var data = viewModel.loadData()
-
+    var data: MutableList<Stock> = arrayListOf()
     /**
      * A map of sample (placeholder) items, by ID.
      */
     val ITEM_MAP: MutableMap<String, PlaceholderItem> = HashMap()
 
-    private val COUNT = 10
-
     init {
-        // Add some sample items.
-        for (i in 1..COUNT) {
-            addItem(createPlaceholderItem(i))
+        data.forEachIndexed { index, stock ->
+            addItem(createPlaceholderItem(index+1,stock))
+        }
+    }
+
+    fun setItem(stockList: List<Stock>) {
+        stockList.forEachIndexed { index, stock ->
+            addItem(createPlaceholderItem(index+1, stock))
         }
     }
 
@@ -41,8 +41,14 @@ object PlaceholderContent {
         ITEM_MAP.put(item.id, item)
     }
 
-    private fun createPlaceholderItem(position: Int): PlaceholderItem {
-        return PlaceholderItem(position.toString(), data[position-1][0], data[position-1][1], data[position-1][2], data[position-1][3], makeDetails(position))
+    fun createPlaceholderItem(index:Int, stock: Stock): PlaceholderItem {
+        val r = ((stock.currentPrice - stock.startPrice).toFloat() / stock.startPrice) * 100
+        val formattedNumber = String.format("%,d", stock.currentPrice)
+        var formattedRate = String.format("%.1f", r) + "%"
+        if (formattedRate[0] != '-')
+            formattedRate = "+" + formattedRate
+
+        return PlaceholderItem(index.toString(), stock.stockName, formattedNumber, formattedRate, stock.imageUrl, makeDetails(index))
     }
 
     private fun makeDetails(position: Int): String {

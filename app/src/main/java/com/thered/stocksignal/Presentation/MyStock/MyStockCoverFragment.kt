@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.MyStock
+package com.thered.stocksignal.presentation.mystock
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.thered.stocksignal.Presentation.Home.MyStockCoverRecyclerViewAdapter
 import com.thered.stocksignal.R
-import com.thered.stocksignal.Presentation.MyStock.placeholder.PlaceholderContent
-import com.thered.stocksignal.Presentation.StockInfoActivity
+import com.thered.stocksignal.presentation.StockInfoActivity
+import com.thered.stocksignal.presentation.mystock.placeholder.MyStockPlaceholderContent
 
 /**
  * A fragment representing a list of Items.
@@ -46,7 +45,7 @@ class MystockCoverFragment : Fragment() {
                 }
 
                 // 어댑터 설정 시 클릭 리스너 추가
-                adapter = MyStockCoverRecyclerViewAdapter(com.thered.stocksignal.Presentation.Home.placeholder.PlaceholderContent.ITEMS) { clickedItem ->
+                adapter = MystockCoverRecyclerViewAdapter(MyStockPlaceholderContent.ITEMS) { clickedItem ->
                     // 클릭된 항목에 대해 처리
                     val intent = Intent(requireContext(), StockInfoActivity::class.java)
                     startActivity(intent)

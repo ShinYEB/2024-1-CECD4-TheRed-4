@@ -1,26 +1,28 @@
-package com.thered.stocksignal.Presentation.Home
+package com.thered.stocksignal.presentation.home
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
-import androidx.fragment.app.replace
-import com.thered.stocksignal.Presentation.MyStock.MyStockActivity
+import androidx.lifecycle.ViewModelProvider
+import com.thered.stocksignal.presentation.mystock.MyStockActivity
 import com.thered.stocksignal.R
+import com.thered.stocksignal.databinding.FragmentHomeBinding
+import com.thered.stocksignal.presentation.StockInfoActivity
+import com.thered.stocksignal.presentation.home.placeholder.HomePlaceholderContent
 
 class HomeFragment : Fragment() {
-
 
     companion object {
         fun newInstance() = HomeFragment()
     }
 
-    private val viewModel: HomeViewModel by viewModels()
+    private lateinit var binding: FragmentHomeBinding
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,23 +30,36 @@ class HomeFragment : Fragment() {
         // TODO: Use the ViewModel
     }
 
+    @SuppressLint("NotifyDataSetChanged", "DetachAndAttachSameFragment")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
-        val button = view.findViewById<Button>(R.id.mystock_button)
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        Log.d("Network_db", "go")
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
-        button.setOnClickListener {
+        viewModel.stockList.observe(viewLifecycleOwner) { items ->
+            HomePlaceholderContent.ITEMS.clear()
+            HomePlaceholderContent.setItem(items.stocks)
+            viewModel.setTime(items.timeLine)
+            Log.d("Network_", items.toString())
+
+            childFragmentManager.beginTransaction()
+                .replace(R.id.stock_list, StockCoverFragment())
+                .commit()
+        }
+
+        viewModel.startActivityEvent.observe(viewLifecycleOwner) {
             val intent = Intent(requireContext(), MyStockActivity::class.java)
             startActivity(intent)
         }
 
-        childFragmentManager.beginTransaction()
-            .replace(R.id.stock_list, StockCoverFragment())
-            .commit()
+        viewModel.fetchStockList()
 
-        return view
+        return binding.root
     }
 }

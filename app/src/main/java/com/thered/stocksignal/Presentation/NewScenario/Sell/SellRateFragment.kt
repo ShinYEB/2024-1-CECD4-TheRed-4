@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.NewScenario.Sell
+package com.thered.stocksignal.presentation.newScenario.Sell
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

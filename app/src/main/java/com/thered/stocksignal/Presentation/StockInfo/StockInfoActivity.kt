@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation
+package com.thered.stocksignal.presentation
 
 import android.os.Bundle
 import android.widget.Button
@@ -11,10 +11,10 @@ import android.graphics.Color
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.thered.stocksignal.Presentation.StockInfo.AnalysisFragment
-import com.thered.stocksignal.Presentation.StockInfo.AutoTradeFragment
-import com.thered.stocksignal.Presentation.StockInfo.PredictionFragment
-import com.thered.stocksignal.Presentation.StockInfo.NewsFragment
+import com.thered.stocksignal.presentation.stockinfo.AnalysisFragment
+import com.thered.stocksignal.presentation.stockinfo.AutoTradeFragment
+import com.thered.stocksignal.presentation.stockinfo.PredictionFragment
+import com.thered.stocksignal.presentation.stockinfo.NewsFragment
 
 class StockInfoActivity : AppCompatActivity() {
     private lateinit var articlePreview: TextView

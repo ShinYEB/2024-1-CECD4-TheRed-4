@@ -1,11 +1,10 @@
-package com.thered.stocksignal.Presentation.StockInfo
+package com.thered.stocksignal.presentation.stockinfo
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.thered.stocksignal.Presentation.StockInfo.Condition
 import com.thered.stocksignal.R
 
 class ConditionAdapter(private val conditionList: List<Condition>) :

@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.Alarm
+package com.thered.stocksignal.presentation.alarm
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

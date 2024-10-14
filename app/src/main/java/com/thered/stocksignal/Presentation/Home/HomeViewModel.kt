@@ -1,21 +1,94 @@
-package com.thered.stocksignal.Presentation.Home
+package com.thered.stocksignal.presentation.home
 
+import DBHelper
+import android.app.Application
+import android.graphics.Color
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.thered.stocksignal.data.network.StockNetwork
+import com.thered.stocksignal.data.repositories.StockListRepository
+import com.thered.stocksignal.domain.entites.Stock
+import com.thered.stocksignal.domain.entites.StockBalanceWithTime
+import com.thered.stocksignal.domain.entites.StockListWithTime
+import com.thered.stocksignal.domain.usecases.StockListUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
-    private var tempData =  listOf(listOf("삼성전자", "64,200", "-0.77%", "https://openchat-phinf.pstatic.net/MjAyMzExMjlfMTM0/MDAxNzAxMjE4OTc1OTcz.FmWyTUNBX_8Zq0XSsr5oHK5TaLQtbFecwnskVcGSSlEg.13XMoPlR2bY5SeOJFdmJRYkrhPofPtTaOKoZbhCGwOQg.PNG/jZhwE4H5QsyHlQobWR97Ng.png"),
-                            listOf("SK하이닉스", "183,800", "+1.60%", "https://openchat-phinf.pstatic.net/MjAyMzExMjdfMjQz/MDAxNzAxMDYxMzE3MTM4.MnBMnvN5w2c3yG-Pb8YKFDA7qA-UmUrciwcBhTh5E1Ag.bSKozpjqmPvhMTcmk1VjadrWXOm3huFB6klPc4d_LOgg.PNG/tYmqjXjmQeOabTfDXPc4og.png"),
-                            listOf("현대차", "254,500", "-1.74%", "https://openchat-phinf.pstatic.net/MjAyMzExMjdfMzUg/MDAxNzAxMDYxMzE1ODU2.8P82Hq5f4ep6wVd20itar8WSREap-NVZbkpwvbwaqqIg.kck1OyGJQRTQRaH4X7V2i58MIUQqCKvEX-cfkmff3FQg.PNG/0WmAvvAqQF6D5XNHGVcOgw.png"),
-                            listOf("롯데칠성", "131,900", "-1.86%", "https://openchat-phinf.pstatic.net/MjAyNDAyMjhfMTA3/MDAxNzA5MDk1Mjk2ODc3.IpOV6n9nCOprFq9v40YhYfvb_ncS7R1xmyajw6ucz8Qg.yvW55wyQpl68KtPu4i_ykNvZ6_KhpnzbkzNq0w2Z-sQg.PNG/tlDLJZxGRzWWkovqVbqjfA.png"),
-                            listOf("KB금융", "83,300", "+3.20%", "https://openchat-phinf.pstatic.net/MjAyMzExMjdfMTY0/MDAxNzAxMDYxMzM3NTk2.199vbvzbCGnQ2G6D6WG5kEFF_uB-tmLzAejJUuR4EJcg.1UELC1AM6RBRzf6aK14NYT60sBdiZpXBoZp8o8aPrtQg.PNG/1K66YxeaRMWtyuY9yFxd1Q.png"),
-                            listOf("넥슨게임즈", "15,600", "+0.65%", "https://openchat-phinf.pstatic.net/MjAyMzExMjdfMTEz/MDAxNzAxMDYwMzY4NjAz.uTON_KBGW14j7pz-vbED0pwaViBTwGrayHMxlhIvRHEg.PfMModPo1LxuPvTwjSHiaP7gyII9V_DORYbd41_Dd1wg.PNG/2uGHZwgYRcC8yqEOzHP1Ww.png"),
-                            listOf("카카오", "36,650", "-0.27%", "https://openchat-phinf.pstatic.net/MjAyMzExMjlfNiAg/MDAxNzAxMjE4OTc2MzI2.uJK3OT1Tpx8MH0_ihyQw3RnBxgZNVFRm5tJInOe-7kEg.D2uVfWAKi6-kppTChPSopsS57Oih-ZzjKXdjDSjWOw8g.PNG/Q0oF_AeQaCrHTt7Sp77YQ.png"),
-                            listOf("NAVER", "170,400", "-0.29%", "https://openchat-phinf.pstatic.net/MjAyMzExMjlfMTQ3/MDAxNzAxMjE4OTc2NTU5.d54mNTOtAz4I4922724tVJlZt4TQYaZc-6Oj7KeO38cg.A6HVrLD8vS57CxPYOtgn9TOCSRKzzfCMSngLMV3BoDkg.PNG/wZm0XJGhQim8uS6abk2jQ.png"),
-                            listOf("하이브", "172,900", "+1.77%", "https://openchat-phinf.pstatic.net/MjAyMzExMjdfODkg/MDAxNzAxMDYxMzIxMzQ1.BchonjpJZgLK1nBMycrZaRPVD32HgUwTEjM13J22xScg.qdU3U4d9xZgH7yOxilVMiX2kYdTYlveAMaHl27Gcq38g.PNG/poBxTYpTToQUVMxYLqow.png"),
-                            listOf("에스엠", "67,800", "+2.57%", "https://openchat-phinf.pstatic.net/MjAyMzExMjdfMjMw/MDAxNzAxMDYwMzY4MDkz.Q8jcNPmt-LRSdTpdeG8OmwfPuWNK4P1_IJQ58np4cp4g.eyZm0zVkEVWDKed9Uqjf1G19BBlK26aFvjdYdhnWsVsg.PNG/aigX1LbuQUKlXTfU0HXU0w.png")
-    )
 
-    fun loadData(): List<List<String>> {
-        return tempData
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
+
+    // 비동기 처리
+    private val stockNetwork = StockNetwork()
+    private val dbHelper = DBHelper(application.applicationContext)
+    private val stockListRepository = StockListRepository(dbHelper, stockNetwork)
+    private val stockListUseCase = StockListUseCase(stockListRepository)
+
+    // StockList 비동기 처리 위한 변수
+    private val _stockList = MutableLiveData<StockListWithTime>()
+    val stockList: LiveData<StockListWithTime> get() = _stockList
+
+    // MyBalance 비동기 처리 위한 변수
+    private val _myBalance = MutableLiveData<StockBalanceWithTime>()
+    val myBalance: LiveData<StockBalanceWithTime> get() = _myBalance
+
+    // Button Click Event Listener val
+    private val _startActivityEvent = MutableLiveData<Unit>()
+    val startActivityEvent: LiveData<Unit> get() = _startActivityEvent
+
+    // DataBinding
+    private val _timeLine = MutableLiveData<String>()
+    val timeLine: LiveData<String> get() = _timeLine
+
+    private val _myBalanceTimeLine = MutableLiveData<String>()
+    val myBalanceTimeLine: LiveData<String> get() = _myBalanceTimeLine
+
+    private val _myBalanceTotalPrice = MutableLiveData<String>()
+    val myBalanceTotalPrice: LiveData<String> get() = _myBalanceTotalPrice
+
+    private val _myBalanceEarnRate = MutableLiveData<String>()
+    val myBalanceEarnRate: LiveData<String> get() = _myBalanceEarnRate
+
+    private val _myBalanceEarnRateColor = MutableLiveData<Int>()
+    val myBalanceEarnRateColor: LiveData<Int> get() = _myBalanceEarnRateColor
+
+    fun fetchStockList(){
+        stockListUseCase.getStockList { stockList ->
+            _stockList.postValue(stockList)
+        }
     }
+
+    fun fetchMyBalance(){
+        stockListUseCase.getMyBalance { stockBalance ->
+            _myBalance.postValue(stockBalance)
+        }
+    }
+
+    fun setTime(time: String) {
+        _timeLine.value = "$time 기준"
+    }
+
+    fun setBalance(time: String, totalStockPrice : Int, totalStockPL : Int) {
+        _myBalanceTimeLine.value = time
+        _myBalanceTotalPrice.value = String.format("%,d", totalStockPrice) + " 원"
+
+        var earnRate = String.format("%.2f", (totalStockPL.toFloat() / totalStockPrice) * 100) + "%"
+        if (earnRate[0] != '-')
+            earnRate = '+' + earnRate
+        _myBalanceEarnRate.value = earnRate
+
+        if (earnRate == "+0.0%")
+            _myBalanceEarnRateColor.value = Color.parseColor("#333333")
+        else if (earnRate[0] == '+')
+            _myBalanceEarnRateColor.value = Color.parseColor("#FF5353")
+        else if (earnRate[0] == '-')
+            _myBalanceEarnRateColor.value = Color.parseColor("#0080FF")
+    }
+
+    fun onButtonClicked() {
+        _startActivityEvent.value = Unit
+    }
+
 }

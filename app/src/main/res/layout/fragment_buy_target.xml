@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Presentation.NewScenario.Buy.BuyTargetFragment">
+    tools:context=".presentation.newScenario.Buy.BuyTargetFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/set_volume"
