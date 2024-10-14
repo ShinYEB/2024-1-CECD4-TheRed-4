@@ -58,7 +58,7 @@ public class KakaoLoginDto {
     public static class LoginResponseDto{
 
         private Long userId;
-        private String token;
+        private String token ;
 
     }
 }
