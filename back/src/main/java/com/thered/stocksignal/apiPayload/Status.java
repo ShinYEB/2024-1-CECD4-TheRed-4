@@ -28,6 +28,7 @@ public enum Status {
      */
     INGA_SUCCESS("200", "SUCCESS", "카카오 인가코드입니다."),
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
+    TOKEN_INVALID("201", "SUCCESS", "유효하지 않은 토큰입니다."),
 
     QUESTION_FOUND("200", "SUCCESS", "답변 정보를 찾았습니다."),
 
