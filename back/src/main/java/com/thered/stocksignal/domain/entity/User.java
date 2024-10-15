@@ -39,4 +39,10 @@ public class User {
     private Boolean isKisLinked;
 
     public void setNickname(String nickname) {this.nickname = nickname;}
+
+    public void setKisAccount(String secretKey, String appKey, Boolean isKisLinked){
+        this.secretKey = secretKey;
+        this.appKey = appKey;
+        this.isKisLinked = isKisLinked;
+    }
 }

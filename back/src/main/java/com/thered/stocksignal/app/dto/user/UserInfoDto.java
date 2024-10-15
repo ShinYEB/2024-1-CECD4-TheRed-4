@@ -28,4 +28,13 @@ public class UserInfoDto {
     public static class LoginRequestDto{
         public String email;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class kisAccountRequestDto{
+        public String appKey;
+        public String secretKey;
+    }
 }
