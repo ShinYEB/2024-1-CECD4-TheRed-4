@@ -48,6 +48,9 @@ public enum Status {
     SET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 수정되었습니다."),
     NICKNAME_SUCCESS("200", "SUCCESS", "사용 가능한 닉네임입니다."),
     NICKNAME_INVALID("201", "SUCCESS", "이미 존재하는 닉네임입니다."),
+
+    KIS_CONNECT_SUCCESS("200", "SUCCESS", "한국투자증권 계좌를 연동했습니다."),
+    KIS_CONNECT_FAILED("201", "SUCCESS", "한국투자증권 계좌를 연동할 수 없습니다."),
   
     TRADE_BUY_SUCCESS("200", "SUCCESS", "매수를 성공했습니다."),
     TRADE_SELL_SUCCESS("200", "SUCCESS", "매도를 성공했습니다."),
