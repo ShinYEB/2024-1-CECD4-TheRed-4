@@ -9,4 +9,10 @@ public interface UserAccountService {
     Optional<User> saveKakaoUser(String email);
 
     Optional<User> findByEmail(String email);
+
+    Boolean isExistNickname(String nickname);
+
+    void editUserNickname(Long userId, String nickname);
+
+    Optional<User> findById(Long userId);
 }

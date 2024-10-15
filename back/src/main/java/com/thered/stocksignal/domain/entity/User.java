@@ -37,4 +37,6 @@ public class User {
 
     @Column(nullable = true)
     private Boolean isKisLinked;
+
+    public void setNickname(String nickname) {this.nickname = nickname;}
 }

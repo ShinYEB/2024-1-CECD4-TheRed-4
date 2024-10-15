@@ -28,6 +28,7 @@ public enum Status {
      */
     INGA_SUCCESS("200", "SUCCESS", "카카오 인가코드입니다."),
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
+    TOKEN_INVALID("201", "SUCCESS", "유효하지 않은 토큰입니다."),
 
     QUESTION_FOUND("200", "SUCCESS", "답변 정보를 찾았습니다."),
 
@@ -46,6 +47,7 @@ public enum Status {
     GET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 조회되었습니다."),
     SET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 수정되었습니다."),
     NICKNAME_SUCCESS("200", "SUCCESS", "사용 가능한 닉네임입니다."),
+    NICKNAME_INVALID("201", "SUCCESS", "이미 존재하는 닉네임입니다."),
   
     TRADE_BUY_SUCCESS("200", "SUCCESS", "매수를 성공했습니다."),
     TRADE_SELL_SUCCESS("200", "SUCCESS", "매도를 성공했습니다."),
