@@ -2,6 +2,7 @@ package com.thered.stocksignal.service.company;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.kisApi.KisApiRequest;
 import com.thered.stocksignal.repository.CompanyRepository;
@@ -9,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -183,6 +188,39 @@ public class CompanyServiceImpl implements CompanyService {
             periodPrice.setPeriodPrice(dailyPriceList);
 
             return Optional.of(periodPrice);
+
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<List<popularStockResponseDto>> getPopularStocks() {
+        List<popularStockResponseDto> popularStocks = new ArrayList<>();
+        try {
+            String url = "https://finance.naver.com/sise/lastsearch2.naver";
+            Document document = Jsoup.connect(url).get();
+
+            // 주식 테이블에서 데이터 추출
+            Elements rows = document.select("table.type_5 tbody tr");
+
+            // 상위 10개 종목 가져오기
+            for (int i = 1; i <= 14 && i < rows.size(); i++) { // 첫 번째 행은 헤더이므로 1부터 시작
+                Element row = rows.get(i);
+
+                String rankText = row.select("td.no").text();
+                if (rankText.isEmpty()) {
+                    continue; // 빈 문자열이면 건너뜀
+                }
+
+                popularStockResponseDto popularStock = popularStockResponseDto.builder().build();
+                popularStock.setRank(Integer.parseInt(rankText)); // 순위
+                popularStock.setStockName(row.select("td a.tltle").text()); // 종목명
+
+                popularStocks.add(popularStock);
+            }
+
+            return Optional.of(popularStocks);
 
         } catch (Exception e) {
             return Optional.empty();

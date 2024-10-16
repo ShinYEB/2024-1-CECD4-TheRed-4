@@ -2,6 +2,7 @@ package com.thered.stocksignal.app.controller;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
+import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
 import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.CompanyDto.*;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.thered.stocksignal.app.dto.StockDto.*;
@@ -119,5 +121,16 @@ public class CompanyController {
         return responseDto
                 .map(dto -> ApiResponse.onSuccess(Status.PERIOD_PRICE_SUCCESS, dto))
                 .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
+    }
+
+    @GetMapping("/popular")
+    @Operation(summary = "상위 10개 인기 주식 조회", description = "상위 10개 인기 종목을 가져옵니다.")
+    public ApiResponse<List<popularStockResponseDto>> getPopularStocks() {
+
+        Optional<List<popularStockResponseDto>> responseDto = companyService.getPopularStocks();
+
+        return responseDto
+                .map(dto -> ApiResponse.onSuccess(Status.COMPANY_RANKING_SUCCESS, dto))
+                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_RANKING_FAILURE));
     }
 }

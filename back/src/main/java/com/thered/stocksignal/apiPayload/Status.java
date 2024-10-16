@@ -40,6 +40,8 @@ public enum Status {
 
     CURRENT_PRICE_SUCCESS("200", "SUCCESS", "현재가 조회에 성공했습니다."),
     PERIOD_PRICE_SUCCESS("200", "SUCCESS", "기간별 조회에 성공했습니다."),
+    NEWS_FOUND("200", "SUCCESS", "뉴스 조회에 성공하였습니다."),
+    COMPANY_RANKING_SUCCESS("200", "SUCCESS", "인기 종목 조회에 성공하였습니다."),
     AI_PREDICTION_SUCCESS("200", "SUCCESS", "AI 예상 주가 조회에 성공했습니다."),
 
     MY_BALANCE_SUCCESS("200", "SUCCESS", "잔고 조회에 성공했습니다."),
@@ -57,12 +59,15 @@ public enum Status {
   
     MYSTOCK_SUCCESS("200", "SUCCESS", "나의 전체 주식현황을 읽는데 성공했습니다."),
     MYSTOCK_SHORT_SUCCESS("200", "SUCCESS", "나의 주식현황 요약을 읽는데 성공했습니다."),
-    NEWS_FOUND("200", "SUCCESS", "뉴스 조회에 성공하였습니다."),
 
     //실패
-    USER_NOT_FOUND("400", "FAILURE", "사용자를 찾을 수 없습니다"),
-    COMPANY_NOT_FOUND("400", "FAILURE", "회사 정보를 찾을 수 없습니다"),
-    MY_BALANCE_NOT_FOUND("400", "FAILURE", "잔고 정보를 찾을 수 없습니다"),
+    USER_NOT_FOUND("404", "FAILURE", "사용자를 찾을 수 없습니다"),
+
+    COMPANY_NOT_FOUND("404", "FAILURE", "회사 정보를 찾을 수 없습니다"),
+    COMPANY_RANKING_FAILURE("400", "FAILURE", "인기 종목 조회에 실패했습니다."),
+
+    MY_BALANCE_NOT_FOUND("404", "FAILURE", "잔고 정보를 찾을 수 없습니다"),
+
     NEWS_NOT_FOUND("404", "FAILURE", "뉴스 정보를 찾을 수 없습니다");
 
     private final String code;

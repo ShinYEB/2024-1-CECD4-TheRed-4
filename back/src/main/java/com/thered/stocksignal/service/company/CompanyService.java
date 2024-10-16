@@ -1,5 +1,8 @@
 package com.thered.stocksignal.service.company;
 
+import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
+
+import java.util.List;
 import java.util.Optional;
 
 import static com.thered.stocksignal.app.dto.CompanyDto.*;
@@ -21,5 +24,8 @@ public interface CompanyService {
 
     // 종목 코드 -> 일봉 조회
     Optional<PeriodPriceResponseDto> findPeriodPriceByCode(String companyCode, String startDate, String endDate, String accessToken, String appKey, String appSecret);
+
+    // 인기 종목 10개 조회
+    Optional<List<popularStockResponseDto>> getPopularStocks();
 }
 
