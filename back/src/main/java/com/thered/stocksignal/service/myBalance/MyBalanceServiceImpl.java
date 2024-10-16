@@ -1,10 +1,6 @@
 package com.thered.stocksignal.service.myBalance;
 
-import com.thered.stocksignal.domain.entity.Company;
-import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.domain.enums.OauthType;
 import com.thered.stocksignal.kisApi.KisApiRequest;
-import com.thered.stocksignal.repository.UserStockRepository;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -14,10 +10,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.thered.stocksignal.app.dto.MyBalanceDto.*;
 
@@ -28,10 +24,9 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
     private final KisApiRequest apiRequest;
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
-    private final UserStockRepository userStockRepository;
 
     // 내 잔고 조회
-    public MyBalanceResponseDto getMyBalance(String accountNumber, String accessToken, String appKey, String appSecret) {
+    public Optional<MyBalanceResponseDto> getMyBalance(String accountNumber, String accessToken, String appKey, String appSecret) {
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/trading/inquire-balance";
@@ -90,12 +85,10 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
             myBalanceDto.setTotalStockPrice(jsonNode.path("output2").get(0).path("evlu_amt_smtl_amt").asLong()); // 보유 주식 전체 가치
             myBalanceDto.setTotalStockPL(jsonNode.path("output2").get(0).path("evlu_pfls_smtl_amt").asLong());    // 보유 주식 전체 손익
 
-            return myBalanceDto;
+            return Optional.of(myBalanceDto);
 
-        } catch (IOException e) {
-            return null;
-            // TODO : 실패 시 Status 반환
-            // ApiResponse.onFailure(Status.MY_BALANCE_FAILURE);
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 }

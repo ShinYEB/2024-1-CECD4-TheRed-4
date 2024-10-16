@@ -11,10 +11,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.thered.stocksignal.app.dto.CompanyDto.*;
 import static com.thered.stocksignal.app.dto.StockDto.*;
@@ -29,25 +29,28 @@ public class CompanyServiceImpl implements CompanyService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public CompanyCodeResponseDto findCodeByName(String companyName) {
-        Company company = companyRepository.findByCompanyName(companyName);
+    public Optional<CompanyCodeResponseDto> findCodeByName(String companyName) {
+        Optional<Company> company = companyRepository.findByCompanyName(companyName);
+        if (company.isEmpty()) return Optional.empty();
+
         CompanyCodeResponseDto companyCode = CompanyCodeResponseDto.builder().build();
+        companyCode.setCompanyCode(company.get().getCompanyCode());
 
-        companyCode.setCompanyCode(company != null ? company.getCompanyCode() : null);
-        return companyCode;
+        return Optional.of(companyCode);
     }
 
     @Override
-    public CompanyLogoResponseDto findLogoByName(String companyName) {
-        Company company = companyRepository.findByCompanyName(companyName);
+    public Optional<CompanyLogoResponseDto> findLogoByName(String companyName) {
+        Optional<Company> company = companyRepository.findByCompanyName(companyName);
+        if (company.isEmpty()) return Optional.empty();
+
         CompanyLogoResponseDto companyLogo = CompanyLogoResponseDto.builder().build();
-
-        companyLogo.setLogoImage(company != null ? company.getLogoImage() : null);
-        return companyLogo;
+        companyLogo.setLogoImage(company.get().getLogoImage());
+        return Optional.of(companyLogo);
     }
 
     @Override
-    public CompanyInfoResponseDto findCompanyInfoByCode(String companyCode, String accessToken, String appKey, String appSecret) {
+    public Optional<CompanyInfoResponseDto> findCompanyInfoByCode(String companyCode, String accessToken, String appKey, String appSecret) {
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
@@ -85,17 +88,15 @@ public class CompanyServiceImpl implements CompanyService {
             companyInfo.setOneYearHighPrice(output.path("stck_dryy_hgpr").asLong());   // 연중최고가
             companyInfo.setOneYearLowPrice(output.path("stck_dryy_lwpr").asLong());   // 연중최저가
 
-            return companyInfo;
+            return Optional.of(companyInfo);
 
-        } catch (IOException e) {
-            return null;
-            // TODO : 실패 시 Status 반환
-            // ApiResponse.onFailure(Status.);
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 
     @Override
-    public CurrentPriceResponseDto findCurrentPriceByCode(String companyCode, String accessToken, String appKey, String appSecret){
+    public Optional<CurrentPriceResponseDto> findCurrentPriceByCode(String companyCode, String accessToken, String appKey, String appSecret){
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
@@ -126,17 +127,15 @@ public class CompanyServiceImpl implements CompanyService {
 
             currentPrice.setCurrentPrice(output.path("stck_oprc").asLong());   // 현재가
 
-            return currentPrice;
+            return Optional.of(currentPrice);
 
-        } catch (IOException e) {
-            return null;
-            // TODO : 실패 시 Status 반환
-            // ApiResponse.onFailure(Status.);
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 
     @Override
-    public PeriodPriceResponseDto findPeriodPriceByCode(String companyCode, String startDate, String endDate, String accessToken, String appKey, String appSecret){
+    public Optional<PeriodPriceResponseDto> findPeriodPriceByCode(String companyCode, String startDate, String endDate, String accessToken, String appKey, String appSecret){
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice";
@@ -183,12 +182,10 @@ public class CompanyServiceImpl implements CompanyService {
 
             periodPrice.setPeriodPrice(dailyPriceList);
 
-            return periodPrice;
+            return Optional.of(periodPrice);
 
-        } catch (IOException e) {
-            return null;
-            // TODO : 실패 시 Status 반환
-            // ApiResponse.onFailure(Status.);
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 }
