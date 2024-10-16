@@ -2,7 +2,6 @@ package com.thered.stocksignal.service.myBalance;
 
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.domain.entity.UserStock;
 import com.thered.stocksignal.domain.enums.OauthType;
 import com.thered.stocksignal.kisApi.KisApiRequest;
 import com.thered.stocksignal.repository.UserStockRepository;
@@ -83,11 +82,6 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
                 stock.setPL(stockNode.path("evlu_pfls_amt").asLong()); // 손익
 
                 stocks.add(stock); // 해당 주식을 리스트에 추가
-
-                // 조회한 내역을 UserStock DB에 업데이트함
-                updateUserStock(1L, stockNode, 10L, 9900L);
-                // TODO : DB 업데이트시 실제 얻은 값들로 수행
-                // updateUserStock(userId, stockNode, quantity, currentPrice);
             }
 
             // output2 : 보유 주식 총합 정보
@@ -102,43 +96,6 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
             return null;
             // TODO : 실패 시 Status 반환
             // ApiResponse.onFailure(Status.MY_BALANCE_FAILURE);
-        }
-    }
-
-    public void updateUserStock(Long userId, JsonNode stockNode, Long quantity, Long currentPrice) {
-
-        Long companyId = 1L; // 종목 ID 가져오기
-
-        // TODO : 실제 companyId를 가져오도록 변경
-        // Long companyId = stockNode.path("company_id").asLong();
-
-        UserStock userStock = null; // 사용자 ID와 종목 ID로 UserStock 가져오기
-
-        // TODO : 실제 UserStock을 가져오도록 변경
-        // UserStock userStock = userStockRepository.findByUserIdAndComapnyId(userId, companyId);
-
-        /*
-        TODO : User와 Company 객체를 DB에서 조회하도록 변경
-        User user = userRepository.findById(userId);
-        Company company = companyRepository.findById(companyId);
-        */
-
-        if (userStock != null) {
-            // 이미 존재하면 업데이트
-            userStock.setStockCount((long) quantity);
-            userStock.setTotalPrice((long) (quantity * currentPrice));
-            userStockRepository.save(userStock);
-        }
-        else {
-            // 존재하지 않으면 새로 생성
-            // TODO : 아래 예시를 실제 User 및 Company 객체로 변경
-            UserStock newUserStock = UserStock.builder()
-                    .user(new User(1L,"삼성전자","닉네임", OauthType.KAKAO,"1","1","1",true))
-                    .company(new Company(1L,"065824", "삼성전자", "image"))
-                    .stockCount(10L)
-                    .totalPrice(99000L)
-                    .build();
-            userStockRepository.save(newUserStock);
         }
     }
 }
