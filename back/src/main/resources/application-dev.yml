@@ -25,3 +25,9 @@ security:
   kakao:
     client_id: ${REST_API_KEY}
     redirect_uri: http://pposiraun.com/api/auth/kakao/callback
+
+naver:
+  client:
+    id: ${NAVER_CLIENT_ID}
+    secret: ${NAVER_CLIENT_SECRET}
+
