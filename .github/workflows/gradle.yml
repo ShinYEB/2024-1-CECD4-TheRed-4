@@ -62,13 +62,6 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          echo "Starting Application with the following environment variables:"
-          echo "DB_URL=${{ secrets.MYSQL_URL }}"
-          echo "DB_USER=${{ secrets.MYSQL_USERNAME }}"
-          echo "DB_PASSWD=${{ secrets.MYSQL_PASSWORD }}"
-          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}"
-          echo "REST_API_KEY=${{ secrets.REST_API_KEY }}"
-
           sudo docker kill ${{ secrets.PROJECT_NAME }} || true
           sudo docker rm -f ${{ secrets.PROJECT_NAME }} || true
           sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }} || true
@@ -83,4 +76,7 @@ jobs:
           -e JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }} \
           -e REST_API_KEY=${{ secrets.REST_API_KEY }} \
           -e REDIRECT_URI=${{ secrets.REDIRECT_URI }} \
+          -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
+          -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
           -d ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
+          
