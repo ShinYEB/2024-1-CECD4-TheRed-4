@@ -24,10 +24,8 @@ public class UserInfoController {
     @Operation(summary = "회원 정보 조회", description = "Header에 token을 담아야 합니다.")
     @GetMapping("/info/detail")
     public ApiResponse<?> getUserInfo(@RequestHeader("Authorization") String token){
-        if (token == null || !token.startsWith("Bearer ")) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
-
-        String actualToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserId(actualToken);
+        Long userId = userAccountService.getUserIdFromToken(token);
+        if(userId == -1) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
         Optional<User> user = userAccountService.findById(userId);
         UserInfoDto.InfoResponseDto infoResponseDto = new UserInfoDto.InfoResponseDto().builder()
                 .nickname(user.get().getNickname())
@@ -39,12 +37,9 @@ public class UserInfoController {
     @Operation(summary = "회원 정보 수정")
     @PatchMapping("/info/edit")
     public ApiResponse<?> setUserInfo(@RequestBody UserInfoDto.InfoRequestDto dto, @RequestHeader("Authorization") String token){
-        if (token == null || !token.startsWith("Bearer ")) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
-
-        String actualToken = token.replace("Bearer ", "");
-        Long userId = jwtUtil.getUserId(actualToken);
+        Long userId = userAccountService.getUserIdFromToken(token);
+        if(userId == -1) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
         userAccountService.editUserNickname(userId, dto.getNickname());
-
         return ApiResponse.onSuccess(Status.SET_USERINFO_SUCCESS, null);
     }
 
@@ -54,5 +49,19 @@ public class UserInfoController {
         Boolean isExists = userAccountService.isExistNickname(nickname);
         if(isExists == false) return ApiResponse.onSuccess(Status.NICKNAME_SUCCESS, null);
         return ApiResponse.onSuccess(Status.NICKNAME_INVALID, null);
+    }
+
+    @Operation(summary = "한국투자증권 계좌 연동")
+    @PostMapping("/kis/connect")
+    public ApiResponse<?> connectKisAccount(@RequestHeader("Authorization") String token,
+                                            @RequestBody UserInfoDto.kisAccountRequestDto dto){
+
+        Long userId = userAccountService.getUserIdFromToken(token);
+        if(userId == -1) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
+
+        Optional<User> user = userAccountService.findById(userId);
+        if(user.get().getIsKisLinked() == false) userAccountService.connectKisAccount(userId, dto);
+
+        return ApiResponse.onSuccess(Status.KIS_CONNECT_SUCCESS, null);
     }
 }
