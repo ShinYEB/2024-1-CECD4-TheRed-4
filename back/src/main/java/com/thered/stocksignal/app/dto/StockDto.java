@@ -14,20 +14,6 @@ public class StockDto {
         private Long currentPrice;    // 현재가
     }
 
-    /* 안쓸가능성 높음
-    @Getter
-    @Builder
-    // 분봉 정보
-    public static class MinuteDataResponseDto {
-        private String date;      // 날짜
-        private String time;      // 시분초
-        private Long openPrice; // 시가
-        private Long closePrice; // 종가
-        private Long highPrice; // 고가
-        private Long lowPrice;  // 저가
-    }
-     */
-
     @Getter
     @Setter
     @Builder
@@ -49,10 +35,10 @@ public class StockDto {
     @Getter
     @Setter
     @Builder
-    // AI 예측 주가 정보
-    public static class PredictionPriceResponseDto {
-        private String date;      // 날짜
-        private Long closePrice; // 종가
+    // 주식 순위
+    public static class popularStockResponseDto {
+        private Integer rank;
+        private String stockName;
     }
 
     @Getter

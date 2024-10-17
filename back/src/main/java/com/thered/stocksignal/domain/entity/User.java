@@ -38,6 +38,12 @@ public class User {
     @Column(nullable = true)
     private Boolean isKisLinked;
 
+    @Column(nullable = true)
+    private String accountNumber;
+
+    @Column(nullable = true, length = 1024)
+    private String kisToken;
+
     public void setNickname(String nickname) {this.nickname = nickname;}
 
     public void setKisAccount(String secretKey, String appKey, Boolean isKisLinked){
