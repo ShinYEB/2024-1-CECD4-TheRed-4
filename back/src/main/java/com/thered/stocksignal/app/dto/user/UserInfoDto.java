@@ -36,5 +36,6 @@ public class UserInfoDto {
     public static class kisAccountRequestDto{
         public String appKey;
         public String secretKey;
+        public String account;
     }
 }
