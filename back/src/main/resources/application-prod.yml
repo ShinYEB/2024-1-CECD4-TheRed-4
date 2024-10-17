@@ -24,3 +24,7 @@ security:
   kakao:
     client_id: ${REST_API_KEY}
     redirect_uri: ${REDIRECT_URI}
+naver:
+  client:
+    id: ${NAVER_CLIENT_ID}
+    secret: ${NAVER_CLIENT_SECRET}
