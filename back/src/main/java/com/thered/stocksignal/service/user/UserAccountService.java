@@ -20,4 +20,8 @@ public interface UserAccountService {
     Long getUserIdFromToken(String token);
 
     void connectKisAccount(Long userId, UserInfoDto.kisAccountRequestDto dto);
+
+    void editKisAccessToken(Long userId, String accessToken, String accessTokenExpired);
+
+    void refreshKisToken(Long userId);
 }
