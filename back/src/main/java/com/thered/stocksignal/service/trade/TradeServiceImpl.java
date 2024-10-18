@@ -44,11 +44,11 @@ public class TradeServiceImpl implements TradeService {
         String secretKey = user.getSecretKey();
 
         HttpHeaders header = new HttpHeaders(); // Http header
-        header.add("content-type", "application/json; charset=utf-8");
-        header.add("authorization", "Bearer " +accessToken);
-        header.add("appkey", appKey);
-        header.add("appsecret", secretKey);
-        header.add("tr_id", tr_id);
+        header.set("content-type", "application/json; charset=utf-8");
+        header.set("authorization", "Bearer " +accessToken);
+        header.set("appkey", appKey);
+        header.set("appsecret", secretKey);
+        header.set("tr_id", tr_id);
 
         return header;
     }
@@ -110,12 +110,16 @@ public class TradeServiceImpl implements TradeService {
                 Company company = companyRepository.findByCompanyCode(dto.getScode())
                         .orElseThrow(() -> new RuntimeException("존재하지 않는 회사 코드입니다."));
 
+                TradeType type;
+                if(tr_id.equals("VTTC0802U")) type = TradeType.BUY;
+                else type = TradeType.SELL;
+
                 Trade newTrade = Trade.builder()
                         .user(user)
                         .tradeDate(new Date())
                         .tradeQuantity(dto.getWeek())
                         .company(company)
-                        .tradeType(TradeType.BUY)
+                        .tradeType(type)
                         .build();
 
                 tradeRepository.save(newTrade);
