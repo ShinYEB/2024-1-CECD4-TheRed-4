@@ -60,6 +60,11 @@ class HomeFragment : Fragment() {
 
         viewModel.fetchStockList()
 
+        viewModel.test.observe(viewLifecycleOwner) { item ->
+            Log.d("test", item.toString())
+        }
+        viewModel.getTest()
+
         return binding.root
     }
 }

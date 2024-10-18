@@ -9,10 +9,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.thered.stocksignal.data.network.StockNetwork
+import com.thered.stocksignal.data.network.TestNetwork
+import com.thered.stocksignal.data.network.TestService
 import com.thered.stocksignal.data.repositories.StockListRepository
 import com.thered.stocksignal.domain.entites.Stock
 import com.thered.stocksignal.domain.entites.StockBalanceWithTime
 import com.thered.stocksignal.domain.entites.StockListWithTime
+import com.thered.stocksignal.domain.entites.TestEntry
 import com.thered.stocksignal.domain.usecases.StockListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -69,6 +72,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun setTime(time: String) {
         _timeLine.value = "$time 기준"
     }
+
+
+//  test area
+    private val testNetwork = TestNetwork()
+    private val _test = MutableLiveData<TestEntry?>()
+    val test: MutableLiveData<TestEntry?> get() = _test
+
+    fun getTest(){
+        testNetwork.getTest("UwfBYNUqE-26K8VhWV8ZclanVGtPEbDF2K9N1djtHZ2gvXNJEnn_OgAAAAQKKiWPAAABkp5gHvtb9Pmr5eg_ZA") { item ->
+            _test.postValue(item)
+        }
+    }
+//
 
     fun setBalance(time: String, totalStockPrice : Int, totalStockPL : Int) {
         _myBalanceTimeLine.value = time
