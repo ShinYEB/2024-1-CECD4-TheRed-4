@@ -1,11 +1,13 @@
 package com.thered.stocksignal.service.myBalance;
 
 import com.thered.stocksignal.kisApi.KisApiRequest;
+import com.thered.stocksignal.service.company.CompanyService;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
+import com.thered.stocksignal.app.dto.CompanyDto.CompanyLogoResponseDto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +26,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
     private final KisApiRequest apiRequest;
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
+    private final CompanyService companyService;
 
     // 내 잔고 조회
     public Optional<MyBalanceResponseDto> getMyBalance(String accountNumber, String accessToken, String appKey, String appSecret) {
@@ -70,11 +73,18 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
 
                 StockResponseDto stock = StockResponseDto.builder().build();
 
-                stock.setStockName(stockNode.path("prdt_name").asText());   // 종목명
+                String companyName = stockNode.path("prdt_name").asText();
+                stock.setStockName(companyName);   // 종목명
                 stock.setQuantity(stockNode.path("hldg_qty").asLong());  // 수량
                 stock.setAvgPrice(stockNode.path("pchs_avg_pric").asLong());  // 매입 평균가
                 stock.setCurrentPrice(stockNode.path("prpr").asLong()); // 현재가
                 stock.setPL(stockNode.path("evlu_pfls_amt").asLong()); // 손익
+                String logoImage = companyService.findLogoByName(companyName)
+                        .map(CompanyLogoResponseDto::getLogoImage)
+                        .orElse(null); // TODO: null 대신 디폴트이미지 경로
+
+                stock.setLogoImage(logoImage);
+                // 로고 이미지
 
                 stocks.add(stock); // 해당 주식을 리스트에 추가
             }
