@@ -32,14 +32,8 @@ public class MyBalanceController {
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        Optional<User> user = userAccountService.findById(userId);
-        if (user.isEmpty()) return ApiResponse.onFailure(Status.USER_NOT_FOUND);
-
         Optional<MyBalanceResponseDto> responseDto = myBalanceService.getMyBalance(
-                user.get().getAccountNumber(),
-                user.get().getKisToken(),
-                user.get().getAppKey(),
-                user.get().getSecretKey()
+                userId
         );
 
         return responseDto.map(dto -> ApiResponse.onSuccess(Status.MY_BALANCE_SUCCESS, dto))

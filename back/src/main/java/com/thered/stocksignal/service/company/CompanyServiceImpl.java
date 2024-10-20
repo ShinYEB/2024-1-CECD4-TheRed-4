@@ -2,10 +2,14 @@ package com.thered.stocksignal.service.company;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thered.stocksignal.apiPayload.ApiResponse;
+import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
 import com.thered.stocksignal.domain.entity.Company;
+import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.kisApi.KisApiRequest;
 import com.thered.stocksignal.repository.CompanyRepository;
+import com.thered.stocksignal.service.user.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -32,6 +36,7 @@ public class CompanyServiceImpl implements CompanyService {
     private final KisApiRequest apiRequest;
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
+    private final UserAccountService userAccountService;
 
     @Override
     public Optional<CompanyCodeResponseDto> findCodeByName(String companyName) {
@@ -55,7 +60,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Optional<CompanyInfoResponseDto> findCompanyInfoByCode(String companyCode, String accessToken, String appKey, String appSecret) {
+    public Optional<CompanyInfoResponseDto> findCompanyInfoByCode(String companyCode, Long userId) {
+
+        userAccountService.refreshKisToken(userId);
+
+        Optional<User> user = userAccountService.findById(userId);
+        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
@@ -69,9 +79,9 @@ public class CompanyServiceImpl implements CompanyService {
         // 요청 헤더 생성
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("authorization", "Bearer " + accessToken)
-                .addHeader("appkey", appKey)
-                .addHeader("appsecret", appSecret)
+                .addHeader("authorization", "Bearer " + user.get().getKisToken())
+                .addHeader("appkey", user.get().getAppKey())
+                .addHeader("appsecret", user.get().getSecretKey())
                 .addHeader("tr_id", "FHKST01010100")
                 .build();
 
@@ -101,7 +111,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Optional<CurrentPriceResponseDto> findCurrentPriceByCode(String companyCode, String accessToken, String appKey, String appSecret){
+    public Optional<CurrentPriceResponseDto> findCurrentPriceByCode(String companyCode, Long userId){
+
+        userAccountService.refreshKisToken(userId);
+
+        Optional<User> user = userAccountService.findById(userId);
+        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
@@ -115,9 +130,9 @@ public class CompanyServiceImpl implements CompanyService {
         // 요청 헤더 생성
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("authorization", "Bearer " + accessToken)
-                .addHeader("appkey", appKey)
-                .addHeader("appsecret", appSecret)
+                .addHeader("authorization", "Bearer " + user.get().getKisToken())
+                .addHeader("appkey", user.get().getAppKey())
+                .addHeader("appsecret", user.get().getSecretKey())
                 .addHeader("tr_id", "FHKST01010100")
                 .build();
 
@@ -140,7 +155,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Optional<PeriodPriceResponseDto> findPeriodPriceByCode(String companyCode, String startDate, String endDate, String accessToken, String appKey, String appSecret){
+    public Optional<PeriodPriceResponseDto> findPeriodPriceByCode(String companyCode, String startDate, String endDate, Long userId){
+
+        userAccountService.refreshKisToken(userId);
+
+        Optional<User> user = userAccountService.findById(userId);
+        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice";
@@ -159,9 +179,9 @@ public class CompanyServiceImpl implements CompanyService {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("content-type", "application/json; charset=utf-8")
-                .addHeader("authorization", "Bearer " + accessToken)
-                .addHeader("appkey", appKey)
-                .addHeader("appsecret", appSecret)
+                .addHeader("authorization", "Bearer " + user.get().getKisToken())
+                .addHeader("appkey", user.get().getAppKey())
+                .addHeader("appsecret", user.get().getSecretKey())
                 .addHeader("tr_id", "FHKST03010100")
                 .build();
 

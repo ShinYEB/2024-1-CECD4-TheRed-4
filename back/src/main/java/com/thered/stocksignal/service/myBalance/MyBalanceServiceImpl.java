@@ -1,7 +1,9 @@
 package com.thered.stocksignal.service.myBalance;
 
+import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.kisApi.KisApiRequest;
 import com.thered.stocksignal.service.company.CompanyService;
+import com.thered.stocksignal.service.user.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,16 +29,22 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
     private final CompanyService companyService;
+    private final UserAccountService userAccountService;
 
     // 내 잔고 조회
-    public Optional<MyBalanceResponseDto> getMyBalance(String accountNumber, String accessToken, String appKey, String appSecret) {
+    public Optional<MyBalanceResponseDto> getMyBalance(Long userId) {
+
+        userAccountService.refreshKisToken(userId);
+
+        Optional<User> user = userAccountService.findById(userId);
+        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/trading/inquire-balance";
 
         // API 쿼리 파라미터
         String url = apiRequest.buildUrl(endpoint,
-                "CANO=" + accountNumber,
+                "CANO=" + user.get().getAccountNumber(),
                 "ACNT_PRDT_CD=01",
                 "AFHR_FLPR_YN=N",
                 "INQR_DVSN=02",
@@ -53,9 +61,9 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Bearer " + accessToken)
-                .addHeader("appkey", appKey)
-                .addHeader("appsecret", appSecret)
+                .addHeader("authorization", "Bearer " + user.get().getKisToken())
+                .addHeader("appkey", user.get().getAppKey())
+                .addHeader("appsecret", user.get().getSecretKey())
                 .addHeader("tr_id", "VTTC8434R")
                 .build();
 
