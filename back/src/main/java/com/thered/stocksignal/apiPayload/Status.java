@@ -68,6 +68,7 @@ public enum Status {
 
     CONDITION_FOUND("200", "SUCCESS", "조건 조회에 성공하였습니다."),
     CONDITION_ADDED("200", "SUCCESS", "조건 추가에 성공했습니다."),
+    CONDITION_DELETED("200", "SUCCESS", "조건 삭제에 성공했습니다."),
 
     //실패
     USER_NOT_FOUND("404", "FAILURE", "사용자를 찾을 수 없습니다"),
@@ -82,7 +83,8 @@ public enum Status {
     SCENARIO_CREATION_FAILED("400", "FAILURE", "시나리오 생성에 실패하였습니다."),
     SCENARIO_DELETION_FAILED("400", "FAILURE", "시나리오 삭제에 실패하였습니다."),
 
-    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다.");
+    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다."),
+    DELETING_CONDITION_FAILED("400", "FAILURE", "조건 삭제에 실패했습니다.");
 
     private final String code;
     private final String result;

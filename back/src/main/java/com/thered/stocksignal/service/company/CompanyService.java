@@ -1,7 +1,6 @@
 package com.thered.stocksignal.service.company;
 
 import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
-import com.thered.stocksignal.domain.entity.Company;
 
 import java.util.List;
 import java.util.Optional;

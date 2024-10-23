@@ -24,7 +24,7 @@ public class CompanyController {
     private final CompanyService companyService;
     private final UserAccountService userAccountService;
 
-    @GetMapping("/code/{companyName}")
+    @GetMapping("/{companyName}/code")
     @Operation(summary = "종목 코드 조회", description = "회사명으로 종목 코드를 가져옵니다.")
     public ApiResponse<CompanyCodeResponseDto> getCompanyCode(@PathVariable String companyName) {
 
@@ -35,7 +35,7 @@ public class CompanyController {
                 .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
     }
 
-    @GetMapping("/logo/{companyName}")
+    @GetMapping("/{companyName}/logo")
     @Operation(summary = "로고 이미지 URL 조회", description = "회사명으로 로고 이미지 URL을 가져옵니다.")
     public ApiResponse<CompanyLogoResponseDto> getCompanyLogo(@PathVariable String companyName) {
 
@@ -45,18 +45,20 @@ public class CompanyController {
                 .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
     }
 
-    @GetMapping("/{companyCode}")
-    @Operation(summary = "회사 정보 조회(분석 탭)", description = "종목 코드로 회사 정보 조회")
+    @GetMapping("/{companyName}")
+    @Operation(summary = "회사 정보 조회(분석 탭)", description = "종목명으로 회사 정보 조회")
     public ApiResponse<CompanyInfoResponseDto> getCompanyInfo(
-            @PathVariable String companyCode,
+            @PathVariable String companyName,
             @RequestHeader("Authorization") String token
     ) {
+        Optional<CompanyCodeResponseDto> companyCode = companyService.findCodeByName(companyName);
+        if(companyCode.isEmpty()) return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
 
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
         Optional<CompanyInfoResponseDto> responseDto = companyService.findCompanyInfoByCode(
-                companyCode,
+                companyCode.get().getCompanyCode(),
                 userId
         );
 
@@ -65,18 +67,20 @@ public class CompanyController {
                 .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
     }
 
-    @GetMapping("/current-price/{companyCode}")
-    @Operation(summary = "현재가 조회", description = "종목 코드로 현재가 조회")
+    @GetMapping("/{companyName}/current-price")
+    @Operation(summary = "현재가 조회", description = "종목명으로 현재가 조회")
     public ApiResponse<CurrentPriceResponseDto> getCurrentPrice(
-            @PathVariable String companyCode,
+            @PathVariable String companyName,
             @RequestHeader("Authorization") String token
     ){
+        Optional<CompanyCodeResponseDto> companyCode = companyService.findCodeByName(companyName);
+        if(companyCode.isEmpty()) return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
 
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
         Optional<CurrentPriceResponseDto> responseDto = companyService.findCurrentPriceByCode(
-                companyCode,
+                companyCode.get().getCompanyCode(),
                 userId
         );
 
@@ -85,14 +89,17 @@ public class CompanyController {
                 .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
     }
 
-    @GetMapping("/period-price")
+    @GetMapping("/{companyName}/period-price")
     @Operation(summary = "일봉 조회", description = "종목 코드로 일봉 조회")
     public ApiResponse<PeriodPriceResponseDto> getPeriodPrice(
-            @RequestParam  String companyCode,
+            @PathVariable String companyName,
             @RequestParam  String startDate,
             @RequestParam  String endDate,
             @RequestHeader("Authorization") String token
     ){
+        Optional<CompanyCodeResponseDto> companyCode = companyService.findCodeByName(companyName);
+        if(companyCode.isEmpty()) return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
@@ -100,7 +107,7 @@ public class CompanyController {
         if (user.isEmpty()) return ApiResponse.onFailure(Status.USER_NOT_FOUND);
 
         Optional<PeriodPriceResponseDto> responseDto = companyService.findPeriodPriceByCode(
-                companyCode,
+                companyCode.get().getCompanyCode(),
                 startDate,
                 endDate,
                 userId

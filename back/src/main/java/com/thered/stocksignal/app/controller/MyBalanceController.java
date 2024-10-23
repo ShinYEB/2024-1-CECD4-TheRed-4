@@ -2,7 +2,6 @@ package com.thered.stocksignal.app.controller;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
-import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.service.myBalance.MyBalanceService;
 import com.thered.stocksignal.service.user.UserAccountService;
 import lombok.RequiredArgsConstructor;

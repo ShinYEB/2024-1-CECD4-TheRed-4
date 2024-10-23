@@ -61,8 +61,8 @@ public class ScenarioDto {
     @AllArgsConstructor
     public static class ConditionResponseDto {
         private Long conditionId;
-        private BuysellType buysellType;
-        private MethodType methodType;
+        private BuysellType buysellType; // BUY, SELL
+        private MethodType methodType;  // RATE, PRICE, TRADING
         private Long initialPrice;
         private Long currentPrice;
         private Long targetPrice1;

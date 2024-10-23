@@ -1,20 +1,14 @@
 package com.thered.stocksignal.service.scenario;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thered.stocksignal.app.dto.CompanyDto;
+
 import com.thered.stocksignal.app.dto.ScenarioDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
-import com.thered.stocksignal.app.dto.kakao.KakaoLoginDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
 import com.thered.stocksignal.domain.entity.ScenarioCondition;
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.domain.enums.BuysellType;
-import com.thered.stocksignal.domain.enums.MethodType;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.repository.ScenarioConditionRepository;
 import com.thered.stocksignal.repository.ScenarioRepository;
@@ -22,28 +16,12 @@ import com.thered.stocksignal.repository.UserRepository;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.StockDto.CurrentPriceResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-
-import jakarta.annotation.PostConstruct;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -183,6 +161,26 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         // 조건 저장
         scenarioConditionRepository.save(condition);
+
+        return true;
+    }
+
+    public boolean deleteCondition(Long userId, Long conditionId) {
+
+        Optional<ScenarioCondition> condition = scenarioConditionRepository.findById(conditionId);
+
+        // 조건이 존재하지 않으면 삭제 실패
+        if (condition.isEmpty()) {
+            return false;
+        }
+
+        // 해당 조건이 사용자의 것이 아니면 삭제 실패
+        if(!Objects.equals(condition.get().getScenario().getUser().getId(), userId)){
+            return false;
+        }
+
+        // 조건 삭제
+        scenarioConditionRepository.delete(condition.get());
 
         return true;
     }

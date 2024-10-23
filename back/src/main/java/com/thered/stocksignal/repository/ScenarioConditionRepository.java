@@ -9,9 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ScenarioConditionRepository extends JpaRepository<ScenarioCondition, Long> {
-    @Modifying
-    @Query("DELETE FROM ScenarioCondition sc WHERE sc.scenario = :scenario")
     void deleteByScenario(Scenario scenario);
 
     List<ScenarioCondition> findByScenarioId(Long scenarioId);
+
 }

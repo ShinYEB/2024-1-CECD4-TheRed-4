@@ -2,8 +2,6 @@ package com.thered.stocksignal.service.company;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thered.stocksignal.apiPayload.ApiResponse;
-import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.User;
