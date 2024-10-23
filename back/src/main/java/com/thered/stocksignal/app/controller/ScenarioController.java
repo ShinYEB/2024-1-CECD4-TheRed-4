@@ -82,7 +82,7 @@ public class ScenarioController {
         return ApiResponse.onSuccess(Status.CONDITION_FOUND, responseDto);
     }
 
-    @PatchMapping("/conditions/create")
+    @PostMapping("/conditions/create")
     @Operation(summary = "시나리오 조건 추가", description = "특정 시나리오에 새 조건을 추가합니다.")
     public ApiResponse<Void> addCondition(
             @RequestHeader("Authorization") String token,
