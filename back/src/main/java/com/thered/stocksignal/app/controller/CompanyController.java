@@ -25,7 +25,7 @@ public class CompanyController {
     private final UserAccountService userAccountService;
 
     @GetMapping("/{companyName}/code")
-    @Operation(summary = "종목 코드 조회", description = "회사명으로 종목 코드를 가져옵니다.")
+    @Operation(summary = "종목 코드 조회", description = "종목명으로 종목 코드를 가져옵니다.")
     public ApiResponse<CompanyCodeResponseDto> getCompanyCode(@PathVariable String companyName) {
 
         Optional<CompanyCodeResponseDto> responseDto = companyService.findCodeByName(companyName);
@@ -36,7 +36,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyName}/logo")
-    @Operation(summary = "로고 이미지 URL 조회", description = "회사명으로 로고 이미지 URL을 가져옵니다.")
+    @Operation(summary = "로고 이미지 URL 조회", description = "종목명으로 로고 이미지 경로를 불러옵니다.")
     public ApiResponse<CompanyLogoResponseDto> getCompanyLogo(@PathVariable String companyName) {
 
         Optional<CompanyLogoResponseDto> responseDto = companyService.findLogoByName(companyName);
@@ -46,7 +46,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyName}")
-    @Operation(summary = "회사 정보 조회(분석 탭)", description = "종목명으로 회사 정보 조회")
+    @Operation(summary = "회사 정보 조회(분석 탭)", description = "종목명으로 회사 정보를 조회합니다.")
     public ApiResponse<CompanyInfoResponseDto> getCompanyInfo(
             @PathVariable String companyName,
             @RequestHeader("Authorization") String token
@@ -68,7 +68,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyName}/current-price")
-    @Operation(summary = "현재가 조회", description = "종목명으로 현재가 조회")
+    @Operation(summary = "현재가 조회", description = "종목명으로 현재가를 조회합니다.")
     public ApiResponse<CurrentPriceResponseDto> getCurrentPrice(
             @PathVariable String companyName,
             @RequestHeader("Authorization") String token
@@ -90,7 +90,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyName}/period-price")
-    @Operation(summary = "일봉 조회", description = "종목 코드로 일봉 조회")
+    @Operation(summary = "일봉 조회", description = "종목명으로 일봉을 조회합니다.")
     public ApiResponse<PeriodPriceResponseDto> getPeriodPrice(
             @PathVariable String companyName,
             @RequestParam  String startDate,

@@ -233,7 +233,7 @@ public class CompanyServiceImpl implements CompanyService {
 
                 popularStockResponseDto popularStock = popularStockResponseDto.builder().build();
                 popularStock.setRank(Integer.parseInt(rankText)); // 순위
-                popularStock.setStockName(row.select("td a.tltle").text()); // 종목명
+                popularStock.setCompanyName(row.select("td a.tltle").text()); // 종목명
 
                 popularStocks.add(popularStock);
             }
