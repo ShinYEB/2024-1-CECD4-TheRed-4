@@ -23,11 +23,11 @@ public class ScenarioCondition {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "buysell_type", nullable = false)
-    private BuysellType buysell_type;
+    private BuysellType buysellType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "method_type", nullable = false)
-    private MethodType method_type;
+    private MethodType methodType;
 
     @Column(name = "target_price1")
     private Long targetPrice1;

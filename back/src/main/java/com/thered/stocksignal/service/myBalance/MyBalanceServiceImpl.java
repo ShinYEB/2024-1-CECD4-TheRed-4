@@ -73,7 +73,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
             String jsonResponse = Objects.requireNonNull(response.body()).string();
             JsonNode jsonNode = objectMapper.readTree(jsonResponse);
 
-            MyBalanceResponseDto myBalanceDto = MyBalanceResponseDto.builder().build();
+            MyBalanceResponseDto myBalance = MyBalanceResponseDto.builder().build();
             List<StockResponseDto> stocks = new ArrayList<>(); // 주식 리스트
 
             // output1 : 보유 주식 개별 정보
@@ -98,12 +98,12 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
             }
 
             // output2 : 보유 주식 총합 정보
-            myBalanceDto.setCash(jsonNode.path("output2").get(0).path("dnca_tot_amt").asLong());  // 예수금
-            myBalanceDto.setStocks(stocks);
-            myBalanceDto.setTotalStockPrice(jsonNode.path("output2").get(0).path("evlu_amt_smtl_amt").asLong()); // 보유 주식 전체 가치
-            myBalanceDto.setTotalStockPL(jsonNode.path("output2").get(0).path("evlu_pfls_smtl_amt").asLong());    // 보유 주식 전체 손익
+            myBalance.setCash(jsonNode.path("output2").get(0).path("dnca_tot_amt").asLong());  // 예수금
+            myBalance.setStocks(stocks);
+            myBalance.setTotalStockPrice(jsonNode.path("output2").get(0).path("evlu_amt_smtl_amt").asLong()); // 보유 주식 전체 가치
+            myBalance.setTotalStockPL(jsonNode.path("output2").get(0).path("evlu_pfls_smtl_amt").asLong());    // 보유 주식 전체 손익
 
-            return Optional.of(myBalanceDto);
+            return Optional.of(myBalance);
 
         } catch (Exception e) {
             return Optional.empty();

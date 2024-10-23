@@ -4,10 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thered.stocksignal.app.dto.CompanyDto;
+import com.thered.stocksignal.app.dto.ScenarioDto;
+import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.kakao.KakaoLoginDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
+import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
+import com.thered.stocksignal.domain.entity.ScenarioCondition;
+import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.repository.CompanyRepository;
+import com.thered.stocksignal.repository.ScenarioConditionRepository;
 import com.thered.stocksignal.repository.ScenarioRepository;
+import com.thered.stocksignal.repository.UserRepository;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.StockDto.CurrentPriceResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +49,9 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     private final ScenarioRepository scenarioRepository;
     private final CompanyService companyService;
+    private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
+    private final ScenarioConditionRepository scenarioConditionRepository;
 
 //    private String websocketUrl = "ws://ops.koreainvestment.com:31000";
 //    private StompSession stompSession;
@@ -111,6 +122,43 @@ public class ScenarioServiceImpl implements ScenarioService {
         }
 
         return scenarioList;
+    }
+
+    public boolean createScenario(Long userId, ScenarioRequestDto newScenario) {
+
+        Optional<Company> company = companyRepository.findByCompanyName(newScenario.getCompanyName());
+        Optional<User> user = userRepository.findById(userId);
+
+        if(company.isEmpty()) return false;
+        if(user.isEmpty()) return false;
+
+        // 시나리오 객체 생성
+        Scenario scenario = Scenario.builder()
+                .scenarioName(newScenario.getScenarioName())
+                .company(company.get())
+                .initialPrice(newScenario.getInitialPrice())
+                .user(user.get())
+                .build();
+
+        // 시나리오 저장
+        scenario = scenarioRepository.save(scenario);
+
+        // 조건 객체 생성
+        ScenarioCondition condition = ScenarioCondition.builder()
+                .scenario(scenario)
+                .buysellType(newScenario.getBuysellType())
+                .methodType(newScenario.getMethodType())
+                .targetPrice1(newScenario.getTargetPrice1())
+                .targetPrice2(newScenario.getTargetPrice2())
+                .targetPrice3(newScenario.getTargetPrice3())
+                .targetPrice4(newScenario.getTargetPrice4())
+                .quantity(newScenario.getQuantity())
+                .build();
+
+        // 조건 저장
+        scenarioConditionRepository.save(condition);
+
+        return true;
     }
 
 }

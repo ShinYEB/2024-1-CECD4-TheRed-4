@@ -2,6 +2,8 @@ package com.thered.stocksignal.app.controller;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
+import com.thered.stocksignal.app.dto.ScenarioDto;
+import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
 import com.thered.stocksignal.service.scenario.ScenarioService;
 import com.thered.stocksignal.service.user.UserAccountService;
@@ -31,5 +33,21 @@ public class ScenarioController {
         );
 
         return ApiResponse.onSuccess(Status.SCENARIO_FOUND, responseDto);
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "시나리오 생성", description = "새로운 시나리오를 생성합니다.")
+    public ApiResponse<ScenarioResponseDto> createScenario(
+            @RequestHeader("Authorization") String token,
+            @RequestBody ScenarioRequestDto newScenario) {
+
+        Long userId = userAccountService.getUserIdFromToken(token);
+        if (userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
+
+        boolean responseDto = scenarioService.createScenario(userId, newScenario);
+        if(!responseDto){
+            return ApiResponse.onFailure(Status.SCENARIO_CREATION_FAILED, null);
+        }
+        return ApiResponse.onSuccess(Status.SCENARIO_CREATED, null);
     }
 }

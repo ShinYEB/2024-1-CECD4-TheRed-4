@@ -119,6 +119,6 @@ public class CompanyController {
 
         return responseDto
                 .map(dto -> ApiResponse.onSuccess(Status.COMPANY_RANKING_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_RANKING_FAILURE));
+                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_RANKING_FAILED));
     }
 }
