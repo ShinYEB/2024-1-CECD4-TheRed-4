@@ -1,15 +1,35 @@
 package com.thered.stocksignal.app.controller;
 
+import com.thered.stocksignal.apiPayload.ApiResponse;
+import com.thered.stocksignal.apiPayload.Status;
+import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
 import com.thered.stocksignal.service.scenario.ScenarioService;
+import com.thered.stocksignal.service.user.UserAccountService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/scenario")
 public class ScenarioController {
 
     private final ScenarioService scenarioService;
+    private final UserAccountService userAccountService;
 
-    //
+    @GetMapping()
+    @Operation(summary = "시나리오 조회", description = "시나리오를 조회합니다.")
+    public ApiResponse<List<ScenarioResponseDto>> getScenario(@RequestHeader("Authorization") String token) {
+
+        Long userId = userAccountService.getUserIdFromToken(token);
+        if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
+
+        List<ScenarioResponseDto> responseDto = scenarioService.getScenario(
+                userId
+        );
+
+        return ApiResponse.onSuccess(Status.SCENARIO_FOUND, responseDto);
+    }
 }

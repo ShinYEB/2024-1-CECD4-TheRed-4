@@ -22,7 +22,6 @@ public class ScenarioDto {
     @Getter
     @Setter
     @Builder
-    // 현재가 정보
     public static class ConditionResponseDto {
         private Long conditionId;
         private BuysellType buysellType;

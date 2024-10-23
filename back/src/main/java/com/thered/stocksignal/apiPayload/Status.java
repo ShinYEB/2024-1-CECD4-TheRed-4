@@ -62,6 +62,8 @@ public enum Status {
     MYSTOCK_SUCCESS("200", "SUCCESS", "나의 전체 주식현황을 읽는데 성공했습니다."),
     MYSTOCK_SHORT_SUCCESS("200", "SUCCESS", "나의 주식현황 요약을 읽는데 성공했습니다."),
 
+    SCENARIO_FOUND("200", "SUCCESS", "시나리오 조회에 성공했습니다."),
+
     //실패
     USER_NOT_FOUND("404", "FAILURE", "사용자를 찾을 수 없습니다"),
 
