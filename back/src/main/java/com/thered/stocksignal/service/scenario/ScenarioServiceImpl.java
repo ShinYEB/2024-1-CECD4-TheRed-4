@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thered.stocksignal.app.dto.CompanyDto;
 import com.thered.stocksignal.app.dto.ScenarioDto;
+import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.kakao.KakaoLoginDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
@@ -12,6 +13,8 @@ import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
 import com.thered.stocksignal.domain.entity.ScenarioCondition;
 import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.domain.enums.BuysellType;
+import com.thered.stocksignal.domain.enums.MethodType;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.repository.ScenarioConditionRepository;
 import com.thered.stocksignal.repository.ScenarioRepository;
@@ -52,53 +55,6 @@ public class ScenarioServiceImpl implements ScenarioService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final ScenarioConditionRepository scenarioConditionRepository;
-
-//    private String websocketUrl = "ws://ops.koreainvestment.com:31000";
-//    private StompSession stompSession;
-//
-//    @PostConstruct
-//    public void connect() {
-//        WebSocketStompClient stompClient = new WebSocketStompClient(new StandardWebSocketClient());
-//        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-//
-//        stompClient.connect(websocketUrl, new StompSessionHandler() {
-//            @Override
-//            public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-//                stompSession = session;
-//                subscribeToStock("005930"); // 삼성전자
-//            }
-//
-//            @Override
-//            public void handleFrame(StompHeaders headers, Object payload) {
-//                // 메시지 처리
-//                System.out.println("Received message: " + payload);
-//            }
-//
-//            @Override
-//            public Type getPayloadType(StompHeaders headers) {
-//                return String.class;
-//            }
-//
-//            @Override
-//            public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-//                System.err.println("Error: " + exception.getMessage());
-//            }
-//
-//            @Override
-//            public void handleTransportError(StompSession session, Throwable error) {
-//                System.err.println("Transport error: " + error.getMessage());
-//            }
-//        });
-//    }
-//
-//    private void subscribeToStock(String stockCode) {
-//        String subscribeMessage = createSubscribeMessage(stockCode);
-//        stompSession.send("/topic/subscribe", subscribeMessage);
-//    }
-//
-//    private String createSubscribeMessage(String stockCode) {
-//        return String.format("{\"header\": {\"approval_key\": \"발급받은_접속키\", \"custtype\": \"P\", \"tr_type\": \"1\", \"content-type\": \"utf-8\"}, \"body\": {\"input\": {\"tr_id\": \"H0STCNT0\", \"tr_key\": \"%s\"}}}", stockCode);
-//    }
 
     public List<ScenarioResponseDto> getScenario(Long userId) {
         List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
@@ -161,4 +117,73 @@ public class ScenarioServiceImpl implements ScenarioService {
         return true;
     }
 
+    public boolean deleteScenario(Long userId, Long scenarioId) {
+
+        Optional<Scenario> scenario = scenarioRepository.findByIdAndUserId(scenarioId, userId);
+
+        // 시나리오가 존재하지 않으면 삭제 실패
+        if (scenario.isEmpty()) {
+            return false;
+        }
+
+        // 시나리오와 관련된 조건 삭제
+        scenarioConditionRepository.deleteByScenario(scenario.get());
+
+        // 시나리오 삭제
+        scenarioRepository.delete(scenario.get());
+
+        return true;
+    }
+
+    public List<ConditionResponseDto> getConditions(Long userId, Long scenarioId) {
+        List<ScenarioCondition> conditions = scenarioConditionRepository.findByScenarioId(scenarioId);
+
+        List<ConditionResponseDto> conditionList = new ArrayList<>();
+
+        for (ScenarioCondition condition : conditions) {
+            Long currentPrice = companyService.findCurrentPriceByCode(condition.getScenario().getCompany().getCompanyCode(), userId)
+                    .map(CurrentPriceResponseDto::getCurrentPrice)
+                    .orElse(null); // current price 정보를 찾을 수 없음
+
+            ConditionResponseDto responseDto = ConditionResponseDto.builder()
+                    .conditionId(condition.getId())
+                    .buysellType(condition.getBuysellType())
+                    .methodType(condition.getMethodType())
+                    .initialPrice(condition.getScenario().getInitialPrice())
+                    .currentPrice(currentPrice)
+                    .targetPrice1(condition.getTargetPrice1())
+                    .targetPrice2(condition.getTargetPrice2())
+                    .targetPrice3(condition.getTargetPrice3())
+                    .targetPrice4(condition.getTargetPrice4())
+                    .quantity(condition.getQuantity())
+                    .build();
+
+            conditionList.add(responseDto);
+        }
+
+        return conditionList;
+    }
+
+    public boolean addCondition(Long userId, ScenarioDto.ConditionRequestDto newCondition){
+        Optional<Scenario> scenario = scenarioRepository.findById(newCondition.getScenarioId());
+
+        if(scenario.isEmpty()) return false;
+
+        // 조건 객체 생성
+        ScenarioCondition condition = ScenarioCondition.builder()
+                .scenario(scenario.get())
+                .buysellType(newCondition.getBuysellType())
+                .methodType(newCondition.getMethodType())
+                .targetPrice1(newCondition.getTargetPrice1())
+                .targetPrice2(newCondition.getTargetPrice2())
+                .targetPrice3(newCondition.getTargetPrice3())
+                .targetPrice4(newCondition.getTargetPrice4())
+                .quantity(newCondition.getQuantity())
+                .build();
+
+        // 조건 저장
+        scenarioConditionRepository.save(condition);
+
+        return true;
+    }
 }

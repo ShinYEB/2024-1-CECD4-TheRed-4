@@ -44,4 +44,12 @@ public class ScenarioCondition {
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
+    @Setter
+    @Column(name = "is_price1_reached", nullable = false)
+    private boolean isPrice1Reached;
+
+    @Setter
+    @Column(name = "is_price3_reached", nullable = false)
+    private boolean isPrice3Reached;
+
 }

@@ -30,6 +30,22 @@ public class ScenarioDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ConditionRequestDto {
+        private Long scenarioId;
+        private BuysellType buysellType;
+        private MethodType methodType;
+        private Long targetPrice1;
+        private Long targetPrice2;
+        private Long targetPrice3;
+        private Long targetPrice4;
+        private Long quantity;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ScenarioResponseDto {
         private Long scenarioId;
         private String scenarioName;
