@@ -112,6 +112,7 @@ public class CompanyServiceImpl implements CompanyService {
     public Optional<CurrentPriceResponseDto> findCurrentPriceByCode(String companyCode, Long userId){
 
         userAccountService.refreshKisToken(userId);
+        userAccountService.refreshKisSocketKey(userId);
 
         Optional<User> user = userAccountService.findById(userId);
         if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
