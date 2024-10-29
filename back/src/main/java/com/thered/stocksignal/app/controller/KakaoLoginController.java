@@ -9,10 +9,7 @@ import com.thered.stocksignal.service.kakao.KakaoLoginService;
 import com.thered.stocksignal.service.user.UserAccountService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Optional;
 
@@ -27,7 +24,7 @@ public class KakaoLoginController {
 
     @Operation(summary = "프론트로부터 카카오 인가코드 전달받기")
     @Parameter(name = "code", description = "카카오에서 받은 인카코드, RequestParam")
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ApiResponse<?> kakaoLoginCode(@RequestParam("code") String code){
 
         String token = kakaoLoginService.getKakaoToken(code);
