@@ -20,4 +20,6 @@ public interface ScenarioService {
     boolean addCondition(Long userId, ConditionRequestDto condtionRequestDto);
 
     boolean deleteCondition(Long userId, Long conditionId);
+
+
 }

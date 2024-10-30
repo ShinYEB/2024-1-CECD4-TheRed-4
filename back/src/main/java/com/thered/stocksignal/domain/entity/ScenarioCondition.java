@@ -52,4 +52,8 @@ public class ScenarioCondition {
     @Column(name = "is_price3_reached", nullable = false)
     private boolean isPrice3Reached;
 
+    @Setter
+    @Column(name = "is_finished", nullable = false)
+    private boolean isFinished;
+
 }

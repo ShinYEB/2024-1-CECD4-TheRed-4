@@ -42,15 +42,42 @@ public class StockDto {
     }
 
     @Getter
+    @Setter
     @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class MyStockResponseDto{
-        public String companyName;
-        public Integer totalPrice;
-        public String rate;
+    // 실시간 정보
+    public static class RealTimeStockInfoDto {
+        private String companyName;
+        private String time;
+        private Long latestPrice;   // 체결가
+
+        private Long buyPrice1; // 매수호가 1~6 (1 = 가장 비쌈)
+        private Long buyPrice2;
+        private Long buyPrice3;
+        private Long buyPrice4;
+        private Long buyPrice5;
+        private Long buyPrice6;
+
+        private Long buyQuantity1;  // 매수호가별 잔량
+        private Long buyQuantity2;
+        private Long buyQuantity3;
+        private Long buyQuantity4;
+        private Long buyQuantity5;
+        private Long buyQuantity6;
+
+        private Long sellPrice1;    // 매도호가 1~6 (1 = 가장 쌈)
+        private Long sellPrice2;
+        private Long sellPrice3;
+        private Long sellPrice4;
+        private Long sellPrice5;
+        private Long sellPrice6;
+
+        private Long sellQuantity1; // 매도호가별 잔량
+        private Long sellQuantity2;
+        private Long sellQuantity3;
+        private Long sellQuantity4;
+        private Long sellQuantity5;
+        private Long sellQuantity6;
+
     }
-
-
 }
 

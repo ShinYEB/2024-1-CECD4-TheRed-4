@@ -46,6 +46,9 @@ dependencies {
 
 	// scrapping
 	implementation 'org.jsoup:jsoup:1.14.3'
+
+	// Spring WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.named('test') {

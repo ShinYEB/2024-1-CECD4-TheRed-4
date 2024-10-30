@@ -5,6 +5,8 @@ import com.thered.stocksignal.app.dto.ScenarioDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
+import com.thered.stocksignal.app.dto.kis.KisSocketDto;
+import com.thered.stocksignal.config.WebSocketHandler;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
 import com.thered.stocksignal.domain.entity.ScenarioCondition;
@@ -15,6 +17,8 @@ import com.thered.stocksignal.repository.ScenarioRepository;
 import com.thered.stocksignal.repository.UserRepository;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.StockDto.CurrentPriceResponseDto;
+import com.thered.stocksignal.service.user.UserAccountService;
+import com.thered.stocksignal.service.user.UserAccountServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +37,8 @@ public class ScenarioServiceImpl implements ScenarioService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final ScenarioConditionRepository scenarioConditionRepository;
+    private final WebSocketHandler webSocketHandler;
+    private final UserAccountService userAccountService;
 
     public List<ScenarioResponseDto> getScenario(Long userId) {
         List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
@@ -65,6 +71,36 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         if(company.isEmpty()) return false;
         if(user.isEmpty()) return false;
+
+        userAccountService.refreshKisSocketKey(userId);
+
+        // 웹소켓 연결
+        KisSocketDto.Header header = KisSocketDto.Header.builder()
+                .approval_key(userRepository.findById(userId).get().getSocketKey())
+                .custtype("P")
+                .tr_type("1")
+                .content_type("utf-8")
+                .build();
+
+        KisSocketDto.Input input = KisSocketDto.Input.builder()
+                .tr_id("H0STASP0")
+                .tr_key(company.get().getCompanyCode())
+                .build();
+
+        KisSocketDto.Body body = KisSocketDto.Body.builder()
+                .input(input)
+                .build();
+
+        KisSocketDto.KisSocketRequestDto request = KisSocketDto.KisSocketRequestDto.builder()
+                .header(header)
+                .body(body)
+                .build();
+
+        try{
+            webSocketHandler.subscribeStockInfo(userId, request);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         // 시나리오 객체 생성
         Scenario scenario = Scenario.builder()
@@ -184,4 +220,6 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         return true;
     }
+
+
 }
