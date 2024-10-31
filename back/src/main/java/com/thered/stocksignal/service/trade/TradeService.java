@@ -7,5 +7,4 @@ public interface TradeService {
 
     String sell(Long userId, TradeDto dto);
 
-    boolean autoTrade(String companyCode, String currentPrice);
 }

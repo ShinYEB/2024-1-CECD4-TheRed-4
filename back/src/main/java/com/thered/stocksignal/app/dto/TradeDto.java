@@ -2,10 +2,12 @@ package com.thered.stocksignal.app.dto;
 
 import com.thered.stocksignal.domain.enums.OrderType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class TradeDto {

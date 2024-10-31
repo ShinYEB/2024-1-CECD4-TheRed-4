@@ -4,6 +4,7 @@ import com.thered.stocksignal.app.dto.ScenarioDto.ConditionRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
+import com.thered.stocksignal.app.dto.StockDto;
 
 import java.util.List;
 
@@ -21,5 +22,6 @@ public interface ScenarioService {
 
     boolean deleteCondition(Long userId, Long conditionId);
 
+    boolean checkAutoTrade(Long userId, List<StockDto.RealTimeStockInfoDto> stockInfoDtoList);
 
 }
