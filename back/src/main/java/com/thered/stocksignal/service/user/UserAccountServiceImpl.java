@@ -1,14 +1,26 @@
 package com.thered.stocksignal.service.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thered.stocksignal.app.dto.kis.KisAccountDto;
 import com.thered.stocksignal.app.dto.user.UserInfoDto;
 import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.domain.enums.OauthType;
 import com.thered.stocksignal.jwt.JWTUtil;
 import com.thered.stocksignal.repository.UserRepository;
+import com.thered.stocksignal.util.DateUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -18,6 +30,7 @@ public class UserAccountServiceImpl implements UserAccountService{
 
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
+    private static final String baseUrl = "https://openapivts.koreainvestment.com:29443";
 
     @Override
     public Optional<User> saveKakaoUser(String email) {
@@ -74,8 +87,68 @@ public class UserAccountServiceImpl implements UserAccountService{
         if(user == null) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
         User updateUser = user.get();
 
-        updateUser.setKisAccount(dto.getSecretKey(), dto.getAppKey(), true);
+        updateUser.setKisAccount(dto.getSecretKey(), dto.getAppKey(), dto.getAccount(), true);
 
         userRepository.save(updateUser);
     }
+
+    @Override
+    public void editKisAccessToken(Long userId, String accessToken, String accessTokenExpired) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId));
+        user.setAccessToken(accessToken, accessTokenExpired);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void refreshKisToken(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId));
+
+        if(user.getIsKisLinked() == false) throw new RuntimeException("한국투자증권 연동이 되어 있지 않습니다.");
+
+        Date expirationDate;
+        if (user.getKisTokenExpired() != null) expirationDate = DateUtil.parseDate(user.getKisTokenExpired());
+        else expirationDate = new Date(0);
+        Date now = new Date();
+
+        // 유효기간이 만료되지 않은 경우
+        if(!expirationDate.before(now)) return;
+
+        // 유효기간이 만료된 경우
+        RestTemplate tokenRt = new RestTemplate();
+        Map<String, String> params = new HashMap<>();
+        params.put("grant_type", "client_credentials");
+        params.put("appkey", user.getAppKey());
+        params.put("appsecret", user.getSecretKey());
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonParams;
+        try {
+            jsonParams = objectMapper.writeValueAsString(params); // JSON으로 변환
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("JSON 변환 오류", e);
+        }
+        HttpEntity<String> request = new HttpEntity<>(jsonParams);
+
+        ResponseEntity<String> response = tokenRt.exchange(
+                baseUrl+"/oauth2/tokenP",
+                HttpMethod.POST,
+                request,
+                String.class
+        ); // Request to Kis
+
+        KisAccountDto.AccessTokenResponseDto tokenResponseDto;
+
+        try{
+            tokenResponseDto = objectMapper.readValue(response.getBody(), KisAccountDto.AccessTokenResponseDto.class);
+            String newAccessToken = tokenResponseDto.getAccess_token();
+            String newTokenExpired = tokenResponseDto.getAccess_token_token_expired();
+            editKisAccessToken(user.getId(), newAccessToken, newTokenExpired);
+        }catch(JsonMappingException e){
+            e.printStackTrace();
+        }catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+    }
+
 }

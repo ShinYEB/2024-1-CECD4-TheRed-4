@@ -41,14 +41,23 @@ public class User {
     @Column(nullable = true)
     private String accountNumber;
 
-    @Column(nullable = true, length = 1024)
+    @Column(nullable = true, length = 2048)
     private String kisToken;
+
+    @Column(nullable = true, length = 2048)
+    private String kisTokenExpired;
 
     public void setNickname(String nickname) {this.nickname = nickname;}
 
-    public void setKisAccount(String secretKey, String appKey, Boolean isKisLinked){
+    public void setKisAccount(String secretKey, String appKey, String accountNumber, Boolean isKisLinked){
         this.secretKey = secretKey;
         this.appKey = appKey;
+        this.accountNumber = accountNumber;
         this.isKisLinked = isKisLinked;
+    }
+
+    public void setAccessToken(String kisToken, String kisTokenExpired){
+        this.kisToken = kisToken;
+        this.kisTokenExpired = kisTokenExpired;
     }
 }

@@ -28,7 +28,7 @@ public enum Status {
      */
     INGA_SUCCESS("200", "SUCCESS", "카카오 인가코드입니다."),
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
-    TOKEN_INVALID("201", "SUCCESS", "유효하지 않은 토큰입니다."),
+    TOKEN_INVALID("401", "SUCCESS", "유효하지 않은 토큰입니다."),
 
     QUESTION_FOUND("200", "SUCCESS", "답변 정보를 찾았습니다."),
 
@@ -49,26 +49,42 @@ public enum Status {
     GET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 조회되었습니다."),
     SET_USERINFO_SUCCESS("200", "SUCCESS", "회원 정보가 수정되었습니다."),
     NICKNAME_SUCCESS("200", "SUCCESS", "사용 가능한 닉네임입니다."),
-    NICKNAME_INVALID("201", "SUCCESS", "이미 존재하는 닉네임입니다."),
+    NICKNAME_INVALID("409", "SUCCESS", "이미 존재하는 닉네임입니다."),
 
     KIS_CONNECT_SUCCESS("200", "SUCCESS", "한국투자증권 계좌를 연동했습니다."),
-    KIS_CONNECT_FAILED("201", "SUCCESS", "한국투자증권 계좌를 연동할 수 없습니다."),
+    KIS_CONNECT_FAILED("401", "SUCCESS", "한국투자증권 계좌를 연동할 수 없습니다."),
   
     TRADE_BUY_SUCCESS("200", "SUCCESS", "매수를 성공했습니다."),
+    TRADE_BUY_FAILED("400", "FAILED", "매수를 실패했습니다."),
     TRADE_SELL_SUCCESS("200", "SUCCESS", "매도를 성공했습니다."),
-  
+    TRADE_SELL_FAILED("400", "FAILED", "매도를 실패했습니다."),
+
     MYSTOCK_SUCCESS("200", "SUCCESS", "나의 전체 주식현황을 읽는데 성공했습니다."),
     MYSTOCK_SHORT_SUCCESS("200", "SUCCESS", "나의 주식현황 요약을 읽는데 성공했습니다."),
+
+    SCENARIO_FOUND("200", "SUCCESS", "시나리오 조회에 성공했습니다."),
+    SCENARIO_CREATED("200", "SUCCESS", "시나리오 생성에 성공했습니다."),
+    SCENARIO_DELETED("200", "SUCCESS", "시나리오가 삭제되었습니다."),
+
+    CONDITION_FOUND("200", "SUCCESS", "조건 조회에 성공하였습니다."),
+    CONDITION_ADDED("200", "SUCCESS", "조건 추가에 성공했습니다."),
+    CONDITION_DELETED("200", "SUCCESS", "조건 삭제에 성공했습니다."),
 
     //실패
     USER_NOT_FOUND("404", "FAILURE", "사용자를 찾을 수 없습니다"),
 
     COMPANY_NOT_FOUND("404", "FAILURE", "회사 정보를 찾을 수 없습니다"),
-    COMPANY_RANKING_FAILURE("400", "FAILURE", "인기 종목 조회에 실패했습니다."),
+    COMPANY_RANKING_FAILED("400", "FAILURE", "인기 종목 조회에 실패했습니다."),
 
     MY_BALANCE_NOT_FOUND("404", "FAILURE", "잔고 정보를 찾을 수 없습니다"),
 
-    NEWS_NOT_FOUND("404", "FAILURE", "뉴스 정보를 찾을 수 없습니다");
+    NEWS_NOT_FOUND("404", "FAILURE", "뉴스 정보를 찾을 수 없습니다"),
+
+    SCENARIO_CREATION_FAILED("400", "FAILURE", "시나리오 생성에 실패하였습니다."),
+    SCENARIO_DELETION_FAILED("400", "FAILURE", "시나리오 삭제에 실패하였습니다."),
+
+    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다."),
+    DELETING_CONDITION_FAILED("400", "FAILURE", "조건 삭제에 실패했습니다.");
 
     private final String code;
     private final String result;
