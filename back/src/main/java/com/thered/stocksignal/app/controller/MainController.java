@@ -1,3 +1,4 @@
+/*
 package com.thered.stocksignal.app.controller;
 
 import com.thered.stocksignal.apiPayload.ApiResponse;
@@ -60,3 +61,4 @@ public class MainController {
         return ApiResponse.onSuccess(Status.MYSTOCK_SHORT_SUCCESS, dtos);
     }
 }
+*/

@@ -17,7 +17,7 @@ public class ScenarioCondition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "scenario_id", nullable = false)
     private Scenario scenario;
 

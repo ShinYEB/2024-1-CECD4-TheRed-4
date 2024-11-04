@@ -45,7 +45,7 @@ public class StockDto {
     @Setter
     @Builder
     // 실시간 정보
-    public static class RealTimeStockInfoDto {
+    public static class RealTimeStockDto {
         private String companyName;
         private String time;
         private Long latestPrice;   // 체결가

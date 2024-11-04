@@ -5,17 +5,12 @@ import com.thered.stocksignal.app.dto.ScenarioDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
-import com.thered.stocksignal.app.dto.StockDto;
-import com.thered.stocksignal.app.dto.TradeDto;
 import com.thered.stocksignal.app.dto.kis.KisSocketDto;
 import com.thered.stocksignal.config.WebSocketHandler;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
 import com.thered.stocksignal.domain.entity.ScenarioCondition;
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.domain.enums.BuysellType;
-import com.thered.stocksignal.domain.enums.MethodType;
-import com.thered.stocksignal.domain.enums.OrderType;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.repository.ScenarioConditionRepository;
 import com.thered.stocksignal.repository.ScenarioRepository;
@@ -24,7 +19,6 @@ import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.StockDto.CurrentPriceResponseDto;
 import com.thered.stocksignal.service.trade.TradeService;
 import com.thered.stocksignal.service.user.UserAccountService;
-import com.thered.stocksignal.service.user.UserAccountServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,33 +75,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         userAccountService.refreshKisSocketKey(userId);
 
-        // 웹소켓 연결
-        KisSocketDto.Header header = KisSocketDto.Header.builder()
-                .approval_key(userRepository.findById(userId).get().getSocketKey())
-                .custtype("P")
-                .tr_type("1")
-                .content_type("utf-8")
-                .build();
-
-        KisSocketDto.Input input = KisSocketDto.Input.builder()
-                .tr_id("H0STASP0")
-                .tr_key(company.get().getCompanyCode())
-                .build();
-
-        KisSocketDto.Body body = KisSocketDto.Body.builder()
-                .input(input)
-                .build();
-
-        KisSocketDto.KisSocketRequestDto request = KisSocketDto.KisSocketRequestDto.builder()
-                .header(header)
-                .body(body)
-                .build();
-
-        try{
-            webSocketHandler.subscribeStockInfo(userId, request);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        webSocketHandler.handleKisSocketRequest(userId, company.get().getCompanyCode(), "1");
 
         // 시나리오 객체 생성
         Scenario scenario = Scenario.builder()
@@ -157,33 +125,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         userAccountService.refreshKisSocketKey(userId);
 
-        // 웹소켓에서 해당 종목 연결 해제
-        KisSocketDto.Header header = KisSocketDto.Header.builder()
-                .approval_key(userRepository.findById(userId).get().getSocketKey())
-                .custtype("P")
-                .tr_type("2")
-                .content_type("utf-8")
-                .build();
-
-        KisSocketDto.Input input = KisSocketDto.Input.builder()
-                .tr_id("H0STASP0")
-                .tr_key(companyCode)
-                .build();
-
-        KisSocketDto.Body body = KisSocketDto.Body.builder()
-                .input(input)
-                .build();
-
-        KisSocketDto.KisSocketRequestDto request = KisSocketDto.KisSocketRequestDto.builder()
-                .header(header)
-                .body(body)
-                .build();
-
-        try{
-            webSocketHandler.subscribeStockInfo(userId, request);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        webSocketHandler.handleKisSocketRequest(userId, companyCode, "2");
 
         return true;
     }
@@ -258,149 +200,5 @@ public class ScenarioServiceImpl implements ScenarioService {
         scenarioConditionRepository.delete(condition.get());
 
         return true;
-    }
-
-    public boolean checkAutoTrade(Long userId, List<StockDto.RealTimeStockInfoDto> stockInfoDtoList) {
-        List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
-        for(Scenario scenario : scenarios){
-            Company company = scenario.getCompany();
-            String companyName = company.getCompanyName();
-            String companyCode = company.getCompanyCode();
-            List<ScenarioCondition> conditions = scenarioConditionRepository.findByScenarioId(scenario.getId());
-
-            Long buyPrice = null;
-            Long sellPrice = null;
-
-            for (StockDto.RealTimeStockInfoDto stockInfo : stockInfoDtoList) {
-                if (stockInfo.getCompanyName().equals(companyName)) {
-                    buyPrice = stockInfo.getBuyPrice1();  // 매수호가1
-                    sellPrice = stockInfo.getSellPrice1(); // 매도호가1
-                    break;
-                }
-            }
-
-            if (buyPrice != null && sellPrice != null) {
-                executeAutoTrade(userId, companyCode, conditions, sellPrice, buyPrice);
-            }
-        }
-
-        return false;
-    }
-
-    private void executeAutoTrade(Long userId, String companyCode, List<ScenarioCondition> conditions, Long sellPrice, Long buyPrice) {
-        int status;
-        if(conditions.size() == 1){
-            if(!conditions.getFirst().isFinished()){
-                status = excuteByRule(userId, companyCode, conditions.getFirst(), sellPrice, buyPrice);
-                if(status == 1) {
-                    conditions.getFirst().setFinished(true);
-                    scenarioConditionRepository.save(conditions.getFirst());
-                }
-            }
-        }
-        else if(conditions.size() == 2){
-            if(!conditions.getFirst().isFinished()){
-                status = excuteByRule(userId, companyCode, conditions.getFirst(), sellPrice, buyPrice);
-                if(status == 1) {
-                    conditions.getFirst().setFinished(true);
-                    conditions.getLast().setFinished(false);
-                    scenarioConditionRepository.save(conditions.getFirst());
-                    scenarioConditionRepository.save(conditions.getLast());
-                }
-            }
-            if(!conditions.getLast().isFinished()){
-                status = excuteByRule(userId, companyCode, conditions.getLast(), buyPrice, sellPrice);
-                if(status == 1) {
-                    conditions.getFirst().setFinished(false);
-                    conditions.getLast().setFinished(true);
-                    scenarioConditionRepository.save(conditions.getFirst());
-                    scenarioConditionRepository.save(conditions.getLast());
-                }
-            }
-        }
-    }
-
-    private int excuteByRule(Long userId, String companyCode, ScenarioCondition sc, Long sellPrice, Long buyPrice){
-
-        TradeDto dto = TradeDto.builder().scode(companyCode).orderType(OrderType.SIJANG).price(0L).week(sc.getQuantity()).build();
-
-        if (sc.getMethodType() == MethodType.RATE || sc.getMethodType() == MethodType.PRICE) {
-
-            if (sc.getBuysellType() == BuysellType.BUY) {
-
-                if (sc.getTargetPrice1() != null && buyPrice >= sc.getTargetPrice1()) {
-                    tradeService.buy(userId, dto);
-                    return 1;
-                }
-                if (sc.getTargetPrice2() != null && buyPrice <= sc.getTargetPrice2()) {
-                    tradeService.buy(userId, dto);
-                    return 1;
-                }
-
-            } else if (sc.getBuysellType() == BuysellType.SELL) {
-
-                if (sc.getTargetPrice1() != null && sellPrice >= sc.getTargetPrice1()) {
-                    tradeService.sell(userId, dto);
-                    return 1;
-                }
-                if (sc.getTargetPrice2() != null && sellPrice <= sc.getTargetPrice2()) {
-                    tradeService.sell(userId, dto);
-                    return 1;
-                }
-            }
-        }
-
-        if (sc.getMethodType() == MethodType.TRADING) {
-
-            if (sc.getBuysellType() == BuysellType.BUY) {
-
-                // 상승 -> 하락
-                if (sc.getTargetPrice1() != null && buyPrice >= sc.getTargetPrice1()) {
-                    sc.setPrice1Reached(true);
-                    scenarioConditionRepository.save(sc);
-                    return 0;
-                }
-                else if (sc.getTargetPrice2() != null && buyPrice <= sc.getTargetPrice2() && sc.isPrice1Reached()) {
-                    tradeService.buy(userId, dto);
-                    return 1;
-                }
-
-                // 하락 -> 상승
-                if (sc.getTargetPrice3() != null && buyPrice <= sc.getTargetPrice3()) {
-                    sc.setPrice3Reached(true);
-                    scenarioConditionRepository.save(sc);
-                    return 0;
-                }
-                else if (sc.getTargetPrice4() != null && buyPrice >= sc.getTargetPrice4() && sc.isPrice3Reached()) {
-                    tradeService.buy(userId, dto);
-                    return 1;
-                }
-
-            } else if (sc.getBuysellType() == BuysellType.SELL) {
-
-                // 상승 -> 하락
-                if (sc.getTargetPrice1() != null && sellPrice >= sc.getTargetPrice1()) {
-                    sc.setPrice1Reached(true);
-                    scenarioConditionRepository.save(sc);
-                    return 0;
-                }
-                if (sc.getTargetPrice2() != null && sellPrice <= sc.getTargetPrice2() && sc.isPrice1Reached()) {
-                    tradeService.sell(userId, dto);
-                    return 1;
-                }
-
-                // 하락 -> 상승
-                if (sc.getTargetPrice3() != null && sellPrice <= sc.getTargetPrice3()) {
-                    sc.setPrice3Reached(true);
-                    scenarioConditionRepository.save(sc);
-                    return 0;
-                }
-                else if (sc.getTargetPrice4() != null && sellPrice >= sc.getTargetPrice4() && sc.isPrice3Reached()) {
-                    tradeService.sell(userId, dto);
-                    return 1;
-                }
-            }
-        }
-        return 0;
     }
 }
