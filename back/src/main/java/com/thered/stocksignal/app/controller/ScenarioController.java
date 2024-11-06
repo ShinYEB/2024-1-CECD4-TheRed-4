@@ -45,7 +45,7 @@ public class ScenarioController {
         Long userId = userAccountService.getUserIdFromToken(token);
         if (userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        boolean isCreated = scenarioService.createScenario(userId, newScenario);
+        boolean isCreated = scenarioService.createScenario(token, userId, newScenario);
         if(!isCreated){
             return ApiResponse.onFailure(Status.SCENARIO_CREATION_FAILED, null);
         }
@@ -61,7 +61,7 @@ public class ScenarioController {
         Long userId = userAccountService.getUserIdFromToken(token);
         if (userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        boolean isDeleted = scenarioService.deleteScenario(userId, scenarioId);
+        boolean isDeleted = scenarioService.deleteScenario(token, userId, scenarioId);
         if (!isDeleted) {
             return ApiResponse.onFailure(Status.SCENARIO_DELETION_FAILED, null);
         }

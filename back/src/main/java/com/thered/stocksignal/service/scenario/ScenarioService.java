@@ -11,9 +11,9 @@ import java.util.List;
 public interface ScenarioService {
     List<ScenarioResponseDto> getScenario(Long userId);
 
-    boolean createScenario(Long userId, ScenarioRequestDto scenarioCreateDto);
+    boolean createScenario(String token, Long userId, ScenarioRequestDto scenarioCreateDto);
 
-    boolean deleteScenario(Long userId, Long scenarioId);
+    boolean deleteScenario(String token, Long userId, Long scenarioId);
 
     List<ConditionResponseDto> getConditions(Long userId, Long scenarioId);
 

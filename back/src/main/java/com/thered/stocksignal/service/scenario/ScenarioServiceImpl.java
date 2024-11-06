@@ -5,7 +5,6 @@ import com.thered.stocksignal.app.dto.ScenarioDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
-import com.thered.stocksignal.app.dto.kis.KisSocketDto;
 import com.thered.stocksignal.config.WebSocketHandler;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
@@ -65,7 +64,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         return scenarioList;
     }
 
-    public boolean createScenario(Long userId, ScenarioRequestDto newScenario) {
+    public boolean createScenario(String token, Long userId, ScenarioRequestDto newScenario) {
 
         Optional<Company> company = companyRepository.findByCompanyName(newScenario.getCompanyName());
         Optional<User> user = userRepository.findById(userId);
@@ -75,7 +74,9 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         userAccountService.refreshKisSocketKey(userId);
 
-        webSocketHandler.handleKisSocketRequest(userId, company.get().getCompanyCode(), "1");
+        String companyCode = company.get().getCompanyCode();
+
+        webSocketHandler.handleKisSocketRequest(token, userId, companyCode, null, "1");
 
         // 시나리오 객체 생성
         Scenario scenario = Scenario.builder()
@@ -106,7 +107,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         return true;
     }
 
-    public boolean deleteScenario(Long userId, Long scenarioId) {
+    public boolean deleteScenario(String token, Long userId, Long scenarioId) {
 
         Optional<Scenario> scenario = scenarioRepository.findByIdAndUserId(scenarioId, userId);
 
@@ -125,7 +126,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         userAccountService.refreshKisSocketKey(userId);
 
-        webSocketHandler.handleKisSocketRequest(userId, companyCode, "2");
+        webSocketHandler.handleKisSocketRequest(token, userId, companyCode, null, "2");
 
         return true;
     }
