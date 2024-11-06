@@ -5,7 +5,7 @@ import com.thered.stocksignal.app.dto.ScenarioDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
-import com.thered.stocksignal.config.WebSocketHandler;
+import com.thered.stocksignal.websocket.WebSocketHandler;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
 import com.thered.stocksignal.domain.entity.ScenarioCondition;
@@ -66,11 +66,19 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     public boolean createScenario(String token, Long userId, ScenarioRequestDto newScenario) {
 
-        Optional<Company> company = companyRepository.findByCompanyName(newScenario.getCompanyName());
+        String companyName = newScenario.getCompanyName();
+        Optional<Company> company = companyRepository.findByCompanyName(companyName);
         Optional<User> user = userRepository.findById(userId);
 
         if(company.isEmpty()) return false;
         if(user.isEmpty()) return false;
+
+        List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
+        for(Scenario scenario : scenarios) {
+            if(scenario.getCompany().getCompanyName().equals(companyName)){
+                return false;   // 종목당 시나리오는 최대 하나
+            }
+        }
 
         userAccountService.refreshKisSocketKey(userId);
 
@@ -161,9 +169,16 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     public boolean addCondition(Long userId, ScenarioDto.ConditionRequestDto newCondition){
-        Optional<Scenario> scenario = scenarioRepository.findById(newCondition.getScenarioId());
-
+        Long scenarioId = newCondition.getScenarioId();
+        Optional<Scenario> scenario = scenarioRepository.findById(scenarioId);
         if(scenario.isEmpty()) return false;
+
+        List<ScenarioCondition> conditions = scenarioConditionRepository.findByScenarioId(scenarioId);
+        for(ScenarioCondition condition : conditions){
+            if(newCondition.getBuysellType() == condition.getBuysellType()){
+                return false;   // buy 혹은 sell은 시나리오당 최대 한개
+            }
+        }
 
         // 조건 객체 생성
         ScenarioCondition condition = ScenarioCondition.builder()

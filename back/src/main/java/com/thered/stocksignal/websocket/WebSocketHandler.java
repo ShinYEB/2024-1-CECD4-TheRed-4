@@ -1,4 +1,4 @@
-package com.thered.stocksignal.config;
+package com.thered.stocksignal.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thered.stocksignal.app.dto.CompanyDto.SocketPayloadDto;
