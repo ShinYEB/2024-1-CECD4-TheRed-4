@@ -1,162 +1,243 @@
 package com.thered.stocksignal.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thered.stocksignal.app.dto.CompanyDto.SocketPayloadDto;
 import com.thered.stocksignal.app.dto.StockDto;
 import com.thered.stocksignal.app.dto.kis.KisSocketDto;
 import com.thered.stocksignal.domain.entity.Scenario;
+import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.domain.session.UserSession;
+import com.thered.stocksignal.jwt.JWTUtil;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.repository.ScenarioRepository;
 import com.thered.stocksignal.repository.UserRepository;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.service.scenario.ScenarioTrade;
+import com.thered.stocksignal.service.user.UserAccountService;
 import jakarta.annotation.PostConstruct;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-//웹소켓 서버를 구현
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-    private final ConcurrentHashMap<Long, Session> userSessions = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<Long, UserSession> userSessions = new ConcurrentHashMap<>();
+    private final Lock lock = new ReentrantLock();
+
     private final CompanyRepository companyRepository;
     private final ScenarioRepository scenarioRepository;
-    private final ScenarioTrade scenarioTrade;
     private final UserRepository userRepository;
-    private final CompanyService companyService;
 
-   /* // client 접속 시
+    private final JWTUtil jwtUtil;
+
+    private final ScenarioTrade scenarioTrade;
+    private final CompanyService companyService;
+    private final UserAccountService userAccountService;
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        System.out.println("새로운 WebSocket 세션이 연결되었습니다: " + session.getId());
     }
 
-    // client 접속 해제 시
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        System.out.println("WebSocket 세션이 종료되었습니다: " + session.getId());
     }
 
-    //클라이언트에서 websocket으로 들어오는 메세지 처리
     @Override
-    protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) throws Exception {
-        System.out.println("입력된 메세지입니다. > " + message);
+    protected void handleTextMessage(WebSocketSession clientSession, TextMessage message) throws Exception {
 
-        String payload = message.getPayload();
+        lock.lock();
+        try{
+            // 클라이언트에서 보낸 메시지
+            String payload = message.getPayload();
+            ObjectMapper objectMapper = new ObjectMapper();
+            SocketPayloadDto dto = objectMapper.readValue(payload, SocketPayloadDto.class);
 
-        try {
-            // open websocket
-            final WebSocketClientEndpoint clientEndPoint = new WebSocketClientEndpoint();
+            String token = dto.getToken();
+            Long userId = userAccountService.getUserIdFromToken(token);
+            String companyName = dto.getCompanyName();
+            String companyCode = companyService.findCodeByName(companyName).get().getCompanyCode();
 
-            Session session = clientEndPoint.connect(new URI("ws://ops.koreainvestment.com:31000"));
-            clientEndPoint.sendMessage(payload);
-
-            // add listener
-            clientEndPoint.addMessageHandler(new WebSocketClientEndpoint.MessageHandler() {
-                public void handleMessage(String message) throws IOException {
-
-                    // Split the message using the '^' delimiter
-                    String[] parts = message.split("\\^");
-                    String[] codepart = parts[0].split("\\|");
-
-                    // Check if the array has enough elements
-                    if (parts.length >= 4) {
-                        // Access individual parts based on their position
-                        String companyCode = codepart[3];
-                        String currentPrice = parts[2];
-                        String companyName = companyRepository.findByCompanyCode(companyCode).get().getCompanyName();
-
-                        String data = "test";
-                        sendWebSocketMessage(data);
-
-                    } else {
-                        sendWebSocketMessage(message);
-                    }
-                }
-            });
-
-            Thread.sleep(5000);
-
-        } catch (InterruptedException ex) {
-            sendWebSocketMessage("Invalid message format: " + ex.getMessage());
-        } catch (URISyntaxException ex) {
-            sendWebSocketMessage("URISyntaxException exception: " + ex.getMessage());
-        }
-    }*/
-
-    /*    // WebSocket 클라이언트로 메시지 전송, 클라이언트가 이 메세지를 받아서 처리를 수행함.
-    public void sendWebSocketMessage(String message) throws IOException {
-        for (WebSocketSession client : CLIENTS) {
-            TextMessage textMessage = new TextMessage(message);
-            System.out.println("Sending message to WebSocket client: \n" + message);
-            client.sendMessage(textMessage);
-        }
-    }*/
-
-    // 한투 웹소켓 리퀘스트 전송
-    public void sendKisSocketRequest(Long userId, KisSocketDto.KisSocketRequestDto request) {
-        if(request.getHeader().getTr_type().equals("1")) {
-            if(userSessions.containsKey(userId)){
-                handleExistingSession(userId, request);
+            if (userId == -1) {
+                System.out.println("유효하지 않은 세션입니다. 유저 확인 불가능");
             }
             else{
-                handleNewSession(userId, request);
+                System.out.println("받은 메시지: " + payload);
+
+                if(userSessions.get(userId) == null){
+                    userSessions.put(userId, new UserSession(clientSession, null));
+                }
+                else{
+                    userSessions.get(userId).setClientSession(clientSession);
+                }
+
+                // action에 따른 처리
+                switch (dto.getAction()) {
+                    case "connect":
+                        handleKisSocketRequest(token, userId, companyCode, companyName, "1");
+                        break;
+                    case "disconnect":
+                        handleKisSocketRequest(token, userId, companyCode, companyName, "2");
+                        break;
+                    default:
+                        System.out.println("알 수 없는 action: " + dto.getAction());
+                }
             }
-        }
-        else {
-            handleExistingSession(userId, request);
+        } finally {
+            lock.unlock();
         }
     }
 
-    private void handleNewSession(Long userId, KisSocketDto.KisSocketRequestDto request) {
+    // 한투 세션 관리
+    public void updateKisSession(Session kisSession){
+        String token =  (String)kisSession.getUserProperties().get("token");
+        Long userId = userAccountService.getUserIdFromToken(token);// 토큰으로부터 사용자 ID 반환
+        if (userId == -1) {
+            System.out.println("유효하지 않은 세션입니다. 유저 확인 불가능");
+        }
+        else{
+            UserSession userSession = userSessions.get(userId);
+
+            if(userSession != null){    // 기존 세션 맵이 있는 경우
+                userSession.setKisSession(kisSession); // 기존의 한투 세션 업데이트
+            }
+            else if(kisSession != null){   // 기존 세션 맵이 없는 경우, kisSession이 null이 아닐 때
+                userSessions.put(userId, new UserSession(null, kisSession)); // 새로운 UserSession 생성
+            }
+        }
+    }
+
+    // 클라이언트로 메시지 전송
+    public void sendMessageToClient(WebSocketSession session, StockDto.RealTimeStockDto dto) {
         try {
-            final WebSocketClientEndpoint clientEndPoint = new WebSocketClientEndpoint();
-            Session session = clientEndPoint.connect(new URI("ws://ops.koreainvestment.com:31000"));
-
-            userSessions.put(userId, session);
             ObjectMapper objectMapper = new ObjectMapper();
-            String message = objectMapper.writeValueAsString(request);
-            clientEndPoint.sendMessage(message);
-
-            clientEndPoint.addMessageHandler(response -> handleResponse(response, userId));
+            String message = objectMapper.writeValueAsString(dto);
+            if(session.isOpen()){
+                session.sendMessage(new TextMessage(message)); // dto를 문자열로 변환하여 클라이언트에게 전송
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void handleResponse(String response, Long userId, String companyName) {
+    // 한투로 메시지 전송
+    public void sendMessageToKis(String token, Long userId, KisSocketDto.KisSocketRequestDto request, String searchName) {
+
+        // 세션 맵에서 찾을 수 있는 유저고, 한투 세션이 null이 아닐때,
+        if(userSessions.containsKey(userId) && userSessions.get(userId).getKisSession()!=null){
+            handleExistingSession(userId, request, searchName);
+        }
+        // 세션 맵에서 찾을 수 없거나, 한투 세션이 null일 때
+        else if(request.getHeader().getTr_type().equals("1")){
+            handleNewSession(token, userId, request, searchName);
+        }
+    }
+
+    // 새 한투 세션 열기
+    private void handleNewSession(String token, Long userId, KisSocketDto.KisSocketRequestDto request, String searchName) {
+        try {
+
+            final WebSocketEndpoint clientEndPoint = new WebSocketEndpoint();
+            Session newSession = clientEndPoint.connect(new URI("ws://ops.koreainvestment.com:31000/tryitout/H0STASP0"), token);
+
+            updateKisSession(newSession);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String message = objectMapper.writeValueAsString(request);
+
+            newSession.getAsyncRemote().sendText(message);
+
+            clientEndPoint.addMessageHandler(response -> handleResponse(response, userId, searchName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 기존 한투 세션 가져오기
+    private void handleExistingSession(Long userId, KisSocketDto.KisSocketRequestDto request, String searchName) {
+        String type = request.getHeader().getTr_type(); // tr_type : 1 등록 2 해제
+
+        // 삭제 요청이고, 자동매매가 아닌 호가 조회 페이지 이탈에 의한 것이라면
+        if(searchName != null && type.equals("2")){
+
+            List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
+            boolean isEnrolled = false;
+
+            for(Scenario scenario : scenarios){
+                if(scenario.getCompany().getCompanyName() == searchName){
+                    isEnrolled = true;
+                    break;
+                }
+            }
+            if(isEnrolled){
+               return; // 유저의 자동매매 시나리오에 있는 주식은 등록을 해제하지 않음
+            }
+        }
+        // 그외 모든 경우
+        try {
+            // userId에 해당하는 세션 가져오기
+            UserSession existingSession = userSessions.get(userId);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            String message = objectMapper.writeValueAsString(request);
+
+            // 기존 세션으로 업데이트된 메시지 전송
+            existingSession.getKisSession().getAsyncRemote().sendText(message);
+            System.out.println("변경된 메시지를 전송했습니다: " + message);
+
+            if(type.equals("2")){
+                // 삭제 후에 scenario 테이블에 아무것도 없다면 userSessions에서 세션을 가져오고 종료
+                if(scenarioRepository.findByUserId(userId).isEmpty()){
+                    try {
+                        existingSession.setKisSession(null); // kis세션 제거
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 한투로부터 오는 응답 처리
+    private void handleResponse(String response, Long userId, String searchName) {
         String[] parts = response.split("\\|");
         String[] data = parts[parts.length - 1].split("\\^");
 
         if (parts.length >= 4) {
             List<StockDto.RealTimeStockDto> stockInfoDtoList = parseStockInfo(data);
             for (StockDto.RealTimeStockDto dto : stockInfoDtoList) {
-                if(companyName == null){
-                    scenarioTrade.checkAutoTrade(userId, dto);
+                if (dto.getCompanyName().equals(searchName)) {
+                    StockDto.RealTimeStockDto realTimeStock = companyService.getRealTimeStock(userId, dto);
+                    sendMessageToClient(userSessions.get(userId).getClientSession(), realTimeStock);
                 }
-                else{
-                    if (dto.getCompanyName().equals(companyName)) {
-                        companyService.getRealTimeStock(userId, dto);
-                    }
-                    else{
-                        scenarioTrade.checkAutoTrade(userId, dto);
-                    }
-                }
+                scenarioTrade.checkAutoTrade(userId, dto);
             }
         } else {
-            System.out.println(response);
+            System.out.println(response); // 초당 거래건수 초과 등
         }
     }
 
+    // 응답 파싱
     private List<StockDto.RealTimeStockDto> parseStockInfo(String[] data) {
         List<List<String>> stockInfos = new ArrayList<>();
         List<StockDto.RealTimeStockDto> stockInfoDtoList = new ArrayList<>();
 
-        // 58개씩 묶어서 리스트에 추가
+        // 정보 단위 그룹화
         for (int i = 0; i < data.length; i += 59) {
             List<String> stockInfo = new ArrayList<>();
             for (int j = i; j < i + 59 && j < data.length; j++) {
@@ -212,35 +293,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
         return stockInfoDtoList;
     }
 
-
-    private void handleExistingSession(Long userId, KisSocketDto.KisSocketRequestDto request) {
-        try {
-            // userId에 해당하는 세션 가져오기
-            Session existingSession = userSessions.get(userId);
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            String message = objectMapper.writeValueAsString(request);
-
-            // 기존 세션으로 업데이트된 메시지 전송
-            existingSession.getBasicRemote().sendText(message);
-            System.out.println("변경된 메시지를 전송했습니다: " + message);
-
-            // 만약 scenario 테이블에 아무것도 없다면 userSessions에서 세션을 가져오고 종료
-            if(scenarioRepository.findByUserId(userId).isEmpty()){
-                try {
-                    existingSession.close(); // 세션 종료
-                    userSessions.remove(userId); // userSessions에서 세션 제거
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 한투 웹소켓 리퀘스트 구성 (type : "1"이면 등록, "2"면 해제)
-    public void handleKisSocketRequest(Long userId, String companyCode, String type) {
+    // 한투 요청 메시지 양식 (type : "1"이면 등록, "2"면 해제)
+    // 자동매매의 경우 searchName을 null로 설정바랍니다. searchName은 실시간 매매호가 검색시 쓰이는 종목명입니다.
+    public void handleKisSocketRequest(String token, Long userId, String companyCode, String searchName, String type) {
         // 웹소켓 연결
         KisSocketDto.Header header = KisSocketDto.Header.builder()
                 .approval_key(userRepository.findById(userId).get().getSocketKey())
@@ -264,7 +319,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 .build();
 
         try{
-            sendKisSocketRequest(userId, request);
+            sendMessageToKis(token, userId, request, searchName);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -273,15 +328,23 @@ public class WebSocketHandler extends TextWebSocketHandler {
     // 서버 재시작 시 모든 유저의 세션을 재연결
     @PostConstruct
     public void reconnectAllKisSocketSessions() {
-        List<Long> userIds = userRepository.findAllUserIds(); // 모든 유저 ID
-        for (Long userId : userIds) {
+        List<User> users = userRepository.findAll(); // 모든 유저 ID
+        for (User user : users) {
+
+            Long userId = user.getId();
+            String nickname = user.getNickname();
+            Long expirationTime = 86400000L; // 24시간
 
             List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
 
             // 유저의 구독 요청 재전송
             for(Scenario scenario : scenarios){
                 String companyCode = scenario.getCompany().getCompanyCode();
-                handleKisSocketRequest(userId, companyCode, "1");
+                String companyName = scenario.getCompany().getCompanyName();
+                String token = jwtUtil.createJwt(userId, nickname, expirationTime);
+
+                // 각 사용자마다 연결
+                handleKisSocketRequest(token, userId, companyCode, null, "1");
             }
         }
     }
