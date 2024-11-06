@@ -43,9 +43,8 @@ public class ScenarioTradeImpl implements ScenarioTrade{
             Long sellPrice = null;
 
             if (stockInfoDto.getCompanyName().equals(companyName)) {
-                buyPrice = stockInfoDto.getBuyPrice1();  // 매수호가1
+                buyPrice = stockInfoDto.getBuyPrice1(); // 매수호가1
                 sellPrice = stockInfoDto.getSellPrice1(); // 매도호가1
-                break;
             }
 
             if (buyPrice != null && sellPrice != null) {
