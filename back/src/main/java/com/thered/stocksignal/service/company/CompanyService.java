@@ -27,5 +27,8 @@ public interface CompanyService {
 
     // 인기 종목 10개 조회
     Optional<List<popularStockResponseDto>> getPopularStocks();
+
+    // 실시간 호가
+    RealTimeStockDto getRealTimeStock(Long userId, RealTimeStockDto dto);
 }
 

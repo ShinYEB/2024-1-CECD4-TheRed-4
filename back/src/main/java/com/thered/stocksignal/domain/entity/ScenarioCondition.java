@@ -17,7 +17,7 @@ public class ScenarioCondition {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "scenario_id", nullable = false)
     private Scenario scenario;
 
@@ -51,5 +51,9 @@ public class ScenarioCondition {
     @Setter
     @Column(name = "is_price3_reached", nullable = false)
     private boolean isPrice3Reached;
+
+    @Setter
+    @Column(name = "is_finished", nullable = false)
+    private boolean isFinished;
 
 }

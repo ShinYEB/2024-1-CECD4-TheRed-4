@@ -5,6 +5,7 @@ import com.thered.stocksignal.app.dto.ScenarioDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ConditionResponseDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioRequestDto;
 import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
+import com.thered.stocksignal.websocket.WebSocketHandler;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Scenario;
 import com.thered.stocksignal.domain.entity.ScenarioCondition;
@@ -15,6 +16,8 @@ import com.thered.stocksignal.repository.ScenarioRepository;
 import com.thered.stocksignal.repository.UserRepository;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.StockDto.CurrentPriceResponseDto;
+import com.thered.stocksignal.service.trade.TradeService;
+import com.thered.stocksignal.service.user.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,9 @@ public class ScenarioServiceImpl implements ScenarioService {
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
     private final ScenarioConditionRepository scenarioConditionRepository;
+    private final WebSocketHandler webSocketHandler;
+    private final UserAccountService userAccountService;
+    private final TradeService tradeService;
 
     public List<ScenarioResponseDto> getScenario(Long userId) {
         List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
@@ -58,13 +64,27 @@ public class ScenarioServiceImpl implements ScenarioService {
         return scenarioList;
     }
 
-    public boolean createScenario(Long userId, ScenarioRequestDto newScenario) {
+    public boolean createScenario(String token, Long userId, ScenarioRequestDto newScenario) {
 
-        Optional<Company> company = companyRepository.findByCompanyName(newScenario.getCompanyName());
+        String companyName = newScenario.getCompanyName();
+        Optional<Company> company = companyRepository.findByCompanyName(companyName);
         Optional<User> user = userRepository.findById(userId);
 
         if(company.isEmpty()) return false;
         if(user.isEmpty()) return false;
+
+        List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
+        for(Scenario scenario : scenarios) {
+            if(scenario.getCompany().getCompanyName().equals(companyName)){
+                return false;   // 종목당 시나리오는 최대 하나
+            }
+        }
+
+        userAccountService.refreshKisSocketKey(userId);
+
+        String companyCode = company.get().getCompanyCode();
+
+        webSocketHandler.handleKisSocketRequest(token, userId, companyCode, null, "1");
 
         // 시나리오 객체 생성
         Scenario scenario = Scenario.builder()
@@ -95,7 +115,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         return true;
     }
 
-    public boolean deleteScenario(Long userId, Long scenarioId) {
+    public boolean deleteScenario(String token, Long userId, Long scenarioId) {
 
         Optional<Scenario> scenario = scenarioRepository.findByIdAndUserId(scenarioId, userId);
 
@@ -104,11 +124,17 @@ public class ScenarioServiceImpl implements ScenarioService {
             return false;
         }
 
+        String companyCode = scenario.get().getCompany().getCompanyCode();
+
         // 시나리오와 관련된 조건 삭제
         scenarioConditionRepository.deleteByScenario(scenario.get());
 
         // 시나리오 삭제
         scenarioRepository.delete(scenario.get());
+
+        userAccountService.refreshKisSocketKey(userId);
+
+        webSocketHandler.handleKisSocketRequest(token, userId, companyCode, null, "2");
 
         return true;
     }
@@ -143,9 +169,16 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     public boolean addCondition(Long userId, ScenarioDto.ConditionRequestDto newCondition){
-        Optional<Scenario> scenario = scenarioRepository.findById(newCondition.getScenarioId());
-
+        Long scenarioId = newCondition.getScenarioId();
+        Optional<Scenario> scenario = scenarioRepository.findById(scenarioId);
         if(scenario.isEmpty()) return false;
+
+        List<ScenarioCondition> conditions = scenarioConditionRepository.findByScenarioId(scenarioId);
+        for(ScenarioCondition condition : conditions){
+            if(newCondition.getBuysellType() == condition.getBuysellType()){
+                return false;   // buy 혹은 sell은 시나리오당 최대 한개
+            }
+        }
 
         // 조건 객체 생성
         ScenarioCondition condition = ScenarioCondition.builder()

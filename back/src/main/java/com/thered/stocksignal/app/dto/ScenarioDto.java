@@ -17,7 +17,6 @@ public class ScenarioDto {
         private BuysellType buysellType;
         private MethodType methodType;
         private Long initialPrice;
-
         private Long targetPrice1;
         private Long targetPrice2;
         private Long targetPrice3;

@@ -30,7 +30,10 @@ public class Trade {
     private Date tradeDate;
 
     @Column(nullable = false)
-    private String tradeQuantity;
+    private Long tradePrice;
+
+    @Column(nullable = false)
+    private Long tradeQuantity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

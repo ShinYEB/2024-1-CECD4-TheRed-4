@@ -244,4 +244,12 @@ public class CompanyServiceImpl implements CompanyService {
             return Optional.empty();
         }
     }
+
+    @Override
+    public RealTimeStockDto getRealTimeStock(Long userId, RealTimeStockDto dto) {
+        String companyName = dto.getCompanyName();
+        String companyCode = findCodeByName(companyName).get().getCompanyCode();
+        dto.setLatestPrice(findCurrentPriceByCode(companyCode, userId).get().getCurrentPrice());
+        return dto;
+    }
 }

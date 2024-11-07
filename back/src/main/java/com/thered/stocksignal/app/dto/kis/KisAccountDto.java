@@ -13,5 +13,12 @@ public class KisAccountDto {
         private Integer expires_in;
         private String access_token_token_expired;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SocketKeyResponseDto {
+        private String approval_key;
+    }
 }
 

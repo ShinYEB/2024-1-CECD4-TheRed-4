@@ -8,6 +8,7 @@ import com.thered.stocksignal.app.dto.kis.KisTradeDto;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.Trade;
 import com.thered.stocksignal.domain.entity.User;
+import com.thered.stocksignal.domain.enums.OrderType;
 import com.thered.stocksignal.domain.enums.TradeType;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.repository.TradeRepository;
@@ -79,7 +80,10 @@ public class TradeServiceImpl implements TradeService {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 
         HttpHeaders header = makeHeaders(userId, tr_id);
-        Map<String, String> body = makeBody(user, dto.getScode(), "01", dto.getWeek(), "0");
+
+        String orderType = dto.getOrderType().equals(OrderType.JIJUNG)? "00" : "01";
+
+        Map<String, String> body = makeBody(user, dto.getScode(), orderType, dto.getWeek().toString(), dto.getPrice().toString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody;
@@ -117,6 +121,7 @@ public class TradeServiceImpl implements TradeService {
                 Trade newTrade = Trade.builder()
                         .user(user)
                         .tradeDate(new Date())
+                        .tradePrice(dto.getPrice())
                         .tradeQuantity(dto.getWeek())
                         .company(company)
                         .tradeType(type)
