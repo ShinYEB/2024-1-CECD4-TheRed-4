@@ -143,7 +143,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             CurrentPriceResponseDto currentPrice = CurrentPriceResponseDto.builder().build();
 
-            currentPrice.setCurrentPrice(output.path("stck_oprc").asLong());   // 현재가
+            currentPrice.setCurrentPrice(output.path("stck_prpr").asLong());   // 현재가
 
             return Optional.of(currentPrice);
 
