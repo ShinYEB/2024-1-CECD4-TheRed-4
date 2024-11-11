@@ -143,7 +143,7 @@ public class CompanyServiceImpl implements CompanyService {
 
             CurrentPriceResponseDto currentPrice = CurrentPriceResponseDto.builder().build();
 
-            currentPrice.setCurrentPrice(output.path("stck_oprc").asLong());   // 현재가
+            currentPrice.setCurrentPrice(output.path("stck_prpr").asLong());   // 현재가
 
             return Optional.of(currentPrice);
 
@@ -243,5 +243,13 @@ public class CompanyServiceImpl implements CompanyService {
         } catch (Exception e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public RealTimeStockDto getRealTimeStock(Long userId, RealTimeStockDto dto) {
+        String companyName = dto.getCompanyName();
+        String companyCode = findCodeByName(companyName).get().getCompanyCode();
+        dto.setLatestPrice(findCurrentPriceByCode(companyCode, userId).get().getCurrentPrice());
+        return dto;
     }
 }

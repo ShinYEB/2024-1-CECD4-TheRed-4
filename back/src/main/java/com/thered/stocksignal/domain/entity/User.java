@@ -47,6 +47,12 @@ public class User {
     @Column(nullable = true, length = 2048)
     private String kisTokenExpired;
 
+    @Column(nullable = true, length = 2048)
+    private String socketKey;
+
+    @Column(nullable = true, length = 2048)
+    private String socketKeyExpired;
+
     public void setNickname(String nickname) {this.nickname = nickname;}
 
     public void setKisAccount(String secretKey, String appKey, String accountNumber, Boolean isKisLinked){
@@ -59,5 +65,10 @@ public class User {
     public void setAccessToken(String kisToken, String kisTokenExpired){
         this.kisToken = kisToken;
         this.kisTokenExpired = kisTokenExpired;
+    }
+
+    public void setSocketKey(String socketKey, String socketKeyExpired){
+        this.socketKey = socketKey;
+        this.socketKeyExpired = socketKeyExpired;
     }
 }

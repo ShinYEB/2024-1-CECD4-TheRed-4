@@ -22,4 +22,9 @@ public class DateUtil {
         }
     }
 
+    public static String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        return dateFormat.format(date);
+    }
+
 }

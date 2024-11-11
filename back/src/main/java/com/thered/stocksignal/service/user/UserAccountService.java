@@ -24,4 +24,8 @@ public interface UserAccountService {
     void editKisAccessToken(Long userId, String accessToken, String accessTokenExpired);
 
     void refreshKisToken(Long userId);
+
+    void editKisSocketKey(Long userId, String socketKey, String socketKeyExpired);
+
+    void refreshKisSocketKey(Long userId);
 }

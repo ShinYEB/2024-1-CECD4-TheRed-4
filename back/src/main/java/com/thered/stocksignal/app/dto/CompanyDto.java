@@ -3,6 +3,7 @@ package com.thered.stocksignal.app.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 public class CompanyDto {
 
@@ -33,6 +34,16 @@ public class CompanyDto {
         private Long oneYearLowPrice;
         private Long oneYearHighPrice;
     }
+
+    @Getter
+    @Setter
+    @ToString
+    public static class SocketPayloadDto {
+        private String action;      // connect, disconnect
+        private String token;       // 토큰 값
+        private String companyName; // 종목명
+    }
+
 
 }
 
