@@ -4,6 +4,7 @@ import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.kisApi.KisApiRequest;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.service.user.UserAccountService;
+import com.thered.stocksignal.util.KisUtil;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -42,10 +43,12 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
         // API url
         String endpoint = "/uapi/domestic-stock/v1/trading/inquire-balance";
 
+        String accountNumber = user.get().getAccountNumber();
+
         // API 쿼리 파라미터
         String url = apiRequest.buildUrl(endpoint,
-                "CANO=" + user.get().getAccountNumber(),
-                "ACNT_PRDT_CD=01",
+                "CANO=" + KisUtil.getCANO(accountNumber),
+                "ACNT_PRDT_CD=" + KisUtil.getACNT_PRDT_CD(accountNumber),
                 "AFHR_FLPR_YN=N",
                 "INQR_DVSN=02",
                 "UNPR_DVSN=01",
