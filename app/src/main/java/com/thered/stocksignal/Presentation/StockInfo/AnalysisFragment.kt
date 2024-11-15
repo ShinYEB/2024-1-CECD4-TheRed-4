@@ -1,6 +1,7 @@
 package com.thered.stocksignal.Presentation.StockInfo
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,39 @@ import androidx.fragment.app.Fragment
 import android.widget.SeekBar
 import android.widget.TextView
 import com.thered.stocksignal.R
+import android.widget.Toast
+import com.thered.stocksignal.Data.Network.RetrofitClient
+import com.thered.stocksignal.Data.model.CompanyInfoResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.thered.stocksignal.Data.Network.StockInfoApiService
+import com.thered.stocksignal.Data.model.CurrentPriceResponse
+import com.thered.stocksignal.Data.model.StockData
 
 class AnalysisFragment : Fragment() {
+
+    private var companyData: StockData? = null
+    private var currentPrice: Int = 0
+
+    private lateinit var startPriceTextView: TextView
+    private lateinit var endPriceTextView: TextView
+    private lateinit var volumeTextView: TextView
+    private lateinit var tradeAmountTextView: TextView
+    private lateinit var dayseekbar: SeekBar
+    private lateinit var yearSeekBar: SeekBar
+
+    private lateinit var yearLowPriceTextView: TextView  // 1년 최저가 TextView
+    private lateinit var yearHighPriceTextView: TextView // 1년 최고가 TextView
+
+    private lateinit var dayLowPriceTextView: TextView  // 1년 최저가 TextView
+    private lateinit var dayHighPriceTextView: TextView // 1년 최고가 TextView
+
+
+
+    companion object {
+        private const val TAG = "API"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,23 +55,117 @@ class AnalysisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // UI 요소들 연결
-        val startPriceTextView: TextView = view.findViewById(R.id.start_price)
-        val endPriceTextView: TextView = view.findViewById(R.id.end_price)
-        val volumeTextView: TextView = view.findViewById(R.id.volume)
-        val tradeAmountTextView: TextView = view.findViewById(R.id.trade_amount)
+        startPriceTextView = view.findViewById(R.id.start_price)
+        endPriceTextView = view.findViewById(R.id.end_price)
+        volumeTextView = view.findViewById(R.id.volume)
+        tradeAmountTextView = view.findViewById(R.id.trade_amount)
+
+        // 1년 최저가/최고가 TextView 연결
+        yearLowPriceTextView = view.findViewById(R.id.one_year_low_price)
+        yearHighPriceTextView = view.findViewById(R.id.one_year_high_price)
+
+        // 1일 최저가/최고가 TextView 연결
+        dayLowPriceTextView = view.findViewById(R.id.one_day_low_price)
+        dayHighPriceTextView = view.findViewById(R.id.one_day_high_price)
 
         // SeekBar들
-        val dayseekbar: SeekBar = view.findViewById(R.id.day_seekbar)
-        val year_seekbar: SeekBar = view.findViewById(R.id.year_seekbar)
+        dayseekbar = view.findViewById(R.id.day_seekbar)
+        yearSeekBar = view.findViewById(R.id.year_seekbar)
 
-        // 필요하다면 여기서 데이터를 동적으로 업데이트할 수 있음
-        startPriceTextView.text = "84,700원"
-        endPriceTextView.text = "84,400원"
-        volumeTextView.text = "9,212,890주"
-        tradeAmountTextView.text = "7,793억 원"
+        // 회사명 (임의로 설정, 필요한 경우 동적으로 받을 수 있음)
+        val companyName = "삼성전자"
+        // API 호출
+        fetchCompanyInfo(companyName)
+        dayseekbar.isEnabled = false
+        yearSeekBar.isEnabled = false
+    }
 
-        // SeekBar 초기값 설정 (현재는 임의의 값)
-        dayseekbar.progress = 84
-        year_seekbar.progress = 85
+    private fun fetchCompanyInfo(companyName: String) {
+        RetrofitClient.stockInfoApi.getCompanyInfo(companyName)
+            .enqueue(object : Callback<CompanyInfoResponse> {
+                override fun onResponse(
+                    call: Call<CompanyInfoResponse>,
+                    response: Response<CompanyInfoResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        Log.d(TAG, "API complete: ${response.body()}")
+                        companyData = response.body()?.data
+
+                        // UI 업데이트
+                        activity?.runOnUiThread {
+                            updateUI()
+                        }
+
+                        // 현재가 API 호출
+                        fetchCurrentPrice(companyName)
+                    } else {
+                        Log.e(TAG, "API fail: ${response.errorBody()?.string()}")
+                        Toast.makeText(context, "분석 데이터를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<CompanyInfoResponse>, t: Throwable) {
+                    Log.e(TAG, "API fail: ${t.message}", t)
+                    Toast.makeText(context, "API 호출 실패: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun fetchCurrentPrice(companyName: String) {
+        RetrofitClient.stockInfoApi.getCurrentPrice(companyName)
+            .enqueue(object : Callback<CurrentPriceResponse> {
+                override fun onResponse(
+                    call: Call<CurrentPriceResponse>,
+                    response: Response<CurrentPriceResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        val currentPrice = response.body()?.data?.currentPrice ?: 0
+
+                        // 현재가 로그로 출력
+                        Log.d(TAG, "Current price: $currentPrice")
+
+                        // SeekBar 업데이트
+                        activity?.runOnUiThread {
+                            // 1일 최고가와 최저가를 SeekBar에 반영
+                            val dayLowPrice = companyData?.lowPrice ?: 0
+                            val dayHighPrice = companyData?.highPrice ?: 0
+
+                            dayseekbar.max = dayHighPrice - dayLowPrice  // SeekBar의 최대값은 (최고가 - 최저가)
+                            dayseekbar.progress = currentPrice - dayLowPrice  // progress는 (현재가 - 최저가)로 설정
+
+                            // 1년 최고가와 최저가를 Year SeekBar에 반영
+                            val yearLowPrice = companyData?.oneYearLowPrice ?: 0
+                            val yearHighPrice = companyData?.oneYearHighPrice ?: 0
+
+                            yearSeekBar.max = yearHighPrice - yearLowPrice  // SeekBar의 최대값은 (1년 최고가 - 1년 최저가)
+                            yearSeekBar.progress = currentPrice - yearLowPrice  // progress는 (현재가 - 1년 최저가)로 설정
+                        }
+                    } else {
+                        Log.e(TAG, "Current price API fail: ${response.errorBody()?.string()}")
+                        Toast.makeText(context, "현재가를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<CurrentPriceResponse>, t: Throwable) {
+                    Log.e(TAG, "Current price API fail: ${t.message}", t)
+                    Toast.makeText(context, "API 호출 실패: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun updateUI() {
+        companyData?.let { data ->
+            startPriceTextView.text = "${data.openPrice}원"
+            endPriceTextView.text = "${data.closePrice}원"
+            volumeTextView.text = "${data.tradingVolume}주"
+            tradeAmountTextView.text = "${data.tradingValue / 100000000}억 원"
+            yearLowPriceTextView.text = "${data.oneYearLowPrice}원"
+            yearHighPriceTextView.text = "${data.oneYearHighPrice}원"
+            dayLowPriceTextView.text = "${data.lowPrice}원"
+            dayHighPriceTextView.text = "${data.highPrice}원"
+        }
+
+        // SeekBar 초기화
+        dayseekbar.max = companyData?.oneYearHighPrice ?: 0
     }
 }

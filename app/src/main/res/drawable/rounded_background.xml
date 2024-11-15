@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF"/> <!-- 배경색 설정 -->
+    <corners android:radius="25dp"/> <!-- 둥글림 정도 설정 -->
+</shape>

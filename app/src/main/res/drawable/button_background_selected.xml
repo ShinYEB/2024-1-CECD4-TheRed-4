@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#1E90FF"/> <!-- 선택된 버튼 배경색 (파란색) -->
+    <corners android:radius="25dp"/>
+</shape>

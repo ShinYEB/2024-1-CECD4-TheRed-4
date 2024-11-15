@@ -5,13 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.thered.stocksignal.Presentation.StockInfo.Condition
 import com.thered.stocksignal.R
+import com.thered.stocksignal.Data.model.Condition
 
-class ConditionAdapter(private val conditionList: List<Condition>) :
+class ConditionAdapter(private val conditionList: List<com.thered.stocksignal.Data.model.Condition>) :
     RecyclerView.Adapter<ConditionAdapter.ConditionViewHolder>() {
 
-    // ViewHolder 클래스에서 XML의 뷰 요소들을 초기화
     class ConditionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val conditionName1: TextView = view.findViewById(R.id.condition_name_1)
         val profitRate1: TextView = view.findViewById(R.id.profit_rate_1)
@@ -20,23 +19,28 @@ class ConditionAdapter(private val conditionList: List<Condition>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConditionViewHolder {
-        // item_condition 레이아웃을 사용하여 뷰 생성
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_condition, parent, false)
         return ConditionViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ConditionViewHolder, position: Int) {
-        // 현재 position의 데이터를 가져옴
         val condition = conditionList[position]
 
-        // 첫 번째 조건명과 수익률 설정
+        // 첫 번째 조건 설정
         holder.conditionName1.text = condition.name
         holder.profitRate1.text = condition.profitRate
 
-        // 두 번째 조건명과 수익률을 임의로 설정하거나 추가 데이터에 맞춰 설정 가능
-        holder.conditionName2.text = "삼성전자"  // 임의의 조건명
-        holder.profitRate2.text = "+15%"  // 임의의 수익률
+        // 두 번째 조건이 있을 경우만 설정
+        if (condition.name2 != null && condition.profitRate2 != null) {
+            holder.conditionName2.text = condition.name2
+            holder.profitRate2.text = condition.profitRate2
+            holder.conditionName2.visibility = View.VISIBLE
+            holder.profitRate2.visibility = View.VISIBLE
+        } else {
+            holder.conditionName2.visibility = View.GONE
+            holder.profitRate2.visibility = View.GONE
+        }
     }
 
     override fun getItemCount(): Int {

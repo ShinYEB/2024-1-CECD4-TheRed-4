@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <string name="kakao_app_key">93bfd494630d7b92e90714929d816e3</string>-->
+    <string name="kakao_app_key">c93bfd494630d7b92e90714929d816e3</string>
+s</PreferenceScreen>
