@@ -24,10 +24,29 @@ public class KakaoLoginController {
 
     @Operation(summary = "프론트로부터 카카오 인가코드 전달받기")
     @Parameter(name = "code", description = "카카오에서 받은 인카코드, RequestParam")
-    @PostMapping("/login")
+    @PostMapping("/login/code")
     public ApiResponse<?> kakaoLoginCode(@RequestParam("code") String code){
 
         String token = kakaoLoginService.getKakaoToken(code);
+        KakaoLoginDto.KakaoUserInfoDto kakaoUserInfoDto = kakaoLoginService.getKakaoUserInfo(token);
+
+        if(userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).isEmpty()) userAccountService.saveKakaoUser(kakaoUserInfoDto.getEmail());
+        User user = userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).get();
+
+        String jwtToken = jwtUtil.createJwt(user.getId(), user.getNickname(), 3600000L);
+        KakaoLoginDto.LoginResponseDto dto = new KakaoLoginDto.LoginResponseDto().builder()
+                .userId(user.getId())
+                .token(jwtToken)
+                .build();
+
+        return ApiResponse.onSuccess(Status.LOGIN_SUCCESS, dto);
+    }
+
+    @Operation(summary = "프론트로부터 카카오 토큰 전달받기")
+    @Parameter(name = "token", description = "카카오에서 받은 토큰, RequestParam")
+    @PostMapping("/login/token")
+    public ApiResponse<?> kakaoLoginToken(@RequestParam("token") String token){
+
         KakaoLoginDto.KakaoUserInfoDto kakaoUserInfoDto = kakaoLoginService.getKakaoUserInfo(token);
 
         if(userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).isEmpty()) userAccountService.saveKakaoUser(kakaoUserInfoDto.getEmail());
