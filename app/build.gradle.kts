@@ -18,6 +18,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_TOKEN", "\"${project.findProperty("API_TOKEN")}\"")
     }
 
     buildTypes {
@@ -38,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfig 기능을 활성화
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
