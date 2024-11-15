@@ -3,8 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginTop="10dp"
-    >
+    android:layout_marginTop="10dp">
 
     <TextView
         android:id="@+id/articlePreview"
@@ -12,5 +11,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:autoLink="web"
+        android:linksClickable="true"
+        android:clickable="true"
+        android:textColorLink="@color/black"/>
 </LinearLayout>

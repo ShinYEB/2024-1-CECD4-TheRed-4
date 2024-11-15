@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="#F7F7F7"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Presentation.Alarm.AlarmActivity">
@@ -22,9 +23,9 @@
 
         <Button
             android:id="@+id/btn_all"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_marginEnd="16dp"
+            android:layout_width="70dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/alarm_all_button"
             android:text="전체"
             android:textStyle="bold"
@@ -32,8 +33,8 @@
 
         <Button
             android:id="@+id/btn_recent"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
+            android:layout_width="70dp"
+            android:layout_height="32dp"
             android:text="최근"
             android:textStyle="bold"
             android:background="@drawable/alarm_new_button"
@@ -44,9 +45,11 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:gravity="center"
         android:padding="16dp"
+        android:background="@drawable/alarm_white_box"
         app:layout_constraintTop_toBottomOf="@id/tabLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

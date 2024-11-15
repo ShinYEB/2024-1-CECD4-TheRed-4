@@ -85,7 +85,23 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
     implementation(libs.mpandroidchart)
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("com.google.android.material:material:1.4.0")
+    implementation (libs.v2.all) // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation (libs.v2.user) // 카카오 로그인
+    implementation (libs.v2.talk) // 친구, 메시지(카카오톡)
+    implementation (libs.v2.share) // 메시지(카카오톡 공유)
+    implementation (libs.v2.auth)
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
+
+
+
 
 }
