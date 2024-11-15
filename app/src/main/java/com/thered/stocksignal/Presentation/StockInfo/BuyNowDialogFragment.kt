@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import com.thered.stocksignal.BuildConfig
 import com.thered.stocksignal.Data.Network.BuyRequest
 import com.thered.stocksignal.Data.Network.BuyResponse
 import com.thered.stocksignal.Data.Network.TradeApiService
@@ -23,8 +24,7 @@ class BuyNowDialogFragment : DialogFragment() {
 
     private lateinit var priceInput: EditText
     private lateinit var weekInput: EditText
-    private val token =
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsIm5pY2tuYW1lIjoi7ZmN7JuQ7KSAIiwiaWF0IjoxNzMxMDU0NzczLCJleHAiOjE3MzQ2NTQ3NzN9.gWoR45M4tTpwx1gyk8oiZqUQfvw3aHuaqDxXdKqilDs"
+    private val token = BuildConfig.API_TOKEN // BuildConfig에서 API_TOKEN 값을 가져옵니다
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -61,8 +61,6 @@ class BuyNowDialogFragment : DialogFragment() {
     }
 
 
-
-
     private fun onConfirmButtonClick() {
         val scode = "005930"  // 실제 종목 코드를 설정
         val price = priceInput.text.toString().toIntOrNull() ?: 0
@@ -77,7 +75,7 @@ class BuyNowDialogFragment : DialogFragment() {
             val tradeApiService = retrofit.create(TradeApiService::class.java)
             val buyRequest = BuyRequest(scode = scode, price = price, week = week)
 
-            tradeApiService.buyStock(token, buyRequest).enqueue(object : Callback<BuyResponse> {
+            tradeApiService.buyStock("Bearer $token", buyRequest).enqueue(object : Callback<BuyResponse> {
                 override fun onResponse(call: Call<BuyResponse>, response: Response<BuyResponse>) {
                     if (response.isSuccessful) {
                         val result = response.body()

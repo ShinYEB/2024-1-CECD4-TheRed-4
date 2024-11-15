@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.thered.stocksignal.BuildConfig
 import com.thered.stocksignal.Data.Network.ProfitRateListener
 import com.thered.stocksignal.Data.Network.ScenarioApiService
 import com.thered.stocksignal.Data.model.ScenarioData
@@ -27,7 +28,7 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
 
     private lateinit var conditionAdapter: ConditionAdapter
     private val conditionList = mutableListOf<com.thered.stocksignal.Data.model.Condition>() // 타입 수정
-    private val token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsIm5pY2tuYW1lIjoi7ZmN7JuQ7KSAIiwiaWF0IjoxNzMxMDU0NzczLCJleHAiOjE3MzQ2NTQ3NzN9.gWoR45M4tTpwx1gyk8oiZqUQfvw3aHuaqDxXdKqilDs" // 실제 토큰으로 변경
+    private val token = BuildConfig.API_TOKEN // BuildConfig에서 API 토큰을 가져옵니다.
     private var profitRateListener: ProfitRateListener? = null
 
     private val scenarioApiService: ScenarioApiService = Retrofit.Builder()

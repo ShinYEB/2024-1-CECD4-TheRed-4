@@ -1,6 +1,7 @@
 package com.thered.stocksignal.Data.Network
 
 import com.google.gson.GsonBuilder
+import com.thered.stocksignal.BuildConfig
 import okhttp3.Interceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,7 +17,7 @@ object RetrofitClient {
 
         // Authorization 값 설정 (추후 로그인 구현 시, 실제 토큰으로 교체 필요)
         val newRequest = originalRequest.newBuilder()
-            .header("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsIm5pY2tuYW1lIjoi7ZmN7JuQ7KSAIiwiaWF0IjoxNzMxMDU0NzczLCJleHAiOjE3MzQ2NTQ3NzN9.gWoR45M4tTpwx1gyk8oiZqUQfvw3aHuaqDxXdKqilDs")
+            .header("Authorization", BuildConfig.API_TOKEN) // 동적으로 API 토큰을 가져옴
             .build()
 
         chain.proceed(newRequest)
