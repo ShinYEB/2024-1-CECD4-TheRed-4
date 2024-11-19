@@ -7,7 +7,10 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:background="#F7F7F7"
-    tools:context=".Presentation.ChatBot.ChatBotActivity">
+    tools:context=".presentation.chatbot.ChatBotActivity">
+
+    
+
 
     <!-- Bot Chat Bubble -->
     <LinearLayout

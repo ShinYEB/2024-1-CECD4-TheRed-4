@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.Main
+package com.thered.stocksignal.presentation.main
 
 import androidx.lifecycle.ViewModel
 

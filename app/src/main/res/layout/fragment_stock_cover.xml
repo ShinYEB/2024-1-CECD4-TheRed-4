@@ -11,7 +11,7 @@
 
         <TextView
             android:id="@+id/item_number"
-            android:layout_width="22sp"
+            android:layout_width="30sp"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/text_margin"
             android:textSize="18sp"
@@ -63,7 +63,7 @@
 
         <TextView
             android:id="@+id/earn_rate"
-            android:layout_width="50sp"
+            android:layout_width="60sp"
             android:layout_height="wrap_content"
             android:layout_margin="10sp"
             android:textSize="15sp"

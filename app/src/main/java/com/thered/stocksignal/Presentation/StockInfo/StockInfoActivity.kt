@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation
+package com.thered.stocksignal.presentation
 
 import android.app.Dialog
 import android.os.Bundle
@@ -15,13 +15,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+
+import com.thered.stocksignal.presentation.stockinfo.AnalysisFragment
+import com.thered.stocksignal.presentation.stockinfo.AutoTradeFragment
+import com.thered.stocksignal.presentation.stockinfo.PredictionFragment
+import com.thered.stocksignal.presentation.stockinfo.NewsFragment
+
 import com.bumptech.glide.Glide
 import com.thered.stocksignal.Data.Network.CompanyApiService
 import com.thered.stocksignal.Data.model.CompanyResponse
-import com.thered.stocksignal.Presentation.StockInfo.AnalysisFragment
-import com.thered.stocksignal.Presentation.StockInfo.AutoTradeFragment
-import com.thered.stocksignal.Presentation.StockInfo.PredictionFragment
-import com.thered.stocksignal.Presentation.StockInfo.NewsFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,6 +35,7 @@ import androidx.fragment.app.DialogFragment
 interface ProfitRateListener {
     fun onProfitRateCalculated(profitRate: String)
 }
+
 
 class StockInfoActivity : AppCompatActivity(), ProfitRateListener {
     private lateinit var articlePreview: TextView

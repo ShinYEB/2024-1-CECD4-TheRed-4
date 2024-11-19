@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.thered.stocksignal.Presentation.StockInfo.FirstFragment"
+        android:name="com.thered.stocksignal.presentation.stockinfo.FirstFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_first" >
 
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.thered.stocksignal.Presentation.StockInfo.SecondFragment"
+        android:name="com.thered.stocksignal.presentation.stockinfo.SecondFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second" >
 

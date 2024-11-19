@@ -1,12 +1,15 @@
-package com.thered.stocksignal.Presentation.Search
+package com.thered.stocksignal.presentation.search
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.thered.stocksignal.R
+import com.thered.stocksignal.databinding.FragmentSearchBinding
 
 class SearchFragment : Fragment() {
 
@@ -14,7 +17,8 @@ class SearchFragment : Fragment() {
         fun newInstance() = SearchFragment()
     }
 
-    private val viewModel: SearchViewModel by viewModels()
+    private lateinit var binding: FragmentSearchBinding
+    private lateinit var viewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +30,19 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+
+        viewModel.ouputCode.observe(viewLifecycleOwner) { code ->
+            Log.d("test", code)
+        }
 
         childFragmentManager.beginTransaction()
             .replace(R.id.search_result_list, SearchResultFragment())
             .commit()
 
-        return inflater.inflate(R.layout.fragment_search, container, false)
+        return binding.root
     }
 }

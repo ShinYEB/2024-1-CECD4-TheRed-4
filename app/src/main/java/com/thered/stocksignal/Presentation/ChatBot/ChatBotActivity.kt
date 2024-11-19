@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.ChatBot
+package com.thered.stocksignal.presentation.chatbot
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

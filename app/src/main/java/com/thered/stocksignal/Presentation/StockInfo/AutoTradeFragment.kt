@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.StockInfo
+package com.thered.stocksignal.presentation.stockinfo
 
 import android.app.Activity
 import android.content.Context
@@ -14,11 +14,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
+import com.thered.stocksignal.presentation.newScenario.NewScenarioConditionActivity
+
 import com.thered.stocksignal.BuildConfig
 import com.thered.stocksignal.Data.Network.ProfitRateListener
 import com.thered.stocksignal.Data.Network.ScenarioApiService
 import com.thered.stocksignal.Data.model.ScenarioData
-import com.thered.stocksignal.Presentation.NewScenario.NewScenarioActivity
+
 import com.thered.stocksignal.R
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -56,8 +59,10 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
         // '+ 버튼' 클릭 리스너 설정
         val addButton: Button = view.findViewById(R.id.add_condition)// 해당 버튼의 ID
         addButton.setOnClickListener {
+
             // NewScenarioActivity로 전환
             val intent = Intent(activity, NewScenarioActivity::class.java)
+
             startActivity(intent)
         }
         // 데이터를 API에서 받아오기

@@ -1,222 +1,142 @@
-package com.thered.stocksignal.Presentation.NewScenario
+package com.thered.stocksignal.presentation.newScenario
 
-import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.thered.stocksignal.Presentation.NewScenario.Buy.BuyRateFragment
-import com.thered.stocksignal.Presentation.NewScenario.Buy.BuyTargetFragment
-import com.thered.stocksignal.Presentation.NewScenario.Buy.BuyTradingFragment
-import com.thered.stocksignal.Presentation.NewScenario.Sell.SellRateFragment
-import com.thered.stocksignal.Presentation.NewScenario.Sell.SellTargetFragment
-import com.thered.stocksignal.Presentation.NewScenario.Sell.SellTradingFragment
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.thered.stocksignal.R
+import com.thered.stocksignal.databinding.ActivityNewScenarioBinding
 
 class NewScenarioActivity : AppCompatActivity() {
 
-    private var buySellIndex: Int = 0
-    private var standardIndex: Int = 0
-    private var tradeStandardIndex: Int = 0
-    private var optionIndex: Int = 0
-    private var amountIndex: Int = 0
+    lateinit var binding: ActivityNewScenarioBinding
+    lateinit var newScenarioViewModel: NewScenarioViewModel
+    private lateinit var dataList: List<Int>
 
-    private val container: FrameLayout by lazy { findViewById(R.id.new_scenario_container) }
+    val entryList = ArrayList<Entry>()
+    val lineChart: LineChart by lazy { findViewById(R.id.line_chart) }
+    val imageView: ImageView by lazy { findViewById(R.id.imageView) }
 
-    private val buyButton: Button by lazy { findViewById(R.id.new_scenario_buy_button) }
-    private val sellButton: Button by lazy { findViewById(R.id.new_scenario_sell_button) }
-    private val rateButton: Button by lazy { findViewById(R.id.new_scenario_rate_button) }
-    private val targetButton: Button by lazy { findViewById(R.id.new_scenario_target_button) }
-    private val tradingButton: Button by lazy { findViewById(R.id.new_scenario_trading_button) }
-
-    private val standard1Button: Button by lazy { findViewById(R.id.new_scenario_standard1_button) }
-    private val standard2Button: Button by lazy { findViewById(R.id.new_scenario_standard2_button) }
-
-    private val setAmountButton: Button by lazy { findViewById(R.id.set_amount_button)}
-    private val setRateButton: Button by lazy { findViewById(R.id.set_rate_button)}
-
-    private val addButton: Button by lazy { findViewById(R.id.new_scenario_add_button)}
-
-    private var textcolor = arrayOf(R.color.white, R.color.light_gray)
-    private var backgroundColor = arrayOf(R.drawable.gray_border_box, R.drawable.radius_border_blue_box, R.drawable.radius_border_red_box)
-    private var checkBoxColor = arrayOf(R.drawable.baseline_check_box_gray, R.drawable.baseline_check_box_blue, R.drawable.baseline_check_box_red)
-
-    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_new_scenario)
+            enableEdgeToEdge()
 
-        buyButton.setOnClickListener {
-            buySellIndex = 0
-            setButtonColor()
-            setFragment()
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_new_scenario)
+        newScenarioViewModel = ViewModelProvider(this).get(NewScenarioViewModel::class.java)
+        binding.viewModel = newScenarioViewModel
+        binding.lifecycleOwner = this
+
+        dataList = newScenarioViewModel.loadChartData()
+        newScenarioViewModel.settingInitPrice(dataList[dataList.size - 1], 3.45f)
+
+        Glide.with(this)
+            .load("https://openchat-phinf.pstatic.net/MjAyMzExMjlfMTM0/MDAxNzAxMjE4OTc1OTcz.FmWyTUNBX_8Zq0XSsr5oHK5TaLQtbFecwnskVcGSSlEg.13XMoPlR2bY5SeOJFdmJRYkrhPofPtTaOKoZbhCGwOQg.PNG/jZhwE4H5QsyHlQobWR97Ng.png")
+            .apply(RequestOptions().transform(RoundedCorners(80)))
+            .into(imageView)
+
+        dataList.forEachIndexed { index, data ->
+            entryList.add(Entry(index.toFloat(), data.toFloat()))
         }
 
-        sellButton.setOnClickListener {
-            buySellIndex = 1
-            setButtonColor()
-            setFragment()
+        lineChart.apply {
+            // zoom disabled.
+            setPinchZoom(false)
+            setScaleEnabled(false)
+            isDoubleTapToZoomEnabled = false
+
+            // right, left, x axis disabled.
+            // legend, description disabled.
+            axisRight.isEnabled = false
+            axisLeft.isEnabled = false
+            xAxis.isEnabled = false
+            legend.isEnabled = false
+            description.isEnabled = true
+
+            setOnChartValueSelectedListener(
+                object : OnChartValueSelectedListener {
+                    override fun onValueSelected(e: Entry?, h: Highlight?) {
+                        e?.let {
+                            newScenarioViewModel.setPrice(e.y.toInt())
+                        }
+                    }
+
+                    override fun onNothingSelected() {
+                        newScenarioViewModel.settingInitPrice(dataList[dataList.size - 1], 3.45f)
+                    }
+                }
+            )
         }
 
-        rateButton.setOnClickListener {
-            standardIndex = 0
-            setButtonColor()
-            setFragment()
-        }
+        // LineDataSet에 Entry 추가
+        val lineDataSet = LineDataSet(entryList, "Price Data")
 
-        targetButton.setOnClickListener {
-            standardIndex = 1
-            setButtonColor()
-            setFragment()
-        }
+        lineDataSet.mode = LineDataSet.Mode.CUBIC_BEZIER // 베지어 곡선 모드 설정
+        lineDataSet.setDrawCircles(false) // 데이터 포인트에 원 그리지 않음
+        lineDataSet.setDrawValues(false)  // 데이터 값을 표시하지 않음
+        lineDataSet.lineWidth = 2f        // 선의 두께 설정
+        lineDataSet.color = Color.BLUE
 
-        tradingButton.setOnClickListener {
-            standardIndex = 2
-            setButtonColor()
-            setFragment()
-        }
+        // 최대값과 최소값 구하기
+        val maxEntry = entryList.maxByOrNull { it.y }  // 최대값 Entry
+        val minEntry = entryList.minByOrNull { it.y }  // 최소값 Entry
 
-        standard1Button.setOnClickListener {
-            tradeStandardIndex = 1
-            setButton(standard1Button, 0, buySellIndex + 1)
-            setButton(standard2Button, 1, 0)
-        }
+        val maxY = entryList.maxByOrNull { it.y }?.y ?: 0f  // 최대값
+        val minY = entryList.minByOrNull { it.y }?.y ?: 0f  // 최소값
 
-        standard2Button.setOnClickListener {
-            tradeStandardIndex = 2
-            setButton(standard1Button, 1, 0)
-            setButton(standard2Button, 0, buySellIndex + 1)
-        }
+        // 최대/최소값만 표시할 데이터셋
+        val maxMinEntries = mutableListOf<Entry>()
+        maxEntry?.let { maxMinEntries.add(Entry(it.x, maxY)) }
+        minEntry?.let { maxMinEntries.add(Entry(it.x, minY)) }
 
-        setAmountButton.setOnClickListener {
-            amountIndex = 1
-            setCheckButton(setAmountButton, buySellIndex + 1)
-            setCheckButton(setRateButton, 0)
-            setAddButton()
-        }
+        val maxMinDataSet = LineDataSet(maxMinEntries, "Max/Min Data")
+        maxMinDataSet.valueTextSize = 15.0F // 각 지점의 데이터 텍스트 크기
+        maxMinDataSet.color = Color.WHITE
+        maxMinDataSet.setDrawCircles(true)  // 최대/최소 값에만 원 모양 표시
+        maxMinDataSet.setDrawCircleHole(false)
+        maxMinDataSet.circleRadius = 3f
+        maxMinDataSet.setDrawValues(false)  // 값 표시
+        maxMinDataSet.lineWidth = 0f
 
-        setRateButton.setOnClickListener {
-            amountIndex = 2
-            setCheckButton(setAmountButton, 0)
-            setCheckButton(setRateButton, buySellIndex + 1)
-            setAddButton()
-        }
+        // LineData에 두 개의 DataSet 추가
+        val lineData = LineData(lineDataSet, maxMinDataSet)
+
+        // LineChart에 데이터 설정
+        lineChart.data = lineData
+        lineChart.setVisibleXRangeMaximum(100f)
+        lineChart.animateX(1500)  // X축 방향으로 애니메이션
+        lineChart.description.isEnabled = false  // 차트 설명 비활성화
+
+        // 오른쪽 Y축 설정
+        val rightAxis = lineChart.axisRight
+        rightAxis.isEnabled = true // 오른쪽 Y축 활성화
+        rightAxis.setDrawGridLines(false) // 가로선 제거
+        rightAxis.axisMaximum = maxY  // 오른쪽 Y축의 최대값
+        rightAxis.axisMinimum = minY  // 오른쪽 Y축의 최소값
+        rightAxis.textColor = resources.getColor(android.R.color.darker_gray) // 텍스트 색상 변경
+
+        // 차트 새로고침
+        lineChart.invalidate()
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        val rootView = findViewById<View>(android.R.id.content)
-        rootView.post {
-            setFragment()
-        }
-    }
-
-    private fun setButtonColor() {
-        if (buySellIndex == 0) {
-            setButton(buyButton, 0, 1)
-            setButton(sellButton, 1, 0)
-
-            setButton(rateButton, 1, 0)
-            setButton(targetButton, 1, 0)
-            setButton(tradingButton, 1, 0)
-
-            when (standardIndex) {
-                0 -> setButton(rateButton, 0, 1)
-                1 -> setButton(targetButton, 0, 1)
-                2 ->setButton(tradingButton, 0, 1)
-            }
-        }
-        else {
-            setButton(buyButton, 1, 0)
-            setButton(sellButton, 0, 2)
-
-            setButton(rateButton, 1, 0)
-            setButton(targetButton, 1, 0)
-            setButton(tradingButton, 1, 0)
-
-            when (standardIndex) {
-                0 -> setButton(rateButton, 0, 2)
-                1 -> setButton(targetButton, 0, 2)
-                2 ->setButton(tradingButton, 0, 2)
-            }
-        }
-
-        if (amountIndex == 1) setCheckButton(setAmountButton, buySellIndex + 1)
-        if (amountIndex == 2) setCheckButton(setRateButton, buySellIndex + 1)
-        if (tradeStandardIndex == 1) setButton(standard1Button, 0, buySellIndex + 1)
-        if (tradeStandardIndex == 2) setButton(standard2Button, 0, buySellIndex + 1)
-        optionIndex = 0
-        setAddButton()
-    }
-
-    private fun setButton(button: Button, text: Int, background: Int) {
-        button.setBackgroundResource(backgroundColor[background])
-        button.setTextColor(ContextCompat.getColor(this, textcolor[text]))
-    }
-
-    private fun setCheckButton(button: Button, background: Int) {
-        button.setBackgroundResource(checkBoxColor[background])
-    }
-
-    private fun setFragment() {
-        val index:Int = buySellIndex*10 + standardIndex
-
-        when (index) {
-            0 -> supportFragmentManager.beginTransaction()
-                .replace(container.id, BuyRateFragment())
-                .commitNow()
-            1 -> supportFragmentManager.beginTransaction()
-                .replace(container.id, BuyTargetFragment())
-                .commitNow()
-            2 -> supportFragmentManager.beginTransaction()
-                .replace(container.id, BuyTradingFragment())
-                .commitNow()
-            10 -> supportFragmentManager.beginTransaction()
-                .replace(container.id, SellRateFragment())
-                .commitNow()
-            11 -> supportFragmentManager.beginTransaction()
-                .replace(container.id, SellTargetFragment())
-                .commitNow()
-            12 -> supportFragmentManager.beginTransaction()
-                .replace(container.id, SellTradingFragment())
-                .commitNow()
-        }
-
-        val fragment = supportFragmentManager.findFragmentById(container.id)
-        fragment?.view?.let { fragmentView ->
-
-            val option1Button = fragmentView.findViewById<Button>(R.id.set_option1_button)
-            val option2Button = fragmentView.findViewById<Button>(R.id.set_option2_button)
-
-            option1Button.setOnClickListener {
-                optionIndex = 1
-                setCheckButton(option1Button, buySellIndex + 1)
-                setCheckButton(option2Button, 0)
-                setAddButton()
-            }
-
-            option2Button.setOnClickListener {
-                optionIndex = 2
-                setCheckButton(option1Button, 0)
-                setCheckButton(option2Button, buySellIndex + 1)
-                setAddButton()
-            }
-        }
-    }
-
-    private fun setAddButton() {
-        if (optionIndex != 0 && amountIndex != 0 && tradeStandardIndex != 0)
-            setButton(addButton, 0, buySellIndex + 1)
-        else
-            setButton(addButton, 1, 0)
     }
 }

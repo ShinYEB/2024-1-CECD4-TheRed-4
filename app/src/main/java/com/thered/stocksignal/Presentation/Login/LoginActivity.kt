@@ -1,5 +1,6 @@
 package com.thered.stocksignal.Presentation.Login
 import android.net.Uri
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,11 +10,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
 import com.thered.stocksignal.Presentation.Main.MainActivity
+
 import com.thered.stocksignal.R
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

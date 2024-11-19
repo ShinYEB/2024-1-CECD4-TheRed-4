@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.MyStock
+package com.thered.stocksignal.presentation.mystock
 
 import android.graphics.Color
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 
-import com.thered.stocksignal.Presentation.MyStock.placeholder.PlaceholderContent.PlaceholderItem
+import com.thered.stocksignal.presentation.mystock.placeholder.MyStockPlaceholderContent.PlaceholderItem
 import com.thered.stocksignal.databinding.FragmentStockCoverBinding
 
 /**
@@ -43,6 +43,8 @@ class MystockCoverRecyclerViewAdapter(
 
         if (item.earnRate[0] == '-')
             holder.earnRateView.setTextColor(Color.parseColor("#0080FF"))
+        else if (item.earnRate == "+0.0%")
+            holder.earnRateView.setTextColor(Color.parseColor("#333333"))
 
         Glide.with(holder.imageView.context)
             .load(item.imgUrl)

@@ -7,7 +7,7 @@
     android:paddingTop="10sp"
     android:paddingHorizontal="30sp"
     android:background="@color/white"
-    tools:context=".Presentation.Search.SearchResultFragment">
+    tools:context=".presentation.search.SearchResultFragment">
 
     <TextView
         android:layout_width="match_parent"

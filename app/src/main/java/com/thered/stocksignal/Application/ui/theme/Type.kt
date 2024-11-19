@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Application.ui.theme
+package com.thered.stocksignal.application.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

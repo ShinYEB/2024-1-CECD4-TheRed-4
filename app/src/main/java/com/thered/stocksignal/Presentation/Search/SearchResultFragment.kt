@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.Search
+package com.thered.stocksignal.presentation.search
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

@@ -1,11 +1,11 @@
-package com.thered.stocksignal.Presentation.Intro
+package com.thered.stocksignal.presentation.Intro
 
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import com.thered.stocksignal.Presentation.Login.LoginActivity
+import com.thered.stocksignal.presentation.login.LoginActivity
 import com.thered.stocksignal.R
 
 class IntroActivity : AppCompatActivity() {
