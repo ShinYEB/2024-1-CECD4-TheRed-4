@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    kotlin("kapt")
 }
 
 android {
@@ -18,6 +19,7 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_TOKEN", "\"${project.findProperty("API_TOKEN")}\"")
     }
 
     buildTypes {
@@ -38,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfig 기능을 활성화
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -52,6 +55,7 @@ android {
         dataBinding = true
         viewBinding = true
     }
+
 }
 
 dependencies {
@@ -85,6 +89,18 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor(libs.compiler)
     implementation(libs.mpandroidchart)
+    
+    implementation(libs.androidx.viewpager2)
+    implementation(libs.material.v140)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    // dagger2
+    implementation(libs.dagger)
+    annotationProcessor(libs.dagger.compiler)
+
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation("com.google.android.material:material:1.4.0")
     implementation (libs.v2.all) // 전체 모듈 설치, 2.11.0 버전부터 지원
@@ -101,7 +117,7 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
-
-
-
+    // hilt
+    implementation(libs.androidx.navigation.compose)
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 }

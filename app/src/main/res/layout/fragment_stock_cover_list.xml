@@ -7,5 +7,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".Presentation.Home.StockCoverFragment"
+    tools:context=".presentation.home.StockCoverFragment"
     tools:listitem="@layout/fragment_stock_cover" />
