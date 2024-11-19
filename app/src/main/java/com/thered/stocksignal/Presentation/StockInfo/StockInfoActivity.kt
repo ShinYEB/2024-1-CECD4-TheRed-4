@@ -30,11 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.thered.stocksignal.R
 import androidx.fragment.app.DialogFragment
 
-interface ProfitRateListener {
-    fun onProfitRateCalculated(profitRate: String)
-}
-
-class StockInfoActivity : AppCompatActivity(), ProfitRateListener {
+class StockInfoActivity : AppCompatActivity() {
     private lateinit var articlePreview: TextView
     private lateinit var predictionImage: ImageView
     private lateinit var newsButton: Button
@@ -42,7 +38,7 @@ class StockInfoActivity : AppCompatActivity(), ProfitRateListener {
     private lateinit var aiButton: Button
     private lateinit var autoTradeButton: Button
     private lateinit var companyNameTextView: TextView
-    private lateinit var sellNowButton: Button // 즉시 거래하기 버튼 변수 추가
+    private lateinit var sellNowButton: Button
     private lateinit var apiService: CompanyApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +60,7 @@ class StockInfoActivity : AppCompatActivity(), ProfitRateListener {
 
         // Retrofit 초기화
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://pposiraun.com/")
+            .baseUrl("https://pposiraun.com/") // 실제 API 엔드포인트 URL
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -212,14 +208,5 @@ class StockInfoActivity : AppCompatActivity(), ProfitRateListener {
         } else {
             super.onBackPressed()
         }
-    }
-
-    override fun onProfitRateCalculated(profitRate: String) {
-        Log.d("StockInfoActivity", "수익률: $profitRate")
-        // 전달받은 수익률을 UI에 표시
-        val percentageChangeTextView: TextView = findViewById(R.id.percentageChange)
-        percentageChangeTextView.text = profitRate
-
-
     }
 }

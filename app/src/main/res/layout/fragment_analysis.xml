@@ -15,7 +15,31 @@
         android:text="삼성전자 분석"
         android:textSize="20sp"
         android:textStyle="bold" />
+    <!-- 거래대금 정보 -->
+    <LinearLayout
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_gravity="center"> <!-- 부모 레이아웃에서 가운데 정렬 -->
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="현재가"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/current_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7,793억 원"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:gravity="end" />
+    </LinearLayout>
     <!-- 시작가 정보 -->
     <LinearLayout
         android:layout_width="200dp"

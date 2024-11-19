@@ -20,7 +20,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class BuyNowDialogFragment : DialogFragment() {
-
     private lateinit var priceInput: EditText
     private lateinit var weekInput: EditText
     private val token =

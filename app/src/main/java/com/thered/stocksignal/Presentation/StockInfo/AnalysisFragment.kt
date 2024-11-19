@@ -24,6 +24,7 @@ class AnalysisFragment : Fragment() {
     private var companyData: StockData? = null
     private var currentPrice: Int = 0
 
+    private lateinit var currentPriceTextView: TextView
     private lateinit var startPriceTextView: TextView
     private lateinit var endPriceTextView: TextView
     private lateinit var volumeTextView: TextView
@@ -36,8 +37,6 @@ class AnalysisFragment : Fragment() {
 
     private lateinit var dayLowPriceTextView: TextView  // 1년 최저가 TextView
     private lateinit var dayHighPriceTextView: TextView // 1년 최고가 TextView
-
-
 
     companion object {
         private const val TAG = "API"
@@ -55,6 +54,8 @@ class AnalysisFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // UI 요소들 연결
+        // 현재가 추가
+        currentPriceTextView=view.findViewById(R.id.current_value)
         startPriceTextView = view.findViewById(R.id.start_price)
         endPriceTextView = view.findViewById(R.id.end_price)
         volumeTextView = view.findViewById(R.id.volume)
@@ -121,6 +122,14 @@ class AnalysisFragment : Fragment() {
                     if (response.isSuccessful && response.body() != null) {
                         val currentPrice = response.body()?.data?.currentPrice ?: 0
 
+                        // 현재가를 companyData에 병합
+                        companyData?.currentPrice = currentPrice
+
+                        activity?.runOnUiThread {
+                            updateUI()
+                        }
+
+
                         // 현재가 로그로 출력
                         Log.d(TAG, "Current price: $currentPrice")
 
@@ -155,6 +164,8 @@ class AnalysisFragment : Fragment() {
 
     private fun updateUI() {
         companyData?.let { data ->
+
+            currentPriceTextView.text = "${data.currentPrice ?: "N/A"}원" // currentPrice 사용
             startPriceTextView.text = "${data.openPrice}원"
             endPriceTextView.text = "${data.closePrice}원"
             volumeTextView.text = "${data.tradingVolume}주"
@@ -163,8 +174,8 @@ class AnalysisFragment : Fragment() {
             yearHighPriceTextView.text = "${data.oneYearHighPrice}원"
             dayLowPriceTextView.text = "${data.lowPrice}원"
             dayHighPriceTextView.text = "${data.highPrice}원"
-        }
 
+        }
         // SeekBar 초기화
         dayseekbar.max = companyData?.oneYearHighPrice ?: 0
     }
