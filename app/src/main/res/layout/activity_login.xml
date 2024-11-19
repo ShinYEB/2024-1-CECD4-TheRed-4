@@ -23,18 +23,15 @@
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintVertical_bias="0.452" />
 
-  <Button
+  <ImageButton
       android:id="@+id/kakao_login_button"
-      android:layout_width="300dp"
-      android:layout_height="50dp"
+      android:src="@drawable/kakao_login_medium_narrow"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:layout_marginTop="32dp"
-      android:backgroundTint="#FEE500"
-      android:text="카카오 로그인"
-      android:textColor="#000000"
-      android:textSize="15dp"
-      app:cornerRadius="10dp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.495"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/stock_signal_text" />
+      app:layout_constraintTop_toBottomOf="@+id/stock_signal_text"
+      android:background="@android:color/transparent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
