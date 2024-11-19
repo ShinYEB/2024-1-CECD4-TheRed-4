@@ -42,13 +42,13 @@ object HomePlaceholderContent {
     }
 
     fun createPlaceholderItem(index:Int, stock: Stock): PlaceholderItem {
-        val r = ((stock.currentPrice - stock.startPrice).toFloat() / stock.startPrice) * 100
+        val r = ((stock.currentPrice - stock.avgPrice).toFloat() / stock.avgPrice) * 100
         val formattedNumber = String.format("%,d", stock.currentPrice)
         var formattedRate = String.format("%.1f", r) + "%"
         if (formattedRate[0] != '-')
             formattedRate = "+" + formattedRate
 
-        return PlaceholderItem(index.toString(), stock.stockName, formattedNumber, formattedRate, stock.imageUrl, makeDetails(index))
+        return PlaceholderItem(index.toString(), stock.stockName, formattedNumber, formattedRate, stock.logoImage, makeDetails(index))
     }
 
     private fun makeDetails(position: Int): String {

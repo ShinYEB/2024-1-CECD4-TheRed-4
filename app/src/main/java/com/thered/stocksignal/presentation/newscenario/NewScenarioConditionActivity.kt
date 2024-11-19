@@ -10,12 +10,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.thered.stocksignal.presentation.newScenario.Buy.BuyRateFragment
-import com.thered.stocksignal.presentation.newScenario.Buy.BuyTargetFragment
-import com.thered.stocksignal.presentation.newScenario.Buy.BuyTradingFragment
-import com.thered.stocksignal.presentation.newScenario.Sell.SellRateFragment
-import com.thered.stocksignal.presentation.newScenario.Sell.SellTargetFragment
-import com.thered.stocksignal.presentation.newScenario.Sell.SellTradingFragment
+import com.thered.stocksignal.presentation.newScenario.buy.BuyRateFragment
+import com.thered.stocksignal.presentation.newScenario.buy.BuyTargetFragment
+import com.thered.stocksignal.presentation.newScenario.buy.BuyTradingFragment
+import com.thered.stocksignal.presentation.newScenario.sell.SellRateFragment
+import com.thered.stocksignal.presentation.newScenario.sell.SellTargetFragment
+import com.thered.stocksignal.presentation.newScenario.sell.SellTradingFragment
 import com.thered.stocksignal.R
 
 class NewScenarioConditionActivity : AppCompatActivity() {
