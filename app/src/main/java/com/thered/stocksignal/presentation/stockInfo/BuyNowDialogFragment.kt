@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.StockInfo
+package com.thered.stocksignal.presentation.stockInfo
 
 import android.os.Bundle
 import android.util.Log

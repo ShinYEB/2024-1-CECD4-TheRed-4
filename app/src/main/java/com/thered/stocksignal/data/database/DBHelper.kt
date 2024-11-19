@@ -46,7 +46,6 @@ class DBHelper(
 
         // STOCK TABLE
         const val STOCK_TABLE_NAME = "STOCK"
-        const val STOCK_TABLE_CODE = "CODE"
         const val STOCK_TABLE_TITLE = "TITLE"
         const val STOCK_TABLE_IMG_URL = "IMG_URL"
         const val STOCK_TABLE_PRICE = "PRICE"
@@ -97,8 +96,7 @@ class DBHelper(
         val createStockTable = """
             CREATE TABLE IF NOT EXISTS $STOCK_TABLE_NAME (
                 $UID integer primary key autoincrement, 
-                $STOCK_TABLE_CODE text unique, 
-                $STOCK_TABLE_TITLE text, 
+                $STOCK_TABLE_TITLE text unique, 
                 $STOCK_TABLE_IMG_URL text, 
                 $STOCK_TABLE_PRICE integer, 
                 $STOCK_TABLE_START_PRICE integer);
@@ -156,8 +154,8 @@ class DBHelper(
             timeLine = timeCursor.getString(timeCursor.getColumnIndex(FAVORITE_UPDATE_TIME))
             val getStocksQueryHandler = """
                 SELECT * FROM $STOCK_TABLE_NAME 
-                WHERE $STOCK_TABLE_CODE 
-                IN (SELECT $STOCK_TABLE_CODE 
+                WHERE $STOCK_TABLE_TITLE 
+                IN (SELECT $STOCK_TABLE_TITLE 
                 FROM $STOCK_LIST_INDEX_TABLE_NAME 
                 WHERE $STOCK_LIST_INDEX = 1);
             """.trimIndent()
@@ -166,11 +164,10 @@ class DBHelper(
             if (stocksCursor.moveToFirst()){
                 do{
                     val stock = Stock()
-                    stock.code = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_CODE))
                     stock.stockName = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_TITLE))
-                    stock.imageUrl = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_IMG_URL))
+                    stock.logoImage = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_IMG_URL))
                     stock.currentPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(STOCK_TABLE_PRICE))
-                    stock.startPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(STOCK_TABLE_START_PRICE))
+                    stock.avgPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(STOCK_TABLE_START_PRICE))
                     list.add(stock)
                 } while (stocksCursor.moveToNext())
             }
@@ -209,7 +206,6 @@ class DBHelper(
 
             val stockQuery = """
                 INSERT OR REPLACE INTO $STOCK_TABLE_NAME (
-                $STOCK_TABLE_CODE,
                 $STOCK_TABLE_TITLE,
                 $STOCK_TABLE_IMG_URL,
                 $STOCK_TABLE_PRICE,
@@ -217,8 +213,8 @@ class DBHelper(
                 VALUES (?, ?, ?, ?, ?);
             """.trimIndent()
 
-            db.execSQL(indexQuery, arrayOf(1, stock.code))
-            db.execSQL(stockQuery, arrayOf(stock.code, stock.stockName, stock.imageUrl, stock.currentPrice, stock.startPrice))
+            db.execSQL(indexQuery, arrayOf(1, stock.stockName))
+            db.execSQL(stockQuery, arrayOf(stock.stockName, stock.stockName, stock.logoImage, stock.currentPrice, stock.avgPrice))
         }
         db.close()
     }
@@ -252,9 +248,9 @@ class DBHelper(
             val getStocksQueryHandler = """
                 SELECT * FROM $STOCK_TABLE_NAME 
                 JOIN $BALANCE_TABLE_NAME
-                ON $STOCK_TABLE_NAME.$STOCK_TABLE_CODE = $BALANCE_TABLE_NAME.$BALANCE_CODE
-                WHERE $STOCK_TABLE_NAME.$STOCK_TABLE_CODE
-                IN (SELECT $STOCK_TABLE_NAME.$STOCK_TABLE_CODE
+                ON $STOCK_TABLE_NAME.$STOCK_TABLE_TITLE = $BALANCE_TABLE_NAME.$BALANCE_CODE
+                WHERE $STOCK_TABLE_NAME.$STOCK_TABLE_TITLE
+                IN (SELECT $STOCK_TABLE_NAME.$STOCK_TABLE_TITLE
                 FROM $STOCK_LIST_INDEX_TABLE_NAME 
                 WHERE $STOCK_LIST_INDEX = 2);
             """.trimIndent()
@@ -263,13 +259,12 @@ class DBHelper(
             if (stocksCursor.moveToFirst()){
                 do{
                     val stock = Stock()
-                    stock.code = stocksCursor.getString(stocksCursor.getColumnIndex("$STOCK_TABLE_NAME.$STOCK_TABLE_CODE"))
                     stock.stockName = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_TITLE))
                     stock.quantity = stocksCursor.getInt(stocksCursor.getColumnIndex(BALANCE_QUANTITY))
-                    stock.imageUrl = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_IMG_URL))
+                    stock.logoImage = stocksCursor.getString(stocksCursor.getColumnIndex(STOCK_TABLE_IMG_URL))
                     stock.avgPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(BALANCE_AVG_PRICE))
                     stock.currentPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(STOCK_TABLE_PRICE))
-                    stock.startPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(STOCK_TABLE_START_PRICE))
+                    stock.avgPrice = stocksCursor.getInt(stocksCursor.getColumnIndex(STOCK_TABLE_START_PRICE))
                     list.add(stock)
                 } while (stocksCursor.moveToNext())
             }
@@ -308,12 +303,11 @@ class DBHelper(
 
             val stockQuery = """
                 INSERT OR REPLACE INTO $STOCK_TABLE_NAME (
-                $STOCK_TABLE_CODE,
                 $STOCK_TABLE_TITLE,
                 $STOCK_TABLE_IMG_URL,
                 $STOCK_TABLE_PRICE,
                 $STOCK_TABLE_START_PRICE)
-                VALUES (?, ?, ?, ?, ?);
+                VALUES (?, ?, ?, ?);
             """.trimIndent()
 
             val balanceQuery = """
@@ -324,9 +318,9 @@ class DBHelper(
                 VALUES (?, ?, ?)
             """.trimIndent()
 
-            db.execSQL(indexQuery, arrayOf(2, stock.code))
-            db.execSQL(stockQuery, arrayOf(stock.code, stock.stockName, stock.imageUrl, stock.currentPrice, stock.startPrice))
-            db.execSQL(balanceQuery, arrayOf(stock.code, stock.quantity, stock.avgPrice))
+            db.execSQL(indexQuery, arrayOf(2, stock.stockName))
+            db.execSQL(stockQuery, arrayOf(stock.stockName, stock.stockName, stock.logoImage, stock.currentPrice, stock.avgPrice))
+            db.execSQL(balanceQuery, arrayOf(stock.stockName, stock.quantity, stock.avgPrice))
         }
         db.close()
     }

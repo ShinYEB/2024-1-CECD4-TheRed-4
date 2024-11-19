@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.thered.stocksignal.presentation.mystock.MyStockActivity
 import com.thered.stocksignal.R
 import com.thered.stocksignal.databinding.FragmentHomeBinding
-import com.thered.stocksignal.presentation.StockInfoActivity
+import com.thered.stocksignal.presentation.stockInfo.StockInfoActivity
 import com.thered.stocksignal.presentation.home.placeholder.HomePlaceholderContent
 
 class HomeFragment : Fragment() {

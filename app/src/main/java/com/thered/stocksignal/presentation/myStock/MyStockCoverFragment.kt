@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.thered.stocksignal.R
-import com.thered.stocksignal.presentation.StockInfoActivity
+import com.thered.stocksignal.presentation.stockInfo.StockInfoActivity
 import com.thered.stocksignal.presentation.mystock.placeholder.MyStockPlaceholderContent
 
 /**

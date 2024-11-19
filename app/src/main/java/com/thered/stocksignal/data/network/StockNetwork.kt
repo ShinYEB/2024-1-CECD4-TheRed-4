@@ -3,6 +3,7 @@ package com.thered.stocksignal.data.network
 import android.util.Log
 import com.thered.stocksignal.domain.entites.StockBalance
 import com.thered.stocksignal.domain.entites.StockList
+import com.thered.stocksignal.domain.entites.StockListResponse
 import com.thered.stocksignal.domain.entites.StockListWithTime
 import retrofit2.Call
 import retrofit2.Callback
@@ -13,9 +14,9 @@ class StockNetwork: Network() {
 
     val service = retrofit.create(StockService::class.java)
 
-    fun getStockListAsync(callback: (StockList?) -> Unit) {
-        service.getStockList().enqueue(object : Callback<StockList> {
-            override fun onResponse(call: Call<StockList>, response: Response<StockList>) {
+    fun getStockListAsync(callback: (StockListResponse?) -> Unit) {
+        service.getStockList().enqueue(object : Callback<StockListResponse> {
+            override fun onResponse(call: Call<StockListResponse>, response: Response<StockListResponse>) {
                 if (response.isSuccessful) {
                     // 네트워크 요청이 성공하면 응답을 처리
                     val stockList = response.body()
@@ -27,7 +28,7 @@ class StockNetwork: Network() {
                 }
             }
 
-            override fun onFailure(call: Call<StockList>, t: Throwable) {
+            override fun onFailure(call: Call<StockListResponse>, t: Throwable) {
                 // 네트워크 요청이 실패했을 때 처리
                 Log.d("Network_failure", t.message ?: "Unknown error")
                 callback(null)
@@ -35,9 +36,9 @@ class StockNetwork: Network() {
         })
     }
 
-    fun getMyBalanceAsync(callback: (StockBalance?) -> Unit) {
-        service.getMyBalance().enqueue(object : Callback<StockBalance> {
-            override fun onResponse(call: Call<StockBalance>, response: Response<StockBalance>) {
+    fun getMyBalanceAsync(callback: (StockListResponse?) -> Unit) {
+        service.getMyBalance().enqueue(object : Callback<StockListResponse> {
+            override fun onResponse(call: Call<StockListResponse>, response: Response<StockListResponse>) {
                 if (response.isSuccessful) {
                     // 네트워크 요청이 성공하면 응답을 처리
                     val stockBalance = response.body()
@@ -49,7 +50,7 @@ class StockNetwork: Network() {
                 }
             }
 
-            override fun onFailure(call: Call<StockBalance>, t: Throwable) {
+            override fun onFailure(call: Call<StockListResponse>, t: Throwable) {
                 // 네트워크 요청이 실패했을 때 처리
                 Log.d("Network_failure", t.message ?: "Unknown error")
                 callback(null)

@@ -23,7 +23,7 @@ class StockListRepository @Inject constructor(
             } else {
                 // 네트워크 성공 시 결과 반환
                 val stockListWithTime = StockListWithTime()
-                stockListWithTime.stocks = stockList.stocks
+                stockListWithTime.stocks = stockList.data.stocks
                 stockListWithTime.timeLine = dbHelper.getTime()
                 callback(stockListWithTime)
             }
@@ -40,10 +40,10 @@ class StockListRepository @Inject constructor(
             } else {
                 // 네트워크 성공 시 결과 반환
                 val stockBalanceWithTime = StockBalanceWithTime()
-                stockBalanceWithTime.stocks = stockBalance.stocks
-                stockBalanceWithTime.cash = stockBalance.cash
-                stockBalanceWithTime.totalStockPrice = stockBalance.totalStockPrice
-                stockBalanceWithTime.totalStockPL = stockBalance.totalStockPL
+                stockBalanceWithTime.stocks = stockBalance.data.stocks
+                stockBalanceWithTime.cash = stockBalance.data.cash
+                stockBalanceWithTime.totalStockPrice = stockBalance.data.totalStockPrice
+                stockBalanceWithTime.totalStockPL = stockBalance.data.totalStockPL
                 stockBalanceWithTime.timeLine = dbHelper.getTime()
                 callback(stockBalanceWithTime)
             }

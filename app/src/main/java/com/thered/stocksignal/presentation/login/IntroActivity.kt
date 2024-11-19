@@ -1,4 +1,4 @@
-package com.thered.stocksignal.presentation.Intro
+package com.thered.stocksignal.presentation.login
 
 import android.content.Intent
 import android.os.Bundle

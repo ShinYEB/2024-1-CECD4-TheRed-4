@@ -1,4 +1,4 @@
-package com.thered.stocksignal.presentation.newScenario.Buy
+package com.thered.stocksignal.presentation.newScenario.sell
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,10 +14,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [BuyTradingFragment.newInstance] factory method to
+ * Use the [SellRateFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class BuyTradingFragment : Fragment() {
+class SellRateFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -35,7 +35,7 @@ class BuyTradingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_buy_trading, container, false)
+        return inflater.inflate(R.layout.fragment_sell_rate, container, false)
     }
 
     companion object {
@@ -45,12 +45,12 @@ class BuyTradingFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment BuyTradingFragment.
+         * @return A new instance of fragment SellRateFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            BuyTradingFragment().apply {
+            SellRateFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

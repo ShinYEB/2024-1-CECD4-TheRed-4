@@ -1,4 +1,4 @@
-package com.thered.stocksignal.presentation
+package com.thered.stocksignal.presentation.stockInfo
 
 import android.app.Dialog
 import android.os.Bundle

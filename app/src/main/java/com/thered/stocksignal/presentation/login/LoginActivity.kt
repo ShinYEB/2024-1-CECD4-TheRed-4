@@ -1,4 +1,4 @@
-package com.thered.stocksignal.Presentation.Login
+package com.thered.stocksignal.presentation.login
 import android.net.Uri
 
 import android.content.Intent
@@ -7,17 +7,12 @@ import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.KakaoSdk
 import com.kakao.sdk.common.util.Utility
 import com.kakao.sdk.user.UserApiClient
-import com.thered.stocksignal.Presentation.Main.MainActivity
+import com.thered.stocksignal.presentation.main.MainActivity
 
 import com.thered.stocksignal.R
 import retrofit2.Retrofit
@@ -25,7 +20,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.POST
 import com.thered.stocksignal.Data.model.TokenResponse
 import com.thered.stocksignal.Data.Network.LoginApiService
 import com.thered.stocksignal.Data.Network.LoginRequest
