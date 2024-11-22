@@ -20,7 +20,10 @@ public class StockDto {
     // 일봉
     public static class DailyPriceResponseDto {
         private String date;      // 날짜
+        private Long startPrice; // 시가
         private Long closePrice; // 종가
+        private Long highPrice; // 고가
+        private Long lowPrice; // 저가
         private Long tradingVolume;    //거래량
     }
 

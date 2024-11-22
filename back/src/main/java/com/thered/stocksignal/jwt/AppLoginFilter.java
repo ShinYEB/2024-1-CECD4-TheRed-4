@@ -50,7 +50,7 @@ public class AppLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         UserCustomDto userCustomDto = (UserCustomDto) authentication.getPrincipal();
 
-        String token = jwtUtil.createJwt(userCustomDto.getUserId(), userCustomDto.getUserNickname(), 60 * 60 * 1000L); // 만료 시간 1시간 설정
+        String token = jwtUtil.createJwt(userCustomDto.getUserId(), userCustomDto.getUserNickname());
 
         response.addHeader("Authorization", "Bearer " + token);
     }

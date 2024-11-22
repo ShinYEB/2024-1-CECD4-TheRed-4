@@ -197,7 +197,10 @@ public class CompanyServiceImpl implements CompanyService {
                 DailyPriceResponseDto dailyPrice = DailyPriceResponseDto.builder().build();
 
                 dailyPrice.setDate(dailyNode.path("stck_bsop_date").asText());   // 날짜
+                dailyPrice.setStartPrice(dailyNode.path("stck_oprc").asLong());   // 시가
                 dailyPrice.setClosePrice(dailyNode.path("stck_clpr").asLong());   // 종가
+                dailyPrice.setHighPrice(dailyNode.path("stck_hgpr").asLong());   // 고가
+                dailyPrice.setLowPrice(dailyNode.path("stck_lwpr").asLong());   // 저가
                 dailyPrice.setTradingVolume(dailyNode.path("acml_vol").asLong());   // 거래량
 
                 dailyPriceList.add(dailyPrice);
