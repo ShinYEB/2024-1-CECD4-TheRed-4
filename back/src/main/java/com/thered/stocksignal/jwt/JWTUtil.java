@@ -40,25 +40,12 @@ public class JWTUtil {
         return claims.get("nickname", String.class);
     }
 
-    public Boolean isExpired(String token) {
-
-        Date expiration = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-
-        return expiration.before(new Date());
-    }
-
-    public String createJwt(Long userId, String nickname, Long expiredMs) {
+    public String createJwt(Long userId, String nickname) {
 
         return Jwts.builder()
                 .claim("userId", userId)
                 .claim("nickname", nickname)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
