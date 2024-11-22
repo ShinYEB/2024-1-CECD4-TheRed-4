@@ -4,7 +4,6 @@ import com.thered.stocksignal.apiPayload.ApiResponse;
 import com.thered.stocksignal.apiPayload.Status;
 import com.thered.stocksignal.app.dto.user.UserInfoDto;
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.jwt.JWTUtil;
 import com.thered.stocksignal.service.user.UserAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +18,6 @@ import java.util.Optional;
 public class UserInfoController {
 
     private final UserAccountService userAccountService;
-    private final JWTUtil jwtUtil;
 
     @Operation(summary = "회원 정보 조회", description = "Header에 token을 담아야 합니다.")
     @GetMapping("/info/detail")
@@ -47,7 +45,7 @@ public class UserInfoController {
     @GetMapping("/{nickname}/exists")
     public ApiResponse<?> isNicknameExists(@Parameter @PathVariable(value = "nickname") String nickname){
         Boolean isExists = userAccountService.isExistNickname(nickname);
-        if(isExists == false) return ApiResponse.onSuccess(Status.NICKNAME_SUCCESS, null);
+        if(!isExists) return ApiResponse.onSuccess(Status.NICKNAME_SUCCESS, null);
         return ApiResponse.onSuccess(Status.NICKNAME_INVALID, null);
     }
 
@@ -60,7 +58,7 @@ public class UserInfoController {
         if(userId == -1) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
 
         Optional<User> user = userAccountService.findById(userId);
-        if(user.get().getIsKisLinked() == false) userAccountService.connectKisAccount(userId, dto);
+        if(!user.get().getIsKisLinked()) userAccountService.connectKisAccount(userId, dto);
 
         return ApiResponse.onSuccess(Status.KIS_CONNECT_SUCCESS, null);
     }

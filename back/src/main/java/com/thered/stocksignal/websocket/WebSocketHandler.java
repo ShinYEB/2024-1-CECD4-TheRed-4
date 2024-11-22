@@ -341,7 +341,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             for(Scenario scenario : scenarios){
                 String companyCode = scenario.getCompany().getCompanyCode();
                 String companyName = scenario.getCompany().getCompanyName();
-                String token = jwtUtil.createJwt(userId, nickname, expirationTime);
+                String token = jwtUtil.createJwt(userId, nickname);
 
                 // 각 사용자마다 연결
                 handleKisSocketRequest(token, userId, companyCode, null, "1");

@@ -33,7 +33,7 @@ public class KakaoLoginController {
         if(userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).isEmpty()) userAccountService.saveKakaoUser(kakaoUserInfoDto.getEmail());
         User user = userAccountService.findByEmail(kakaoUserInfoDto.getEmail()).get();
 
-        String jwtToken = jwtUtil.createJwt(user.getId(), user.getNickname(), 3600000L);
+        String jwtToken = jwtUtil.createJwt(user.getId(), user.getNickname());
         KakaoLoginDto.LoginResponseDto dto = new KakaoLoginDto.LoginResponseDto().builder()
                 .userId(user.getId())
                 .token(jwtToken)

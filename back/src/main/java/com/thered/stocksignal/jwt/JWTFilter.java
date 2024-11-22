@@ -33,12 +33,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String token = authorization.split(" ")[1]; //Bearer 부분 제거 후 순수 토큰만 획득
 
-        if (jwtUtil.isExpired(token)) {
-            System.out.println("token expired");
-            filterChain.doFilter(request, response);
-            return; // 조건이 해당되면 메소드 종료 (필수)
-        }
-
         Long userId = jwtUtil.getUserId(token);
         String nickname = jwtUtil.getNickname(token);
 
