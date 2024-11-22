@@ -81,7 +81,7 @@ public class UserAccountServiceImpl implements UserAccountService{
     @Override
     public void connectKisAccount(Long userId, UserInfoDto.kisAccountRequestDto dto) {
         Optional<User> user = userRepository.findById(userId);
-        if(user == null) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
+        if(user.isEmpty()) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
         User updateUser = user.get();
 
         updateUser.setKisAccount(dto.getSecretKey(), dto.getAppKey(), dto.getAccount(), true);
@@ -139,7 +139,13 @@ public class UserAccountServiceImpl implements UserAccountService{
         try{
             tokenResponseDto = objectMapper.readValue(response.getBody(), KisAccountDto.AccessTokenResponseDto.class);
             String newAccessToken = tokenResponseDto.getAccess_token();
-            String newTokenExpired = tokenResponseDto.getAccess_token_token_expired();
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(Calendar.HOUR, 15);    // utc시간차 고려
+
+            String newTokenExpired = DateUtil.formatDate(calendar.getTime());
+
             editKisAccessToken(user.getId(), newAccessToken, newTokenExpired);
         }catch(JsonMappingException e){
             e.printStackTrace();
@@ -201,7 +207,7 @@ public class UserAccountServiceImpl implements UserAccountService{
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
-            calendar.add(Calendar.HOUR, 24);
+            calendar.add(Calendar.HOUR, 15);    // utc시간차 고려
 
             String newSocketKeyExpired = DateUtil.formatDate(calendar.getTime());
 
