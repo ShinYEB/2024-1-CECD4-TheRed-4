@@ -28,7 +28,7 @@ public class ScenarioTradeImpl implements ScenarioTrade{
     private final ScenarioRepository scenarioRepository;
     private final ScenarioConditionRepository scenarioConditionRepository;
     private final TradeService tradeService;
-    private final ConcurrentHashMap<Long, Lock> userLocks = new ConcurrentHashMap<>(); // 유저 ID에 따라 Lock을 저장;
+    private final ConcurrentHashMap<Long, Lock> userLocks = new ConcurrentHashMap<>(); // 유저 ID에 따라 Lock 관리;
 
     public boolean checkAutoTrade(Long userId, StockDto.RealTimeStockDto stockInfoDto) {
 

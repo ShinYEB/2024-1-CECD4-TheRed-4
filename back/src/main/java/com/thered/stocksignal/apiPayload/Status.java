@@ -81,11 +81,11 @@ public enum Status {
 
     NEWS_NOT_FOUND("404", "FAILURE", "뉴스 정보를 찾을 수 없습니다"),
 
-    SCENARIO_CREATION_FAILED("400", "FAILURE", "시나리오 생성에 실패하였습니다."),
-    SCENARIO_DELETION_FAILED("400", "FAILURE", "시나리오 삭제에 실패하였습니다."),
+    SCENARIO_CREATION_FAILED("400", "FAILURE", "시나리오 생성에 실패하였습니다. 시나리오는 종목당 하나여야 합니다."),
+    SCENARIO_DELETION_FAILED("400", "FAILURE", "시나리오 삭제에 실패하였습니다. 존재하는 시나리오 ID인지 확인해주세요."),
 
-    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다."),
-    DELETING_CONDITION_FAILED("400", "FAILURE", "조건 삭제에 실패했습니다.");
+    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다. 존재하는 시나리오 ID인지 확인해주세요."),
+    DELETING_CONDITION_FAILED("400", "FAILURE", "조건 삭제에 실패했습니다. 해당 사용자의 조건 ID가 아니거나, 존재하지 않는 조건 ID입니다.");
 
     private final String code;
     private final String result;

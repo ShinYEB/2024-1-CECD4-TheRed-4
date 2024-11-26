@@ -122,7 +122,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if(userSession != null){    // 기존 세션 맵이 있는 경우
                 userSession.setKisSession(kisSession); // 기존의 한투 세션 업데이트
             }
-            else if(kisSession != null){   // 기존 세션 맵이 없는 경우, kisSession이 null이 아닐 때
+            else{   // 기존 세션 맵이 없는 경우
                 userSessions.put(userId, new UserSession(null, kisSession)); // 새로운 UserSession 생성
             }
         }
