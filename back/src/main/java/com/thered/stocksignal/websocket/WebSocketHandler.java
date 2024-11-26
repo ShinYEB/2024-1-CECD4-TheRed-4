@@ -1,5 +1,6 @@
 package com.thered.stocksignal.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thered.stocksignal.app.dto.CompanyDto.SocketPayloadDto;
 import com.thered.stocksignal.app.dto.StockDto;
@@ -15,20 +16,25 @@ import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.service.scenario.ScenarioTrade;
 import com.thered.stocksignal.service.user.UserAccountService;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
@@ -48,12 +54,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        System.out.println("새로운 WebSocket 세션이 연결되었습니다: " + session.getId());
+        log.info("새로운 WebSocket 세션이 연결되었습니다: {}", session.getId());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        System.out.println("WebSocket 세션이 종료되었습니다: " + session.getId());
+        log.info("WebSocket 세션이 종료되었습니다:  {}", session.getId());
     }
 
     @Override
@@ -69,14 +75,20 @@ public class WebSocketHandler extends TextWebSocketHandler {
             String token = dto.getToken();
             Long userId = userAccountService.getUserIdFromToken(token);
             String companyName = dto.getCompanyName();
-            String companyCode = companyService.findCodeByName(companyName).get().getCompanyCode();
+            String companyCode = null;
+
+            try{
+                companyCode = companyService.getCodeByName(companyName).getCompanyCode();
+            } catch(EntityNotFoundException e){
+                clientSession.sendMessage(new TextMessage("연결 종료: 해당 회사 정보가 없습니다."));
+                clientSession.close(CloseStatus.SERVER_ERROR);
+            }
 
             if (userId == -1) {
-                System.out.println("유효하지 않은 세션입니다. 유저 확인 불가능");
+                clientSession.sendMessage(new TextMessage("연결 종료: 유저 확인 불가능"));
+                clientSession.close(CloseStatus.SERVER_ERROR);
             }
             else{
-                System.out.println("받은 메시지: " + payload);
-
                 if(userSessions.get(userId) == null){
                     userSessions.put(userId, new UserSession(clientSession, null));
                 }
@@ -93,9 +105,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
                         handleKisSocketRequest(token, userId, companyCode, companyName, "2");
                         break;
                     default:
-                        System.out.println("알 수 없는 action: " + dto.getAction());
+                        clientSession.sendMessage(new TextMessage("연결 종료: 알 수 없는 action"));
+                        clientSession.close(CloseStatus.SERVER_ERROR);
                 }
             }
+        } catch (Exception e){
+            clientSession.sendMessage(new TextMessage("연결 종료: 서버 에러 혹은 요청 양식 불일치"));
+            clientSession.close(CloseStatus.SERVER_ERROR);
         } finally {
             lock.unlock();
         }
@@ -105,22 +121,18 @@ public class WebSocketHandler extends TextWebSocketHandler {
     public void updateKisSession(Session kisSession){
         String token =  (String)kisSession.getUserProperties().get("token");
         Long userId = userAccountService.getUserIdFromToken(token);// 토큰으로부터 사용자 ID 반환
-        if (userId == -1) {
-            System.out.println("유효하지 않은 세션입니다. 유저 확인 불가능");
-        }
-        else{
-            UserSession userSession = userSessions.get(userId);
 
-            if(userSession != null){    // 기존 세션 맵이 있는 경우
-                userSession.setKisSession(kisSession); // 기존의 한투 세션 업데이트
-            }
-            else if(kisSession != null){   // 기존 세션 맵이 없는 경우, kisSession이 null이 아닐 때
-                userSessions.put(userId, new UserSession(null, kisSession)); // 새로운 UserSession 생성
-            }
+        UserSession userSession = userSessions.get(userId);
+
+        if(userSession != null){    // 기존 세션 맵이 있는 경우
+            userSession.setKisSession(kisSession); // 기존의 한투 세션 업데이트
+        }
+        else{   // 기존 세션 맵이 없는 경우
+            userSessions.put(userId, new UserSession(null, kisSession)); // 새로운 UserSession 생성
         }
     }
 
-    // 클라이언트로 메시지 전송
+    // 클라이언트에게 실시간 주가 메시지 전송
     public void sendMessageToClient(WebSocketSession session, StockDto.RealTimeStockDto dto) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -128,12 +140,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if(session.isOpen()){
                 session.sendMessage(new TextMessage(message)); // dto를 문자열로 변환하여 클라이언트에게 전송
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (JsonProcessingException e) {
+            log.info("실시간 주가 클라이언트에게 전송중 예외 발생 : JSON 변환 오류 {}", e.getMessage());
+        }catch (IOException e) {
+            log.info("실시간 주가 클라이언트에게 전송중 예외 발생 : WebSocket 메시지 전송 오류 {}", e.getMessage());
         }
     }
 
-    // 한투로 메시지 전송
+    // 한투로 요청 메시지 전송
     public void sendMessageToKis(String token, Long userId, KisSocketDto.KisSocketRequestDto request, String searchName) {
 
         // 세션 맵에서 찾을 수 있는 유저고, 한투 세션이 null이 아닐때,
@@ -161,8 +175,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
             newSession.getAsyncRemote().sendText(message);
 
             clientEndPoint.addMessageHandler(response -> handleResponse(response, userId, searchName));
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (JsonProcessingException e) {
+            log.info("한투 세션 에서 예외 발생 : JSON 변환 오류 {}", e.getMessage());
+        }catch (URISyntaxException e) {
+            log.info("한투 세션 에서 예외 발생 : URI 형식 오류 {}", e.getMessage());
+        }catch (RuntimeException e){
+            log.info("한투 세션 에서 예외 발생 : 응답 요청이 예상한 양식과 다름 {}", e.getMessage());
         }
     }
 
@@ -196,7 +214,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
             // 기존 세션으로 업데이트된 메시지 전송
             existingSession.getKisSession().getAsyncRemote().sendText(message);
-            System.out.println("변경된 메시지를 전송했습니다: " + message);
+            log.info("변경된 메시지를 전송했습니다: {}", message);
 
             if(type.equals("2")){
                 // 삭제 후에 scenario 테이블에 아무것도 없다면 userSessions에서 세션을 가져오고 종료
@@ -204,12 +222,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     try {
                         existingSession.setKisSession(null); // kis세션 제거
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.info("세션 제거 중 예외 발생: {}", e.getMessage());
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("기존 한투 세션 불러오는 중 예외 발생: {}", e.getMessage());
         }
     }
 
@@ -228,11 +246,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 scenarioTrade.checkAutoTrade(userId, dto);
             }
         } else {
-            System.out.println(response); // 초당 거래건수 초과 등
+            throw new RuntimeException("한투에서 온 응답이 예상된 방식과 다릅니다 : " + response); // 초당 거래건수 초과 등
         }
     }
 
-    // 응답 파싱
+    // 주가 정보 파싱
     private List<StockDto.RealTimeStockDto> parseStockInfo(String[] data) {
         List<List<String>> stockInfos = new ArrayList<>();
         List<StockDto.RealTimeStockDto> stockInfoDtoList = new ArrayList<>();
@@ -248,7 +266,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         // 각 종목 정보 세트를 순회
         for (List<String> stockInfo : stockInfos) {
-            System.out.println(stockInfo);
 
             if (!stockInfo.isEmpty()) {
                 String companyCode = stockInfo.getFirst();
@@ -321,7 +338,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         try{
             sendMessageToKis(token, userId, request, searchName);
         }catch (Exception e){
-            e.printStackTrace();
+            throw new RuntimeException("한투에 메시지 전송 중 예외 발생");
         }
     }
 
@@ -333,14 +350,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
             Long userId = user.getId();
             String nickname = user.getNickname();
-            Long expirationTime = 86400000L; // 24시간
 
             List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
 
             // 유저의 구독 요청 재전송
             for(Scenario scenario : scenarios){
                 String companyCode = scenario.getCompany().getCompanyCode();
-                String companyName = scenario.getCompany().getCompanyName();
                 String token = jwtUtil.createJwt(userId, nickname);
 
                 // 각 사용자마다 연결

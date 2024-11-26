@@ -21,10 +21,15 @@ public class NewsController {
     @GetMapping("/{stockName}")
     @Operation(summary = "뉴스 조회", description = "해당 종목의 뉴스를 조회합니다.")
     public ApiResponse<List<NewsResponseDto>> getNews(@PathVariable String stockName) {
-        Optional<List<NewsResponseDto>> responseDto = newsService.searchNews(stockName);
 
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.NEWS_FOUND, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.NEWS_NOT_FOUND));
+        List<NewsResponseDto> responseDto;
+
+        try{
+            responseDto = newsService.searchNews(stockName);
+        }catch (RuntimeException e){
+            return ApiResponse.onFailure(Status.NEWS_NOT_FOUND);
+        }
+
+        return ApiResponse.onSuccess(Status.NEWS_FOUND, responseDto);
     }
 }

@@ -112,7 +112,5 @@ public class KakaoLoginServiceImpl implements KakaoLoginService{
 
         ResponseEntity<String> responseToken =
                 rtToken.exchange(tokenReqUrl, HttpMethod.GET, kakaoProfileRequestToken, String.class);
-
-        System.out.println("responseToken = " + responseToken);
     }
 }

@@ -15,7 +15,7 @@ public interface UserAccountService {
 
     void editUserNickname(Long userId, String nickname);
 
-    Optional<User> findById(Long userId);
+    Optional<User> getUserById(Long userId);
 
     Long getUserIdFromToken(String token);
 

@@ -39,7 +39,7 @@ public class TradeServiceImpl implements TradeService {
     private final CompanyRepository companyRepository;
 
     private HttpHeaders makeHeaders(Long userId, String tr_id){
-        User user = userAccountService.findById(userId).get();
+        User user = userAccountService.getUserById(userId).get();
         String accessToken = user.getKisToken();
         String appKey = user.getAppKey();
         String secretKey = user.getSecretKey();
@@ -76,7 +76,7 @@ public class TradeServiceImpl implements TradeService {
 
         userAccountService.refreshKisToken(userId);
 
-        User user = userAccountService.findById(userId)
+        User user = userAccountService.getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 
         HttpHeaders header = makeHeaders(userId, tr_id);

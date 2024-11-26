@@ -28,7 +28,6 @@ public enum Status {
      */
     INGA_SUCCESS("200", "SUCCESS", "카카오 인가코드입니다."),
     LOGIN_SUCCESS("200", "SUCCESS", "로그인이 완료되었습니다."),
-    TOKEN_INVALID("401", "SUCCESS", "유효하지 않은 토큰입니다."),
 
     QUESTION_FOUND("200", "SUCCESS", "답변 정보를 찾았습니다."),
 
@@ -71,6 +70,8 @@ public enum Status {
     CONDITION_DELETED("200", "SUCCESS", "조건 삭제에 성공했습니다."),
 
     //실패
+    TOKEN_INVALID("401", "FAILURE", "유효하지 않은 토큰입니다."),
+    KIS_CONNECT_INVALID("401", "FAILURE", "한국투자증권에 연동되어있지 않거나 한국투자증권에 전송한 요청/응답 양식이 올바르지 않습니다."),
     USER_NOT_FOUND("404", "FAILURE", "사용자를 찾을 수 없습니다"),
 
     COMPANY_NOT_FOUND("404", "FAILURE", "회사 정보를 찾을 수 없습니다"),
@@ -80,11 +81,11 @@ public enum Status {
 
     NEWS_NOT_FOUND("404", "FAILURE", "뉴스 정보를 찾을 수 없습니다"),
 
-    SCENARIO_CREATION_FAILED("400", "FAILURE", "시나리오 생성에 실패하였습니다."),
-    SCENARIO_DELETION_FAILED("400", "FAILURE", "시나리오 삭제에 실패하였습니다."),
+    SCENARIO_CREATION_FAILED("400", "FAILURE", "시나리오 생성에 실패하였습니다. 시나리오는 종목당 하나여야 합니다."),
+    SCENARIO_DELETION_FAILED("400", "FAILURE", "시나리오 삭제에 실패하였습니다. 존재하는 시나리오 ID인지 확인해주세요."),
 
-    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다."),
-    DELETING_CONDITION_FAILED("400", "FAILURE", "조건 삭제에 실패했습니다.");
+    ADDING_CONDITION_FAILED("400", "FAILURE", "조건 추가에 실패했습니다. 존재하는 시나리오 ID인지 확인해주세요."),
+    DELETING_CONDITION_FAILED("400", "FAILURE", "조건 삭제에 실패했습니다. 해당 사용자의 조건 ID가 아니거나, 존재하지 않는 조건 ID입니다.");
 
     private final String code;
     private final String result;
