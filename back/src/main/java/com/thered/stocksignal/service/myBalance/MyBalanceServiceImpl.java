@@ -31,12 +31,11 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
     private final UserAccountService userAccountService;
 
     // 내 잔고 조회
-    public Optional<MyBalanceResponseDto> getMyBalance(Long userId) {
+    public MyBalanceResponseDto getMyBalance(Long userId) {
 
         userAccountService.refreshKisToken(userId);
 
         Optional<User> user = userAccountService.getUserById(userId);
-        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/trading/inquire-balance";
@@ -102,10 +101,10 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
             myBalance.setTotalStockPrice(jsonNode.path("output2").get(0).path("evlu_amt_smtl_amt").asLong()); // 보유 주식 전체 가치
             myBalance.setTotalStockPL(jsonNode.path("output2").get(0).path("evlu_pfls_smtl_amt").asLong());    // 보유 주식 전체 손익
 
-            return Optional.of(myBalance);
+            return myBalance;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("한투에서 온 응답 내용이 예상된 양식과 불일치합니다.");
         }
     }
 }

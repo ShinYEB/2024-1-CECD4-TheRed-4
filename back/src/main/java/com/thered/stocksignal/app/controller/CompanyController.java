@@ -54,7 +54,7 @@ public class CompanyController {
             return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
         }
 
-        return ApiResponse.onSuccess(Status.COMPANY_LOGO_SUCCESS, logoResponse))
+        return ApiResponse.onSuccess(Status.COMPANY_LOGO_SUCCESS, logoResponse);
     }
 
     @GetMapping("/{companyName}")
