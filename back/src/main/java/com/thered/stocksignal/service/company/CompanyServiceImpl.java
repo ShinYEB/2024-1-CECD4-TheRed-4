@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thered.stocksignal.app.dto.StockDto.popularStockResponseDto;
 import com.thered.stocksignal.domain.entity.Company;
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.kisApi.KisApiRequest;
+import com.thered.stocksignal.util.KisUtil;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.service.user.UserAccountService;
+import com.thered.stocksignal.util.KisUtil;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,7 +32,7 @@ import static com.thered.stocksignal.app.dto.StockDto.*;
 public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
-    private final KisApiRequest apiRequest;
+    private final KisUtil kisUtil;
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
     private final UserAccountService userAccountService;
@@ -69,7 +70,7 @@ public class CompanyServiceImpl implements CompanyService {
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
 
         // API 쿼리 파라미터
-        String url = apiRequest.buildUrl(endpoint,
+        String url = kisUtil.buildUrl(endpoint,
                 "FID_COND_MRKT_DIV_CODE=J",
                 "FID_INPUT_ISCD="+companyCode
         );
@@ -120,7 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
 
         // API 쿼리 파라미터
-        String url = apiRequest.buildUrl(endpoint,
+        String url = kisUtil.buildUrl(endpoint,
                 "FID_COND_MRKT_DIV_CODE=J",
                 "FID_INPUT_ISCD="+companyCode
         );
@@ -164,7 +165,7 @@ public class CompanyServiceImpl implements CompanyService {
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice";
 
         // API 쿼리 파라미터
-        String url = apiRequest.buildUrl(endpoint,
+        String url = kisUtil.buildUrl(endpoint,
                 "FID_COND_MRKT_DIV_CODE=J",
                 "FID_INPUT_ISCD=" + companyCode,
                 "FID_INPUT_DATE_1=" + startDate,

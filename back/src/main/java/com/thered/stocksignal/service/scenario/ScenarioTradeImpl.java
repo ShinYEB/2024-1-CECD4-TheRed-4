@@ -31,7 +31,7 @@ public class ScenarioTradeImpl implements ScenarioTrade{
     private final ConcurrentHashMap<Long, Lock> userLocks = new ConcurrentHashMap<>(); // 유저 ID에 따라 Lock을 저장;
 
     public boolean checkAutoTrade(Long userId, StockDto.RealTimeStockDto stockInfoDto) {
-        System.out.println(stockInfoDto);
+
         List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
         for(Scenario scenario : scenarios){
             Company company = scenario.getCompany();

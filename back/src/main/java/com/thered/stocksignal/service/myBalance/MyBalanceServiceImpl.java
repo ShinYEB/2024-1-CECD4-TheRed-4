@@ -1,10 +1,9 @@
 package com.thered.stocksignal.service.myBalance;
 
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.kisApi.KisApiRequest;
+import com.thered.stocksignal.util.KisUtil;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.service.user.UserAccountService;
-import com.thered.stocksignal.util.KisUtil;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +25,7 @@ import static com.thered.stocksignal.app.dto.MyBalanceDto.*;
 @RequiredArgsConstructor
 public class MyBalanceServiceImpl implements  MyBalanceService{
 
-    private final KisApiRequest apiRequest;
+    private final KisUtil kisUtil;
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
     private final CompanyService companyService;
@@ -46,7 +45,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
         String accountNumber = user.get().getAccountNumber();
 
         // API 쿼리 파라미터
-        String url = apiRequest.buildUrl(endpoint,
+        String url = kisUtil.buildUrl(endpoint,
                 "CANO=" + KisUtil.getCANO(accountNumber),
                 "ACNT_PRDT_CD=" + KisUtil.getACNT_PRDT_CD(accountNumber),
                 "AFHR_FLPR_YN=N",
