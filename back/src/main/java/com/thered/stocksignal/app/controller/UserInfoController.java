@@ -24,7 +24,7 @@ public class UserInfoController {
     public ApiResponse<?> getUserInfo(@RequestHeader("Authorization") String token){
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
-        Optional<User> user = userAccountService.findById(userId);
+        Optional<User> user = userAccountService.getUserById(userId);
         UserInfoDto.InfoResponseDto infoResponseDto = new UserInfoDto.InfoResponseDto().builder()
                 .nickname(user.get().getNickname())
                 .build();
@@ -57,7 +57,7 @@ public class UserInfoController {
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onSuccess(Status.TOKEN_INVALID, null);
 
-        Optional<User> user = userAccountService.findById(userId);
+        Optional<User> user = userAccountService.getUserById(userId);
         if(!user.get().getIsKisLinked()) userAccountService.connectKisAccount(userId, dto);
 
         return ApiResponse.onSuccess(Status.KIS_CONNECT_SUCCESS, null);

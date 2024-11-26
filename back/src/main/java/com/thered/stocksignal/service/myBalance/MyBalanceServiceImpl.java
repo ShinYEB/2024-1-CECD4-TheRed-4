@@ -9,7 +9,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
-import com.thered.stocksignal.app.dto.CompanyDto.CompanyLogoResponseDto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +35,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
 
         userAccountService.refreshKisToken(userId);
 
-        Optional<User> user = userAccountService.findById(userId);
+        Optional<User> user = userAccountService.getUserById(userId);
         if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
 
         // API url
@@ -89,9 +88,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
                 stock.setAvgPrice(stockNode.path("pchs_avg_pric").asLong());  // 매입 평균가
                 stock.setCurrentPrice(stockNode.path("prpr").asLong()); // 현재가
                 stock.setPL(stockNode.path("evlu_pfls_amt").asLong()); // 손익
-                String logoImage = companyService.findLogoByName(companyName)
-                        .map(CompanyLogoResponseDto::getLogoImage)
-                        .orElse(null); // TODO: null 대신 디폴트이미지 경로
+                String logoImage = companyService.getLogoByName(companyName).getLogoImage();
 
                 stock.setLogoImage(logoImage);
                 // 로고 이미지

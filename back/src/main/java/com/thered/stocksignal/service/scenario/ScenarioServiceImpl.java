@@ -46,9 +46,8 @@ public class ScenarioServiceImpl implements ScenarioService {
         List<ScenarioResponseDto> scenarioList = new ArrayList<>();
 
         for (Scenario scenario : scenarios) {
-            Long currentPrice = companyService.findCurrentPriceByCode(scenario.getCompany().getCompanyCode(), userId)
-                    .map(CurrentPriceResponseDto::getCurrentPrice)
-                    .orElse(null); // current price 정보를 찾을 수 없음
+            Long currentPrice = companyService.getCurrentPriceByCode(scenario.getCompany().getCompanyCode(), userId)
+                    .getCurrentPrice();
 
             ScenarioResponseDto responseDto = ScenarioResponseDto.builder()
                     .scenarioId(scenario.getId())
@@ -145,9 +144,8 @@ public class ScenarioServiceImpl implements ScenarioService {
         List<ConditionResponseDto> conditionList = new ArrayList<>();
 
         for (ScenarioCondition condition : conditions) {
-            Long currentPrice = companyService.findCurrentPriceByCode(condition.getScenario().getCompany().getCompanyCode(), userId)
-                    .map(CurrentPriceResponseDto::getCurrentPrice)
-                    .orElse(null); // current price 정보를 찾을 수 없음
+            Long currentPrice = companyService.getCurrentPriceByCode(condition.getScenario().getCompany().getCompanyCode(), userId)
+                    .getCurrentPrice();
 
             ConditionResponseDto responseDto = ConditionResponseDto.builder()
                     .conditionId(condition.getId())

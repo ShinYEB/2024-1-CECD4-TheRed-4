@@ -8,7 +8,7 @@ import com.thered.stocksignal.domain.entity.User;
 import com.thered.stocksignal.util.KisUtil;
 import com.thered.stocksignal.repository.CompanyRepository;
 import com.thered.stocksignal.service.user.UserAccountService;
-import com.thered.stocksignal.util.KisUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,33 +38,36 @@ public class CompanyServiceImpl implements CompanyService {
     private final UserAccountService userAccountService;
 
     @Override
-    public Optional<CompanyCodeResponseDto> findCodeByName(String companyName) {
+    public CompanyCodeResponseDto getCodeByName(String companyName) {
         Optional<Company> company = companyRepository.findByCompanyName(companyName);
-        if (company.isEmpty()) return Optional.empty();
+        if (company.isEmpty()) throw new EntityNotFoundException("회사 정보가 없습니다: " + companyName);
 
         CompanyCodeResponseDto companyCode = CompanyCodeResponseDto.builder().build();
         companyCode.setCompanyCode(company.get().getCompanyCode());
 
-        return Optional.of(companyCode);
+        return companyCode;
     }
 
     @Override
-    public Optional<CompanyLogoResponseDto> findLogoByName(String companyName) {
+    public CompanyLogoResponseDto getLogoByName(String companyName) {
         Optional<Company> company = companyRepository.findByCompanyName(companyName);
-        if (company.isEmpty()) return Optional.empty();
+        if (company.isEmpty()) throw new EntityNotFoundException("회사 정보가 없습니다: " + companyName);
 
         CompanyLogoResponseDto companyLogo = CompanyLogoResponseDto.builder().build();
         companyLogo.setLogoImage(company.get().getLogoImage());
-        return Optional.of(companyLogo);
+
+        return companyLogo;
     }
 
     @Override
-    public Optional<CompanyInfoResponseDto> findCompanyInfoByCode(String companyCode, Long userId) {
+    public CompanyInfoResponseDto getCompanyInfoByCode(String companyCode, Long userId) {
 
         userAccountService.refreshKisToken(userId);
 
-        Optional<User> user = userAccountService.findById(userId);
-        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
+        Optional<User> user = userAccountService.getUserById(userId);
+
+        Optional<Company> company = companyRepository.findByCompanyCode(companyCode);
+        if(company.isEmpty()) throw new EntityNotFoundException("회사 정보가 없습니다: " + companyCode);
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
@@ -102,20 +105,22 @@ public class CompanyServiceImpl implements CompanyService {
             companyInfo.setOneYearHighPrice(output.path("stck_dryy_hgpr").asLong());   // 연중최고가
             companyInfo.setOneYearLowPrice(output.path("stck_dryy_lwpr").asLong());   // 연중최저가
 
-            return Optional.of(companyInfo);
+            return companyInfo;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("한투에서 온 응답 내용이 예상된 양식과 불일치합니다.");
         }
     }
 
     @Override
-    public Optional<CurrentPriceResponseDto> findCurrentPriceByCode(String companyCode, Long userId){
+    public CurrentPriceResponseDto getCurrentPriceByCode(String companyCode, Long userId){
 
         userAccountService.refreshKisToken(userId);
 
-        Optional<User> user = userAccountService.findById(userId);
-        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
+        Optional<User> user = userAccountService.getUserById(userId);
+
+        Optional<Company> company = companyRepository.findByCompanyCode(companyCode);
+        if(company.isEmpty()) throw new EntityNotFoundException("회사 정보가 없습니다: " + companyCode);
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-price";
@@ -146,20 +151,22 @@ public class CompanyServiceImpl implements CompanyService {
 
             currentPrice.setCurrentPrice(output.path("stck_prpr").asLong());   // 현재가
 
-            return Optional.of(currentPrice);
+            return currentPrice;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("한투에서 온 응답 내용이 예상된 양식과 불일치합니다.");
         }
     }
 
     @Override
-    public Optional<PeriodPriceResponseDto> findPeriodPriceByCode(String companyCode, String startDate, String endDate, Long userId){
+    public PeriodPriceResponseDto getPeriodPriceByCode(String companyCode, String startDate, String endDate, Long userId){
 
         userAccountService.refreshKisToken(userId);
 
-        Optional<User> user = userAccountService.findById(userId);
-        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
+        Optional<User> user = userAccountService.getUserById(userId);
+
+        Optional<Company> company = companyRepository.findByCompanyCode(companyCode);
+        if(company.isEmpty()) throw new EntityNotFoundException("회사 정보가 없습니다: " + companyCode);
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice";
@@ -209,15 +216,15 @@ public class CompanyServiceImpl implements CompanyService {
 
             periodPrice.setPeriodPrice(dailyPriceList);
 
-            return Optional.of(periodPrice);
+            return periodPrice;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("한투에서 온 응답 내용이 예상된 양식과 불일치합니다.");
         }
     }
 
     @Override
-    public Optional<List<popularStockResponseDto>> getPopularStocks() {
+    public List<popularStockResponseDto> getPopularStocks() {
         List<popularStockResponseDto> popularStocks = new ArrayList<>();
         try {
             String url = "https://finance.naver.com/sise/lastsearch2.naver";
@@ -242,18 +249,18 @@ public class CompanyServiceImpl implements CompanyService {
                 popularStocks.add(popularStock);
             }
 
-            return Optional.of(popularStocks);
+            return popularStocks;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("인기 종목을 불러올 수 없습니다. (네이버 증권 구성 변경 등)");
         }
     }
 
     @Override
     public RealTimeStockDto getRealTimeStock(Long userId, RealTimeStockDto dto) {
         String companyName = dto.getCompanyName();
-        String companyCode = findCodeByName(companyName).get().getCompanyCode();
-        dto.setLatestPrice(findCurrentPriceByCode(companyCode, userId).get().getCurrentPrice());
+        String companyCode = getCodeByName(companyName).getCompanyCode();
+        dto.setLatestPrice(getCurrentPriceByCode(companyCode, userId).getCurrentPrice());
         return dto;
     }
 }

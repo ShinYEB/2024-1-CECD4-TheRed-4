@@ -15,6 +15,7 @@ import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.service.scenario.ScenarioTrade;
 import com.thered.stocksignal.service.user.UserAccountService;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.websocket.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
             String token = dto.getToken();
             Long userId = userAccountService.getUserIdFromToken(token);
             String companyName = dto.getCompanyName();
-            String companyCode = companyService.findCodeByName(companyName).get().getCompanyCode();
+            String companyCode = null;
+
+            try{
+                companyCode = companyService.getCodeByName(companyName).getCompanyCode();
+            } catch(EntityNotFoundException e){
+                clientSession.sendMessage(new TextMessage("연결 종료: 해당 회사 정보가 없습니다."));
+                clientSession.close(CloseStatus.SERVER_ERROR);
+            }
 
             if (userId == -1) {
                 throw new IllegalArgumentException("유효하지 않은 세션입니다. 유저 확인 불가능");
