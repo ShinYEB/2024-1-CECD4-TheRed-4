@@ -2,11 +2,13 @@ package com.thered.stocksignal.websocket;
 
 import jakarta.websocket.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URI;
 import java.text.ParseException;
 
+@Slf4j
 @ClientEndpoint
 @RequiredArgsConstructor
 public class WebSocketEndpoint {
@@ -41,14 +43,14 @@ public class WebSocketEndpoint {
     @OnOpen
     public void onOpen(Session kisSession) {
         this.userSession = kisSession;
-        System.out.println("웹소켓 연결이 시작되었습니다.");
+        log.info("새로운 WebSocket 세션이 연결되었습니다: {}", userSession.getId());
     }
 
     // 한투 소켓 연결 종료시
     @OnClose
     public void onClose() {
+        log.info("웹소켓 연결이 종료되었습니다: {}", userSession.getId());
         this.userSession = null;
-        System.out.println("웹소켓 연결이 종료되었습니다.");
     }
 
 

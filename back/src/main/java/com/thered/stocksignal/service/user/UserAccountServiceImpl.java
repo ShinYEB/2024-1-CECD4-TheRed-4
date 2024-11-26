@@ -62,9 +62,9 @@ public class UserAccountServiceImpl implements UserAccountService{
     }
 
     @Override
-    public Optional<User> findById(Long userId) {
+    public Optional<User> getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
-        if(user == null) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
+        if(user.isEmpty()) throw new IllegalArgumentException("존재하지 않는 userId 입니다 : " + userId);
         return user;
     }
 

@@ -15,9 +15,9 @@ import com.thered.stocksignal.repository.ScenarioConditionRepository;
 import com.thered.stocksignal.repository.ScenarioRepository;
 import com.thered.stocksignal.repository.UserRepository;
 import com.thered.stocksignal.service.company.CompanyService;
-import com.thered.stocksignal.app.dto.StockDto.CurrentPriceResponseDto;
 import com.thered.stocksignal.service.trade.TradeService;
 import com.thered.stocksignal.service.user.UserAccountService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +46,8 @@ public class ScenarioServiceImpl implements ScenarioService {
         List<ScenarioResponseDto> scenarioList = new ArrayList<>();
 
         for (Scenario scenario : scenarios) {
-            Long currentPrice = companyService.findCurrentPriceByCode(scenario.getCompany().getCompanyCode(), userId)
-                    .map(CurrentPriceResponseDto::getCurrentPrice)
-                    .orElse(null); // current price 정보를 찾을 수 없음
+            Long currentPrice = companyService.getCurrentPriceByCode(scenario.getCompany().getCompanyCode(), userId)
+                    .getCurrentPrice();
 
             ScenarioResponseDto responseDto = ScenarioResponseDto.builder()
                     .scenarioId(scenario.getId())
@@ -68,10 +67,9 @@ public class ScenarioServiceImpl implements ScenarioService {
 
         String companyName = newScenario.getCompanyName();
         Optional<Company> company = companyRepository.findByCompanyName(companyName);
-        Optional<User> user = userRepository.findById(userId);
+        Optional<User> user = userAccountService.getUserById(userId);
 
-        if(company.isEmpty()) return false;
-        if(user.isEmpty()) return false;
+        if(company.isEmpty()) throw new EntityNotFoundException("회사 정보가 없습니다. : "+companyName);
 
         List<Scenario> scenarios = scenarioRepository.findByUserId(userId);
         for(Scenario scenario : scenarios) {
@@ -83,7 +81,6 @@ public class ScenarioServiceImpl implements ScenarioService {
         userAccountService.refreshKisSocketKey(userId);
 
         String companyCode = company.get().getCompanyCode();
-
         webSocketHandler.handleKisSocketRequest(token, userId, companyCode, null, "1");
 
         // 시나리오 객체 생성
@@ -140,14 +137,14 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     public List<ConditionResponseDto> getConditions(Long userId, Long scenarioId) {
+
         List<ScenarioCondition> conditions = scenarioConditionRepository.findByScenarioId(scenarioId);
 
         List<ConditionResponseDto> conditionList = new ArrayList<>();
 
         for (ScenarioCondition condition : conditions) {
-            Long currentPrice = companyService.findCurrentPriceByCode(condition.getScenario().getCompany().getCompanyCode(), userId)
-                    .map(CurrentPriceResponseDto::getCurrentPrice)
-                    .orElse(null); // current price 정보를 찾을 수 없음
+            Long currentPrice = companyService.getCurrentPriceByCode(condition.getScenario().getCompany().getCompanyCode(), userId)
+                    .getCurrentPrice();
 
             ConditionResponseDto responseDto = ConditionResponseDto.builder()
                     .conditionId(condition.getId())
@@ -171,6 +168,7 @@ public class ScenarioServiceImpl implements ScenarioService {
     public boolean addCondition(Long userId, ScenarioDto.ConditionRequestDto newCondition){
         Long scenarioId = newCondition.getScenarioId();
         Optional<Scenario> scenario = scenarioRepository.findById(scenarioId);
+
         if(scenario.isEmpty()) return false;
 
         List<ScenarioCondition> conditions = scenarioConditionRepository.findByScenarioId(scenarioId);

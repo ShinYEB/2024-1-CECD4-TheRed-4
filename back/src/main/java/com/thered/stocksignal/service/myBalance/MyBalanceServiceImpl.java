@@ -1,16 +1,14 @@
 package com.thered.stocksignal.service.myBalance;
 
 import com.thered.stocksignal.domain.entity.User;
-import com.thered.stocksignal.kisApi.KisApiRequest;
+import com.thered.stocksignal.util.KisUtil;
 import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.service.user.UserAccountService;
-import com.thered.stocksignal.util.KisUtil;
 import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.stereotype.Service;
-import com.thered.stocksignal.app.dto.CompanyDto.CompanyLogoResponseDto;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,19 +24,18 @@ import static com.thered.stocksignal.app.dto.MyBalanceDto.*;
 @RequiredArgsConstructor
 public class MyBalanceServiceImpl implements  MyBalanceService{
 
-    private final KisApiRequest apiRequest;
+    private final KisUtil kisUtil;
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
     private final CompanyService companyService;
     private final UserAccountService userAccountService;
 
     // 내 잔고 조회
-    public Optional<MyBalanceResponseDto> getMyBalance(Long userId) {
+    public MyBalanceResponseDto getMyBalance(Long userId) {
 
         userAccountService.refreshKisToken(userId);
 
-        Optional<User> user = userAccountService.findById(userId);
-        if (user.isEmpty()) return Optional.empty(); //USER_NOT_FOUND
+        Optional<User> user = userAccountService.getUserById(userId);
 
         // API url
         String endpoint = "/uapi/domestic-stock/v1/trading/inquire-balance";
@@ -46,7 +43,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
         String accountNumber = user.get().getAccountNumber();
 
         // API 쿼리 파라미터
-        String url = apiRequest.buildUrl(endpoint,
+        String url = kisUtil.buildUrl(endpoint,
                 "CANO=" + KisUtil.getCANO(accountNumber),
                 "ACNT_PRDT_CD=" + KisUtil.getACNT_PRDT_CD(accountNumber),
                 "AFHR_FLPR_YN=N",
@@ -90,9 +87,7 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
                 stock.setAvgPrice(stockNode.path("pchs_avg_pric").asLong());  // 매입 평균가
                 stock.setCurrentPrice(stockNode.path("prpr").asLong()); // 현재가
                 stock.setPL(stockNode.path("evlu_pfls_amt").asLong()); // 손익
-                String logoImage = companyService.findLogoByName(companyName)
-                        .map(CompanyLogoResponseDto::getLogoImage)
-                        .orElse(null); // TODO: null 대신 디폴트이미지 경로
+                String logoImage = companyService.getLogoByName(companyName).getLogoImage();
 
                 stock.setLogoImage(logoImage);
                 // 로고 이미지
@@ -106,10 +101,10 @@ public class MyBalanceServiceImpl implements  MyBalanceService{
             myBalance.setTotalStockPrice(jsonNode.path("output2").get(0).path("evlu_amt_smtl_amt").asLong()); // 보유 주식 전체 가치
             myBalance.setTotalStockPL(jsonNode.path("output2").get(0).path("evlu_pfls_smtl_amt").asLong());    // 보유 주식 전체 손익
 
-            return Optional.of(myBalance);
+            return myBalance;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("한투에서 온 응답 내용이 예상된 양식과 불일치합니다.");
         }
     }
 }

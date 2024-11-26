@@ -29,7 +29,7 @@ public class NewsServiceImpl implements NewsService {
     @Value("${naver.client.secret}")
     private String clientSecret;
 
-    public Optional<List<NewsResponseDto>> searchNews(String query) {
+    public List<NewsResponseDto> searchNews(String query) {
 
         try {
             String encodedQuery = URLEncoder.encode(query+" 주식 속보", "UTF-8");
@@ -48,11 +48,11 @@ public class NewsServiceImpl implements NewsService {
             return parseResponse(inputStream);
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("뉴스 검색을 위한 기본 정보를 확인해주세요");
         }
     }
 
-    private Optional<List<NewsResponseDto>> parseResponse(InputStream inputStream) {
+    private List<NewsResponseDto> parseResponse(InputStream inputStream) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
 
             StringBuilder responseBody = new StringBuilder();
@@ -74,10 +74,10 @@ public class NewsServiceImpl implements NewsService {
                 newsList.add(news);
             }
 
-            return Optional.of(newsList);
+            return newsList;
 
         } catch (Exception e) {
-            return Optional.empty();
+            throw new RuntimeException("뉴스 파싱중 예외가 발생하였습니다.");
         }
     }
 }

@@ -8,6 +8,7 @@ import com.thered.stocksignal.service.company.CompanyService;
 import com.thered.stocksignal.app.dto.CompanyDto.*;
 import com.thered.stocksignal.service.user.UserAccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,21 +29,32 @@ public class CompanyController {
     @Operation(summary = "종목 코드 조회", description = "종목명으로 종목 코드를 가져옵니다.")
     public ApiResponse<CompanyCodeResponseDto> getCompanyCode(@PathVariable String companyName) {
 
-        Optional<CompanyCodeResponseDto> responseDto = companyService.findCodeByName(companyName);
+        CompanyCodeResponseDto codeResponse = null;
 
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.COMPANY_CODE_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
+        try{
+            codeResponse = companyService.getCodeByName(companyName);
+        }
+        catch (EntityNotFoundException e){
+            return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        }
+
+        return ApiResponse.onSuccess(Status.COMPANY_CODE_SUCCESS, codeResponse);
     }
 
     @GetMapping("/{companyName}/logo")
     @Operation(summary = "로고 이미지 URL 조회", description = "종목명으로 로고 이미지 경로를 불러옵니다.")
     public ApiResponse<CompanyLogoResponseDto> getCompanyLogo(@PathVariable String companyName) {
 
-        Optional<CompanyLogoResponseDto> responseDto = companyService.findLogoByName(companyName);
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.COMPANY_LOGO_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
+        CompanyLogoResponseDto logoResponse = null;
+
+        try{
+            logoResponse = companyService.getLogoByName(companyName);
+        }
+        catch (EntityNotFoundException e){
+            return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        }
+
+        return ApiResponse.onSuccess(Status.COMPANY_LOGO_SUCCESS, logoResponse);
     }
 
     @GetMapping("/{companyName}")
@@ -51,20 +63,27 @@ public class CompanyController {
             @PathVariable String companyName,
             @RequestHeader("Authorization") String token
     ) {
-        Optional<CompanyCodeResponseDto> companyCode = companyService.findCodeByName(companyName);
-        if(companyCode.isEmpty()) return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        CompanyCodeResponseDto codeResponse = null;
+        CompanyInfoResponseDto infoResponse = null;
 
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        Optional<CompanyInfoResponseDto> responseDto = companyService.findCompanyInfoByCode(
-                companyCode.get().getCompanyCode(),
-                userId
-        );
+        try{
+            codeResponse = companyService.getCodeByName(companyName);
+            infoResponse = companyService.getCompanyInfoByCode(
+                    codeResponse.getCompanyCode(),
+                    userId
+            );
+        }catch (IllegalArgumentException e){
+            return ApiResponse.onFailure(Status.USER_NOT_FOUND);
+        }catch (EntityNotFoundException e){
+            return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        }catch (RuntimeException e) {
+            return ApiResponse.onFailure(Status.KIS_CONNECT_INVALID);
+        }
 
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.COMPANY_INFO_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
+        return ApiResponse.onSuccess(Status.COMPANY_INFO_SUCCESS, infoResponse);
     }
 
     @GetMapping("/{companyName}/current-price")
@@ -73,20 +92,27 @@ public class CompanyController {
             @PathVariable String companyName,
             @RequestHeader("Authorization") String token
     ){
-        Optional<CompanyCodeResponseDto> companyCode = companyService.findCodeByName(companyName);
-        if(companyCode.isEmpty()) return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        CompanyCodeResponseDto codeResponse = null;
+        CurrentPriceResponseDto priceResponse = null;
 
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        Optional<CurrentPriceResponseDto> responseDto = companyService.findCurrentPriceByCode(
-                companyCode.get().getCompanyCode(),
-                userId
-        );
+        try{
+            codeResponse = companyService.getCodeByName(companyName);
+            priceResponse = companyService.getCurrentPriceByCode(
+                    codeResponse.getCompanyCode(),
+                    userId
+            );
+        }catch (IllegalArgumentException e){
+            return ApiResponse.onFailure(Status.USER_NOT_FOUND);
+        }catch (EntityNotFoundException e){
+            return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        }catch (RuntimeException e) {
+            return ApiResponse.onFailure(Status.KIS_CONNECT_INVALID);
+        }
 
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.CURRENT_PRICE_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
+        return ApiResponse.onSuccess(Status.CURRENT_PRICE_SUCCESS, priceResponse);
     }
 
     @GetMapping("/{companyName}/period-price")
@@ -97,35 +123,42 @@ public class CompanyController {
             @RequestParam  String endDate,
             @RequestHeader("Authorization") String token
     ){
-        Optional<CompanyCodeResponseDto> companyCode = companyService.findCodeByName(companyName);
-        if(companyCode.isEmpty()) return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        CompanyCodeResponseDto codeResponse = null;
+        PeriodPriceResponseDto priceResponse = null;
 
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        Optional<User> user = userAccountService.findById(userId);
-        if (user.isEmpty()) return ApiResponse.onFailure(Status.USER_NOT_FOUND);
+        try{
+            codeResponse = companyService.getCodeByName(companyName);
+            priceResponse = companyService.getPeriodPriceByCode(
+                    codeResponse.getCompanyCode(),
+                    startDate,
+                    endDate,
+                    userId
+            );
+        }catch (IllegalArgumentException e){
+            return ApiResponse.onFailure(Status.USER_NOT_FOUND);
+        }catch (EntityNotFoundException e){
+            return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        }catch (RuntimeException e) {
+            return ApiResponse.onFailure(Status.KIS_CONNECT_INVALID);
+        }
 
-        Optional<PeriodPriceResponseDto> responseDto = companyService.findPeriodPriceByCode(
-                companyCode.get().getCompanyCode(),
-                startDate,
-                endDate,
-                userId
-        );
-
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.PERIOD_PRICE_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_NOT_FOUND));
+        return ApiResponse.onSuccess(Status.PERIOD_PRICE_SUCCESS, priceResponse);
     }
 
     @GetMapping("/popular")
     @Operation(summary = "상위 10개 인기 주식 조회", description = "상위 10개 인기 종목을 가져옵니다.")
     public ApiResponse<List<popularStockResponseDto>> getPopularStocks() {
 
-        Optional<List<popularStockResponseDto>> responseDto = companyService.getPopularStocks();
+        List<popularStockResponseDto> responseDto;
+        try{
+            responseDto = companyService.getPopularStocks();
+        }catch(RuntimeException e){
+            return ApiResponse.onFailure(Status.COMPANY_RANKING_FAILED);
+        }
 
-        return responseDto
-                .map(dto -> ApiResponse.onSuccess(Status.COMPANY_RANKING_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.COMPANY_RANKING_FAILED));
+        return ApiResponse.onSuccess(Status.COMPANY_RANKING_SUCCESS, responseDto);
     }
 }

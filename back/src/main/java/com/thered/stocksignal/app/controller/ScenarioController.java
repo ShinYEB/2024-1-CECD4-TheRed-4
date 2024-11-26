@@ -9,6 +9,7 @@ import com.thered.stocksignal.app.dto.ScenarioDto.ScenarioResponseDto;
 import com.thered.stocksignal.service.scenario.ScenarioService;
 import com.thered.stocksignal.service.user.UserAccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,10 +43,21 @@ public class ScenarioController {
             @RequestHeader("Authorization") String token,
             @RequestBody ScenarioRequestDto newScenario) {
 
+        boolean isCreated = false;
+
         Long userId = userAccountService.getUserIdFromToken(token);
         if (userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        boolean isCreated = scenarioService.createScenario(token, userId, newScenario);
+        try{
+            isCreated = scenarioService.createScenario(token, userId, newScenario);
+        }catch (IllegalArgumentException e){
+            return ApiResponse.onFailure(Status.USER_NOT_FOUND);
+        }catch (EntityNotFoundException e){
+            return ApiResponse.onFailure(Status.COMPANY_NOT_FOUND);
+        }catch (RuntimeException e) {
+            return ApiResponse.onFailure(Status.KIS_CONNECT_INVALID);
+        }
+
         if(!isCreated){
             return ApiResponse.onFailure(Status.SCENARIO_CREATION_FAILED, null);
         }

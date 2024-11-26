@@ -28,15 +28,20 @@ public class MyBalanceController {
     public ApiResponse<MyBalanceResponseDto> getMyBalance(
             @RequestHeader("Authorization") String token)
     {
+        MyBalanceResponseDto responseDto;
+
         Long userId = userAccountService.getUserIdFromToken(token);
         if(userId == -1) return ApiResponse.onFailure(Status.TOKEN_INVALID);
 
-        Optional<MyBalanceResponseDto> responseDto = myBalanceService.getMyBalance(
-                userId
-        );
+        try{
+            responseDto = myBalanceService.getMyBalance(
+                    userId
+            );
+        }catch (IllegalArgumentException e){
+            return ApiResponse.onFailure(Status.USER_NOT_FOUND);
+        }
 
-        return responseDto.map(dto -> ApiResponse.onSuccess(Status.MY_BALANCE_SUCCESS, dto))
-                .orElseGet(() -> ApiResponse.onFailure(Status.MY_BALANCE_NOT_FOUND));
+        return ApiResponse.onSuccess(Status.MY_BALANCE_SUCCESS, responseDto);
     }
 }
 
