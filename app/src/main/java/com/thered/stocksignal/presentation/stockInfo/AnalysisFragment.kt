@@ -20,6 +20,8 @@ import com.thered.stocksignal.Data.model.CurrentPriceResponse
 import com.thered.stocksignal.Data.model.StockData
 
 class AnalysisFragment : Fragment() {
+
+    private lateinit var companyNameTextView: TextView // 회사명
     private var companyData: StockData? = null
     private var currentPrice: Int = 0
     private lateinit var currentPriceTextView: TextView
@@ -45,13 +47,16 @@ class AnalysisFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        companyNameTextView = view.findViewById(R.id.company_title)
+
         val companyName = arguments?.getString("company_name")
         Log.d("ReceivedCompanyName", "받은 회사 이름: $companyName")
 
         if (!companyName.isNullOrBlank()) {
             fetchCompanyInfo(companyName)
-        }
+            companyNameTextView = view.findViewById(R.id.company_title)
 
+        }
         // UI 요소들 연결
         currentPriceTextView=view.findViewById(R.id.current_value)
         startPriceTextView = view.findViewById(R.id.start_price)

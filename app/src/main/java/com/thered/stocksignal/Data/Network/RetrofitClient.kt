@@ -65,4 +65,8 @@ object RetrofitClient {
     val stockCodeApi: StockCodeApiService by lazy {
         retrofit.create(StockCodeApiService::class.java)
     }
+    val scenarioApi: ScenarioApiService by lazy {
+        retrofit.create(ScenarioApiService::class.java)
+    }
+
 }

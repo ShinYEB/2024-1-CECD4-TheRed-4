@@ -2,7 +2,7 @@ package com.thered.stocksignal.Data.model
 
 // API 응답의 데이터를 나타내는 클래스
 data class ApiResponse(
-    val code: Int,
+    val code: String,
     val result: String,
     val message: String,
     val data: List<ScenarioData> // ScenarioData를 사용

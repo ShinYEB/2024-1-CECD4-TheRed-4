@@ -14,14 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.thered.stocksignal.presentation.newScenario.NewScenarioConditionActivity
-
 import com.thered.stocksignal.BuildConfig
 import com.thered.stocksignal.Data.Network.ProfitRateListener
+import com.thered.stocksignal.Data.Network.RetrofitClient
 import com.thered.stocksignal.Data.Network.ScenarioApiService
 import com.thered.stocksignal.Data.model.ScenarioData
-
+import com.thered.stocksignal.Data.model.ApiResponse
 import com.thered.stocksignal.R
 import com.thered.stocksignal.presentation.newScenario.NewScenarioActivity
 import kotlinx.coroutines.launch
@@ -50,6 +49,8 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // 데이터를 API에서 받아오기
+        getScenarioData()
 
         // RecyclerView 설정
         val recyclerView: RecyclerView = view.findViewById(R.id.conditions_recycler_view)
@@ -60,41 +61,31 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
         // '+ 버튼' 클릭 리스너 설정
         val addButton: Button = view.findViewById(R.id.add_condition)// 해당 버튼의 ID
         addButton.setOnClickListener {
-
             // NewScenarioActivity로 전환
             val intent = Intent(activity, NewScenarioActivity::class.java)
-
             startActivity(intent)
         }
-        // 데이터를 API에서 받아오기
-        getScenarioData()
     }
-
     private fun getScenarioData() {
         lifecycleScope.launch {
             try {
-                val response = scenarioApiService.getScenarios("Bearer $token")
-                Log.d("AutoTradeFragment", "Response code: ${response.code()}")
-                Log.d("AutoTradeFragment", "Response body: ${response.body()}")  // 응답 본문 출력
+                val response = RetrofitClient.scenarioApi.getScenarios("Bearer $token")
+                Log.d("자동매매", "Response code: ${response.code()}")
+                Log.d("자동매매", "Response body: ${response.body()}")  // 응답 본문 출력
 
-
-                if (response.isSuccessful) {
+                if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body() // ApiResponse로 변환된 응답
 
-                    // response.body()가 null일 경우를 안전하게 처리
-                    if (apiResponse != null) {
-                        val scenarioDataList = apiResponse.data ?: emptyList()
-
-                        Log.d("AutoTradeFragment", "Received scenario data: $scenarioDataList")  // 받아온 데이터 로그 찍기
+                    if (apiResponse != null && apiResponse.code == "200" && apiResponse.result == "SUCCESS") {
+                        val scenarioDataList = apiResponse.data // ScenarioData 리스트
 
                         if (scenarioDataList.isNullOrEmpty()) {
-                            // 데이터가 없을 때 처리 (예: "데이터가 없습니다" 메시지 표시)
                             showEmptyDataMessage()
                         } else {
                             conditionList.clear()
                             scenarioDataList.forEach { scenarioData ->
                                 conditionList.add(
-                                    com.thered.stocksignal.Data.model.Condition( // 타입 일치
+                                    com.thered.stocksignal.Data.model.Condition(
                                         name = scenarioData.scenarioName,
                                         profitRate = calculateProfitRate(scenarioData.initialPrice, scenarioData.currentPrice)
                                     )
@@ -103,12 +94,10 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
                             conditionAdapter.notifyDataSetChanged()
                         }
                     } else {
-                        Log.d("AutoTradeFragment", "API response body is null")
-                        showErrorMessage("API 응답이 없습니다.")
+                        showErrorMessage("API 응답이 비정상적입니다. code: ${apiResponse?.code}")
                     }
                 } else {
-                    Log.d("AutoTradeFragment", "Failed to load data, Response code: ${response.code()}")
-                    showErrorMessage("API 요청 실패")
+                    showErrorMessage("API 요청 실패. 응답 코드: ${response.code()}")
                 }
             } catch (e: Exception) {
                 Log.e("AutoTradeFragment", "Error fetching data: ${e.message}")

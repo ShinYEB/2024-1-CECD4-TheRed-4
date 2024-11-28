@@ -17,7 +17,6 @@ class BuyNowDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // 다이얼로그 너비를 화면의 80%로 설정
         dialog?.window?.setLayout((resources.displayMetrics.widthPixels * 1).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
     override fun onCreateView(
@@ -25,7 +24,6 @@ class BuyNowDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.dialog_buy_now, container, false)
-
         // EditText 초기화
         buy_price_text = view.findViewById(R.id.buy_price_text)
         buy_quantity_hint = view.findViewById(R.id.buy_quantity_hint)
@@ -38,8 +36,13 @@ class BuyNowDialogFragment : DialogFragment() {
             val quantity = buy_quantity_hint.text.toString()
 
             if (price.isNotEmpty() && quantity.isNotEmpty()) {
-                onConfirmClickListener?.invoke(price, quantity) // 가격과 수량을 전달
-                dismiss()  // 다이얼로그 닫기
+                // 가격과 수량이 숫자인지 체크
+                if (price.toIntOrNull() != null && quantity.toIntOrNull() != null) {
+                    onConfirmClickListener?.invoke(price, quantity) // 유효한 숫자 입력 시 콜백 호출
+                    dismiss()  // 다이얼로그 닫기
+                } else {
+                    Toast.makeText(activity, "가격과 수량은 숫자여야 합니다.", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(activity, "가격과 수량을 입력하세요.", Toast.LENGTH_SHORT).show()
             }
@@ -49,16 +52,13 @@ class BuyNowDialogFragment : DialogFragment() {
         cancelButton.setOnClickListener {
             dismiss()
         }
-
         // Sell 버튼 클릭 시 SellNowDialogFragment로 이동
         val sellButton: Button = view.findViewById(R.id.buy_sell_change_button)
         sellButton.setOnClickListener {
-            // SellNowDialogFragment로 이동
             val sellDialog = SellNowDialogFragment()
             sellDialog.show(requireFragmentManager(), "SellNowDialog")
-            dismiss()  // 현재 다이얼로그는 닫기
+            dismiss()
         }
-
         return view
     }
     fun setOnConfirmClickListener(listener: (String, String) -> Unit) {

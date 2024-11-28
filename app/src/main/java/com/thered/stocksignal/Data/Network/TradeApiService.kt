@@ -7,11 +7,15 @@ import retrofit2.http.POST
 
 data class BuyRequest(
     val scode: String,
-    val orderType: String = "JIJUNG",  // 주문 유형을 기본값으로 설정
+    val orderType: String = "JIJUNG",  // 기본값이 'JIJUNG'이라면 기본값 그대로 두기
     val price: Int,
     val week: Int
-)
-
+) {
+    init {
+        require(price > 0) { "가격은 0보다 커야 합니다." }
+        require(week > 0) { "수량은 0보다 커야 합니다." }
+    }
+}
 data class SellRequest(
     val scode: String,
     val orderType: String = "JIJUNG",  // 주문 유형을 기본값으로 설정

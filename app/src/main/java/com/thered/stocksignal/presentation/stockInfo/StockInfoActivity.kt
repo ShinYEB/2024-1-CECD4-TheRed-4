@@ -1,7 +1,5 @@
     package com.thered.stocksignal.presentation.stockinfo
 
-    import android.app.Dialog
-    import android.content.Context
     import android.content.Intent
     import android.os.Bundle
     import android.widget.Button
@@ -11,20 +9,11 @@
     import android.content.res.ColorStateList
     import android.graphics.Color
     import android.util.Log
-    import android.view.LayoutInflater
-    import android.view.View
-    import android.view.ViewGroup
     import android.widget.Toast
-    import androidx.activity.OnBackPressedCallback
-    import androidx.activity.addCallback
     import androidx.activity.viewModels
     import androidx.fragment.app.Fragment
     import androidx.fragment.app.FragmentManager
     import androidx.fragment.app.FragmentTransaction
-    import com.thered.stocksignal.presentation.stockinfo.AnalysisFragment
-    import com.thered.stocksignal.presentation.stockinfo.AutoTradeFragment
-    import com.thered.stocksignal.presentation.stockinfo.PredictionFragment
-    import com.thered.stocksignal.presentation.stockinfo.NewsFragment
     import com.bumptech.glide.Glide
     import com.thered.stocksignal.Data.Network.CompanyApiService
     import com.thered.stocksignal.Data.model.CompanyResponse
@@ -34,24 +23,17 @@
     import retrofit2.Retrofit
     import retrofit2.converter.gson.GsonConverterFactory
     import com.thered.stocksignal.R
-    import androidx.fragment.app.DialogFragment
-    import androidx.fragment.app.replace
-    import androidx.lifecycle.ViewModelProvider
     import com.github.mikephil.charting.charts.LineChart
     import com.thered.stocksignal.BuildConfig
     import com.thered.stocksignal.Data.Network.BuyRequest
     import com.thered.stocksignal.Data.Network.BuyResponse
-    import com.thered.stocksignal.presentation.stockinfo.BuyNowDialogFragment
     import com.thered.stocksignal.Data.Network.BuyTradeApiService
     import com.thered.stocksignal.Data.Network.SellRequest
     import com.thered.stocksignal.Data.Network.SellResponse
     import com.thered.stocksignal.Data.Network.SellTradeApiService
     import com.thered.stocksignal.presentation.main.MainActivity
-    import com.thered.stocksignal.presentation.mystock.MyStockActivity
     import com.thered.stocksignal.presentation.newScenario.NewScenarioActivity
     import com.thered.stocksignal.presentation.newScenario.NewScenarioViewModel
-    import com.thered.stocksignal.presentation.stockinfo.SelectTradeActivity
-    import com.thered.stocksignal.presentation.stockinfo.SellNowDialogFragment
 
     class StockInfoActivity : AppCompatActivity() {
         private lateinit var companyNameTextView: TextView // 회사명
@@ -65,21 +47,17 @@
         private lateinit var apiService: CompanyApiService
         private lateinit var buytradeApiService: BuyTradeApiService
         private lateinit var selltradeApiService: SellTradeApiService
-        private var lastSelectedButton: Button? = null
         private val token = BuildConfig.API_TOKEN // API 토큰
         private lateinit var tradeButton: Button
         private lateinit var lineChart: LineChart
         private val newScenarioViewModel: NewScenarioViewModel by viewModels()
 
-
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_stock_info)
-
             companyNameTextView = findViewById(R.id.company_name_text_view)
             profitRateTextView = findViewById(R.id.profit_rate)
             lineChart = findViewById(R.id.line_chart) // XML에서 LineChart를 찾음
-
             val dataList = newScenarioViewModel.loadChartData() // ViewModel에서 데이터 로드
             val lineData = newScenarioViewModel.setupChartData(dataList) // ViewModel에서 차트 데이터 설정
             // 차트 데이터 설정
@@ -95,7 +73,6 @@
             val itemEarnRate: String = intent.getStringExtra("earn_rate") ?: "기본 수익률"
             itemImgUrl = intent.getStringExtra("image_url") ?: "기본 이미지 URL"
             // 데이터 출력 확인
-
             Log.d(
                 "넘어온 데이터 값",
                 "Name: $companyName, Price: $itemPrice, EarnRate: $itemEarnRate, ImageURL: $itemImgUrl"
@@ -111,7 +88,6 @@
             // 회사 이름 텍스트 설정
             companyNameTextView.text = companyName
             Log.d("회사 이름", "Name: $companyName")
-
             // 수익률 텍스트 설정 & 색상 변경
             profitRateTextView.text = itemEarnRate // 수정된 부분
             Log.d("수익률", "EarnRate: $itemEarnRate")
@@ -192,17 +168,24 @@
 
                 Log.d("분석 전달", "companyName 전달: $companyName")
             }
+//            autoTradeButton.setOnClickListener {
+//                // NewScenarioActivity로 이동
+//                val intent = Intent(this, NewScenarioActivity::class.java)
+//                startActivity(intent)
+//                // 버튼 색상 변경
+//                resetButtonColors()
+//                autoTradeButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#0080FF"))
+//                autoTradeButton.setTextColor(Color.WHITE)
+//            }
             autoTradeButton.setOnClickListener {
-                // NewScenarioActivity로 이동
-                val intent = Intent(this, NewScenarioActivity::class.java)
-                startActivity(intent)
-                // 버튼 색상 변경
+                switchFragment(AutoTradeFragment())
                 resetButtonColors()
                 autoTradeButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#0080FF"))
                 autoTradeButton.setTextColor(Color.WHITE)
             }
 
         }
+        // 프래그먼트 변경
         private fun switchFragment(fragment: Fragment) {
             val fragmentManager: FragmentManager = supportFragmentManager
             val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
@@ -210,7 +193,7 @@
             fragmentTransaction.addToBackStack(null)
             fragmentTransaction.commit()
         }
-        // 뉴스, 분석, 예측, 자동매매 클릭 변화
+        // 버튼 클릭 시, 색상 변화
         private fun resetButtonColors() {
             newsButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
             newsButton.setTextColor(Color.BLACK)
@@ -221,13 +204,14 @@
             autoTradeButton.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
             autoTradeButton.setTextColor(Color.BLACK)
         }
+        // 뒤로가기 했을 때 메인으로 이동하게 하기
         override fun onBackPressed() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
             super.onBackPressed()
         }
-        // 로고 이미지 불러오기
+        // 로고 이미지 불러오기 -> 완료
         private fun getCompanyLogo(companyName: String) {
             apiService.getCompanyLogo(companyName).enqueue(object : Callback<CompanyResponse> {
                 override fun onResponse(call: Call<CompanyResponse>, response: Response<CompanyResponse>) {
@@ -267,21 +251,13 @@
             }
             dialog.show(supportFragmentManager, "BuyNowDialog")
         }
-
-        private fun showsellDialog() {
-            val dialog = SellNowDialogFragment()
-            // 확인 버튼 클릭 시 가격과 수량을 받아서 처리
-            dialog.setOnConfirmClickListenerSell { price, quantity ->
-                performTradeSell(price, quantity)
-            }
-            dialog.show(supportFragmentManager, "SellNowDialog")
-        }
-
         private fun performTradeBuy(price: String, quantity: String) {
             val scode = "005930"  // 종목 코드 (예: 삼성전자)
             val price = price.toIntOrNull() ?: 0
             val week = quantity.toIntOrNull() ?: 0
             val orderType = "JIJUNG"
+            // 로그를 찍어서 price와 quantity 값 확인
+            Log.d("서버 전송 전 데이터 확인", "Price: $price, Quantity: $week, Stock Code: $scode, orderType : $orderType, Authorization Header: $token")
 
             if (price > 0 && week > 0) {
                 val buyRequest =
@@ -317,10 +293,29 @@
                 Log.e("TradeRequest", "유효한 가격과 수량을 입력하세요.")
             }
         }
+
+
+
+
+        private fun showsellDialog() {
+            val dialog = SellNowDialogFragment()
+            // 확인 버튼 클릭 시 가격과 수량을 받아서 처리
+            dialog.setOnConfirmClickListenerSell { price, quantity ->
+                performTradeSell(price, quantity)
+            }
+            dialog.show(supportFragmentManager, "SellNowDialog")
+        }
+
         private fun performTradeSell(price: String, quantity: String) {
             val scode = "005930"  // 종목 코드 (예: 삼성전자)
             val price = price.toIntOrNull() ?: 0
             val week = quantity.toIntOrNull() ?: 0
+
+            if (price == null || week == null || price <= 0 || week <= 0) {
+                Log.e("TradeRequest", "유효한 가격과 수량을 입력하세요.")
+                return
+            }
+
             val orderType = "JIJUNG"
             if (price > 0 && week > 0) {
                 val sellRequest =
@@ -337,19 +332,23 @@
                                 val result = response.body()
                                 if (result != null && result.result == "SUCCESS") {
                                     Log.d("TradeRequest", "SUCCESS: ${result.message}")
+                                    Toast.makeText(applicationContext, "주문 성공", Toast.LENGTH_SHORT).show()  // 성공 메시지
                                 } else {
                                     // 실패 메시지 출력
                                     val failureMessage = result?.message ?: "알 수 없는 오류"
                                     Log.e("TradeRequest", "failureMessage: $failureMessage")
+                                    Toast.makeText(applicationContext, failureMessage, Toast.LENGTH_SHORT).show()  // 실패 메시지
                                 }
                             } else {
                                 // 실패 시 상태 코드와 메시지 출력
                                 val errorMessage = response.errorBody()?.string() ?: "서버 오류 발생"
                                 Log.e("TradeRequest", "failureMessage: $errorMessage")
+                                Toast.makeText(applicationContext, errorMessage, Toast.LENGTH_SHORT).show()  // 실패 메시지
                             }
                         }
                         override fun onFailure(call: Call<SellResponse>, t: Throwable) {
                             Log.e("TradeRequest", "Network Error: ${t.message}")
+                            Toast.makeText(applicationContext, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
                         }
                     })
             } else {
