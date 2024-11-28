@@ -74,6 +74,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
             String token = dto.getToken();
             Long userId = userAccountService.getUserIdFromToken(token);
+            userAccountService.refreshKisSocketKey(userId);
             String companyName = dto.getCompanyName();
             String companyCode = null;
 
@@ -236,6 +237,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String[] parts = response.split("\\|");
         String[] data = parts[parts.length - 1].split("\\^");
 
+        // PINGPONG 응답 처리
+        if (response.contains("\"tr_id\":\"PINGPONG\"")) {
+            try{
+                userSessions.get(userId).getClientSession().sendMessage(new TextMessage("현재는 장 마감되었습니다."));
+            }catch (IOException e){
+                log.info("장 마감 메시지를 보내는 중 예외가 발생했습니다. {}", e.getMessage());
+                return;
+            }
+            return;
+        }
+
         if (parts.length >= 4) {
             List<StockDto.RealTimeStockDto> stockInfoDtoList = parseStockInfo(data);
             for (StockDto.RealTimeStockDto dto : stockInfoDtoList) {
@@ -246,7 +258,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 scenarioTrade.checkAutoTrade(userId, dto);
             }
         } else {
-            throw new RuntimeException("한투에서 온 응답이 예상된 방식과 다릅니다 : " + response); // 초당 거래건수 초과 등
+            // SUBSCRIBED, 초당 거래건수 초과 등 응답양식은 exception이지만 서비스는 계속 이어져야 하는 경우
+            log.info("한투에서 온 응답이 예상된 방식과 다릅니다 : {}", response);
         }
     }
 
