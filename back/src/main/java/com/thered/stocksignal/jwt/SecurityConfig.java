@@ -53,6 +53,7 @@ public class SecurityConfig {
         http.httpBasic((auth) -> auth.disable());
 
         http.authorizeHttpRequests((auth) -> auth
+                .requestMatchers("/stocksignal").permitAll()
                 .requestMatchers("/**", "/").permitAll()
                 .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().authenticated());
