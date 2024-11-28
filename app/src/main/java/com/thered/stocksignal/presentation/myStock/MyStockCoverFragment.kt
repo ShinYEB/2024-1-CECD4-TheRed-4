@@ -44,19 +44,6 @@ class MystockCoverFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-
-                // 어댑터 설정 시 클릭 리스너 추가
-//                adapter = MystockCoverRecyclerViewAdapter(MyStockPlaceholderContent.ITEMS) { clickedItem ->
-//                    Log.d("MystockCoverFragment", "Clicked Item: ${clickedItem.content}")
-//                    // 클릭된 항목에 대해 처리
-//                    val intent = Intent(requireContext(), StockInfoActivity::class.java).apply {
-//                        putExtra("company_name", "삼성전자") // 회사 이름 등 데이터 추가
-//                        putExtra("stock_price", clickedItem.price)
-//                        putExtra("earn_rate", clickedItem.earnRate)
-//                        putExtra("image_url", clickedItem.imgUrl)
-//                    }
-//                    startActivity(intent)
-//                }
             }
         }
         return view
