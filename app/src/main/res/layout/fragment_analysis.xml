@@ -8,11 +8,11 @@
 
     <!-- 타이틀 (삼성전자 분석) -->
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/company_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="35/50 분석"
+        android:text="분석 정보"
         android:textSize="20sp"
         android:textColor="@color/black"
         android:textStyle="bold" />

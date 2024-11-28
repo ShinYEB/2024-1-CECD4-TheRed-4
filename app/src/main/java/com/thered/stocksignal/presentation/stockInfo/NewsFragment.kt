@@ -20,6 +20,7 @@ import com.thered.stocksignal.R
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 class NewsFragment : Fragment() {
     private lateinit var articlePreview: TextView
 
