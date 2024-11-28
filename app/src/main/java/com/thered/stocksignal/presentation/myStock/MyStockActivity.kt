@@ -12,7 +12,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.thered.stocksignal.R
 import com.thered.stocksignal.databinding.ActivityMyStockBinding
-
 import com.thered.stocksignal.presentation.home.HomeViewModel
 import com.thered.stocksignal.presentation.home.StockCoverFragment
 import com.thered.stocksignal.presentation.home.placeholder.HomePlaceholderContent
@@ -37,16 +36,12 @@ class MyStockActivity : AppCompatActivity() {
             MyStockPlaceholderContent.setItem(items.stocks)
             viewModel.setBalance(items.timeLine, items.totalStockPrice, items.totalStockPL)
             Log.d("Network_", items.toString())
-
-
             supportFragmentManager.beginTransaction()
                 .replace(stockList.id, MystockCoverFragment())
                 .commit()
 
         }
-
         viewModel.fetchMyBalance()
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)

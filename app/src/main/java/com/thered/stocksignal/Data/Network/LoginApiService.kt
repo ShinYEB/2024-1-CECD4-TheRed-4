@@ -13,7 +13,7 @@ data class LoginRequest(
 interface LoginApiService {
     // 프론트에서 인가 코드를 백엔드로 전달하는 경로
     @Headers("Content-Type: application/json")
-    @POST("api/auth/kakao/login") // POST 요청으로 수정
+    @POST("api/auth/kakao/login/code")
     fun loginWithKakao(
         @Body request: LoginRequest // 인가 코드를 요청 바디로 전송
     ): Call<TokenResponse>

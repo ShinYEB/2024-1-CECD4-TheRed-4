@@ -36,7 +36,7 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
     private var profitRateListener: ProfitRateListener? = null
 
     private val scenarioApiService: ScenarioApiService = Retrofit.Builder()
-        .baseUrl("https://pposiraun.com/") // 실제 API 베이스 URL로 변경
+        .baseUrl("https://pposiraun.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ScenarioApiService::class.java)

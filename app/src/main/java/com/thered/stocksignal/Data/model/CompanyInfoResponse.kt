@@ -15,7 +15,10 @@ data class StockData( // 클래스 이름을 CompanyData에서 StockData로 변�
     val lowPrice: Int,
     val highPrice: Int,
     val oneYearLowPrice: Int,
-    val oneYearHighPrice: Int
+    val oneYearHighPrice: Int,
+
+    var currentPrice: Int? = null
+
 )
 data class CompanyResponse(
     val code: String,

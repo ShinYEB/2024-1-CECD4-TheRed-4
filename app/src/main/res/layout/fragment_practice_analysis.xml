@@ -15,6 +15,7 @@
         android:text="35/50 분석"
         android:textSize="20sp"
         android:textColor="@color/black"
+
         android:textStyle="bold" />
     <!-- 거래대금 정보 -->
     <LinearLayout
