@@ -1,4 +1,4 @@
-package com.thered.stocksignal.presentation.stockinfo
+package com.thered.stocksignal.presentation.chatBot
 
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +19,7 @@ import com.thered.stocksignal.Data.Network.StockInfoApiService
 import com.thered.stocksignal.Data.model.CurrentPriceResponse
 import com.thered.stocksignal.Data.model.StockData
 
-class AnalysisFragment : Fragment() {
+class PracticeAnalysisFragment : Fragment() {
     private var companyData: StockData? = null
     private var currentPrice: Int = 0
     private lateinit var currentPriceTextView: TextView
@@ -40,7 +40,7 @@ class AnalysisFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_analysis, container, false)
+        return inflater.inflate(R.layout.fragment_practice_analysis, container, false)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,9 +82,9 @@ class AnalysisFragment : Fragment() {
                         Log.d(TAG, "API complete: ${response.body()}")
                         companyData = response.body()?.data
                         // 데이터가 로드되면 UI 업데이트
-                            activity?.runOnUiThread {
-                                updateUI()
-                            }
+                        activity?.runOnUiThread {
+                            updateUI()
+                        }
                         fetchCurrentPrice(companyName)
                     } else {
                         Log.e(TAG, "API fail: ${response.errorBody()?.string()}")

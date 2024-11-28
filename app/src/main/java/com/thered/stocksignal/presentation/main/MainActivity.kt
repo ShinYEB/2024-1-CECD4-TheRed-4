@@ -14,13 +14,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.thered.stocksignal.presentation.alarm.AlarmActivity
-import com.thered.stocksignal.presentation.chatbot.ChatBotActivity
 import com.thered.stocksignal.presentation.home.HomeFragment
 import com.thered.stocksignal.presentation.mypage.MypageFragment
 import com.thered.stocksignal.presentation.search.SearchFragment
 import com.thered.stocksignal.R
-import com.thered.stocksignal.data.repositories.StockListRepository
+//import com.thered.stocksignal.data.repositories.StockListRepository
 import com.thered.stocksignal.domain.usecases.StockListUseCase
+import com.thered.stocksignal.presentation.chatbot.PracticeActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
                 true
             }
         }
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_bar_chatbot -> {
-                val intent = Intent(this, ChatBotActivity::class.java)
+                val intent = Intent(this, PracticeActivity::class.java)
                 startActivity(intent)
                 true
             }

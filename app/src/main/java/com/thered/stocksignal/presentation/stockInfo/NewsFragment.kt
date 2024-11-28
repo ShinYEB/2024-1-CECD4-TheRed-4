@@ -1,16 +1,20 @@
 package com.thered.stocksignal.presentation.stockinfo
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.text.Spannable
 import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.thered.stocksignal.Data.Network.RetrofitClient
-import com.thered.stocksignal.Data.model.CompanyCodeResponse
 import com.thered.stocksignal.Data.model.NewsResponse
 import com.thered.stocksignal.R
 import retrofit2.Call
@@ -31,78 +35,72 @@ class NewsFragment : Fragment() {
 
         articlePreview = view.findViewById(R.id.articlePreview)
 
-        val companyName = "삼성전자" // 예시로 삼성전자 사용
-        fetchCompanyCode(companyName)
+        val companyName = arguments?.getString("company_name")
+        if (!companyName.isNullOrBlank()) {
+            fetchNews(companyName)
+        } else {
+            articlePreview.text = "뉴스가 존재하지 않습니다."
+        }
     }
 
-    // 회사명을 이용해 회사 코드를 가져오는 API 호출
-    private fun fetchCompanyCode(companyName: String) {
-        RetrofitClient.stockInfoApi.getCompanyCode(companyName)
-            .enqueue(object : Callback<CompanyCodeResponse> {
-                override fun onResponse(
-                    call: Call<CompanyCodeResponse>,
-                    response: Response<CompanyCodeResponse>
-                ) {
-                    if (response.isSuccessful && response.body() != null) {
-                        val companyCode = response.body()?.data?.companyCode
-                        if (companyCode != null) {
-                            // 회사 코드가 성공적으로 받아졌으면, 그 코드로 뉴스를 가져옵니다.
-                            fetchNews(companyCode)
-                        } else {
-                            articlePreview.text = "회사 코드를 가져오는데 실패했습니다."
-                        }
-                    } else {
-                        articlePreview.text = "회사 코드를 가져오는데 실패했습니다."
-                    }
-                }
-
-                override fun onFailure(call: Call<CompanyCodeResponse>, t: Throwable) {
-                    articlePreview.text = "API 호출 실패: ${t.message}"
-                }
-            })
-    }
-
-    // 회사 코드로 뉴스를 가져오는 API 호출
-    private fun fetchNews(stockCode: String) {
-        RetrofitClient.newsApi.getNews(stockCode).enqueue(object : Callback<NewsResponse> {
+    // 뉴스 API 호출
+    private fun fetchNews(companyName: String) {
+        articlePreview.text = "뉴스를 가져오는 중입니다..."
+        RetrofitClient.newsApi.getNews(companyName).enqueue(object : Callback<NewsResponse> {
             override fun onResponse(call: Call<NewsResponse>, response: Response<NewsResponse>) {
                 if (response.isSuccessful) {
                     val newsResponse = response.body()
                     if (newsResponse != null && newsResponse.code == "200" && newsResponse.result == "SUCCESS") {
                         val articles = newsResponse.data
                         if (articles.isNotEmpty()) {
-                            val displayedArticles = articles.take(3)
-
-                            val formattedText = StringBuilder()
-                            for (article in displayedArticles) {
-                                formattedText.append("<a href=\"${article.url}\">${article.title}</a><br>")
-                            }
-
-                            articlePreview.text =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    Html.fromHtml(
-                                        formattedText.toString(),
-                                        Html.FROM_HTML_MODE_COMPACT
-                                    )
-                                } else {
-                                    Html.fromHtml(formattedText.toString())
+                            // 뉴스 데이터에서 제목과 URL만 HTML 형식으로 변환
+                            val formattedText =
+                                articles.take(3).joinToString(separator = "<br><br>") { article ->
+                                    "<a href=\"${article.url}\">${article.title}</a>"
                                 }
-
+                            val spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                Html.fromHtml(formattedText, Html.FROM_HTML_MODE_COMPACT)
+                            } else {
+                                Html.fromHtml(formattedText)
+                            } as Spannable
+                            articlePreview.text = spannable
                             articlePreview.movementMethod = LinkMovementMethod.getInstance()
+                            // URLSpan 클릭 처리
+                            handleLinks(spannable)
                         } else {
-                            articlePreview.text = "뉴스가 없습니다."
+                            articlePreview.text = "관련 뉴스가 없습니다."
                         }
                     } else {
-                        articlePreview.text = "응답 실패: ${newsResponse?.message}"
+                        articlePreview.text = "뉴스를 불러오는 데 실패했습니다: ${newsResponse?.message ?: "알 수 없는 오류"}"
                     }
                 } else {
-                    articlePreview.text = "뉴스 로드 실패: ${response.message()}"
+                    articlePreview.text = "서버 오류: ${response.code()} - ${response.message()}"
                 }
             }
-
             override fun onFailure(call: Call<NewsResponse>, t: Throwable) {
-                articlePreview.text = "뉴스 로드 실패: ${t.message}"
+                articlePreview.text = "네트워크 오류: ${t.localizedMessage}"
             }
         })
+    }
+    // 링크 클릭 처리
+    private fun handleLinks(spannable: Spannable) {
+        val spans = spannable.getSpans(0, spannable.length, URLSpan::class.java)
+        if (spans.isNotEmpty()) {
+            for (span in spans) {
+                val url = span.url
+                articlePreview.setOnClickListener {
+                    openUrl(url)
+                }
+            }
+        }
+    }
+    // URL 열기
+    private fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.e("NewsFragment", "Failed to open URL: $url", e)
+        }
     }
 }

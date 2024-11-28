@@ -35,7 +35,7 @@ class NewScenarioActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-            enableEdgeToEdge()
+        enableEdgeToEdge()
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_new_scenario)
         newScenarioViewModel = ViewModelProvider(this).get(NewScenarioViewModel::class.java)
@@ -50,6 +50,14 @@ class NewScenarioActivity : AppCompatActivity() {
             .apply(RequestOptions().transform(RoundedCorners(80)))
             .into(imageView)
 
+        // 그래프 설정 메소드 호출
+        setupChart(lineChart, dataList)
+    }
+
+    // 그래프 설정 메소드
+    fun setupChart(lineChart: LineChart, dataList: List<Int>) {
+        // 데이터 포인트를 그래프에 맞게 변환
+        val entryList = ArrayList<Entry>()
         dataList.forEachIndexed { index, data ->
             entryList.add(Entry(index.toFloat(), data.toFloat()))
         }
@@ -132,11 +140,5 @@ class NewScenarioActivity : AppCompatActivity() {
 
         // 차트 새로고침
         lineChart.invalidate()
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
 }

@@ -1,9 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.thered.stocksignal">
-
     <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:name="com.thered.stocksignal.GlobalApplication"
         android:allowBackup="true"
@@ -17,51 +15,52 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
-
         <!-- 앱의 시작 액티비티 설정 -->
         <activity
             android:name=".presentation.login.IntroActivity"
-            android:exported="false">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <!-- 카카오 로그인 액티비티 -->
         <activity
             android:name=".presentation.login.LoginActivity"
-            android:exported="false">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-<!--                <data android:host="oauth"-->
-<!--                    android:scheme="kakaoc93bfd494630d7b92e90714929d816e3"/>-->
-<!--            </intent-filter>-->
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="oauth"
+                    android:scheme="kakaoc93bfd494630d7b92e90714929d816e3"/>
+            </intent-filter>
         </activity>
 
         <!-- 그 외 다른 액티비티들 -->
         <activity
-            android:name=".presentation.stockInfo.StockInfoActivity"
-            android:exported="false">
-
+            android:name=".presentation.stockinfo.StockInfoActivity"
+            android:exported="true">
+<!--            <intent-filter>-->
+<!--            <action android:name="android.intent.action.VIEW" />-->
+<!--            <category android:name="android.intent.category.DEFAULT" />-->
+<!--            <category android:name="android.intent.category.BROWSABLE" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".presentation.alarm.AlarmActivity"
-            android:exported="false"/>
+            android:exported="true"/>
 
         <activity
             android:name=".presentation.newScenario.NewScenarioActivity"
-            android:exported="false" />
+            android:exported="true" />
 
         <activity
             android:name=".presentation.mystock.MyStockActivity"
-            android:exported="false" />
-
+            android:exported="true" />
         <activity
-            android:name=".presentation.chatbot.ChatBotActivity"
-            android:exported="false" />
-
+            android:name=".presentation.chatbot.PracticeActivity"
+            android:exported="true" />
         <activity
             android:name=".presentation.main.MainActivity"
             android:exported="true">

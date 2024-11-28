@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F7F7"
-    tools:context=".presentation.StockInfoActivity">
+    tools:context=".presentation.stockinfo.StockInfoActivity">
 
    
 
@@ -63,17 +63,14 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_gravity="center"/> <!-- 가운데 정렬 -->
-
             <!-- 차트 이미지 -->
-            <ImageView
-                android:id="@+id/chartImage"
-                android:layout_height="200dp"
-                android:layout_marginTop="48dp"
-                android:src="@drawable/sample_chart"
-                android:layout_gravity="center"
-                android:layout_width="match_parent"/> <!-- 너비를 부모에 맞춤 -->
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/line_chart"
+                android:layout_width="match_parent"
+                android:layout_height="200sp"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/today_earn_rate" />
         </LinearLayout>
-
         <!-- 가로 버튼들 (뉴스, 분석, AI예측, 자동매매) -->
         <LinearLayout
             android:layout_marginLeft="10dp"

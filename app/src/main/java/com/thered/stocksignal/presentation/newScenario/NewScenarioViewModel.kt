@@ -5,8 +5,13 @@ import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.thered.stocksignal.R
+import java.security.KeyStore
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 
-public class NewScenarioViewModel: ViewModel() {
+class NewScenarioViewModel: ViewModel() {
+
     var initPrice: Int = 0
     var initRate: Float = 0f
     var price: MutableLiveData<String> = MutableLiveData("")
@@ -19,7 +24,7 @@ public class NewScenarioViewModel: ViewModel() {
         return dataPoints
     }
 
-    fun settingInitPrice(n:Int, r:Float) {
+    fun settingInitPrice(n: Int, r: Float) {
         val formattedNumber = String.format("%,d", n)
         val formattedRate = String.format("%.2f", r)
         initPrice = n
@@ -29,15 +34,14 @@ public class NewScenarioViewModel: ViewModel() {
         if (initRate < 0f) {
             rateColor.value = Color.parseColor("#0080FF")
             rate.value = "$formattedRate%"
-        }
-        else if (initRate > 0f)
+        } else if (initRate > 0f) {
             rateColor.value = Color.parseColor("#FF5353")
-        else
-            rateColor.value =Color.parseColor("#333333")
+        } else {
+            rateColor.value = Color.parseColor("#333333")
+        }
     }
 
-
-    fun setPrice(n:Int) {
+    fun setPrice(n: Int) {
         val r: Float = (n - initPrice).toFloat() / initPrice.toFloat() * 100
         val formattedNumber = String.format("%,d", n)
         val formattedRate = String.format("%.2f", r)
@@ -48,12 +52,27 @@ public class NewScenarioViewModel: ViewModel() {
         if (r < 0f) {
             rateColor.value = Color.parseColor("#0080FF")
             rate.value = "$formattedRate%"
-        }
-        else if (r > 0f)
+        } else if (r > 0f) {
             rateColor.value = Color.parseColor("#FF5353")
-        else
+        } else {
             rateColor.value = Color.parseColor("#333333")
+        }
+    }
 
+    fun setupChartData(dataList: List<Int>): LineData {
+        val entryList = ArrayList<Entry>()
 
+        dataList.forEachIndexed { index, data ->
+            entryList.add(Entry(index.toFloat(), data.toFloat()))
+        }
+
+        val lineDataSet = LineDataSet(entryList, "Price Data")
+        lineDataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
+        lineDataSet.setDrawCircles(false)
+        lineDataSet.setDrawValues(false)
+        lineDataSet.lineWidth = 2f
+        lineDataSet.color = Color.BLUE
+
+        return LineData(lineDataSet)
     }
 }
