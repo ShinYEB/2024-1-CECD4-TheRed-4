@@ -55,14 +55,18 @@ class AutoTradeFragment : Fragment(), ProfitRateListener {  // ProfitRateListene
         // RecyclerView 설정
         val recyclerView: RecyclerView = view.findViewById(R.id.conditions_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        conditionAdapter = ConditionAdapter(conditionList)
+        conditionAdapter = ConditionAdapter(conditionList) { condition ->
+            // 시나리오 리스트 항목을 클릭하면 NewScenarioActivity로 이동 (데이터 전달 없음)
+            val intent = Intent(activity, NewScenarioActivity::class.java)
+            startActivity(intent)
+        }
         recyclerView.adapter = conditionAdapter
 
         // '+ 버튼' 클릭 리스너 설정
         val addButton: Button = view.findViewById(R.id.add_condition)// 해당 버튼의 ID
         addButton.setOnClickListener {
-            // NewScenarioActivity로 전환
-            val intent = Intent(activity, NewScenarioActivity::class.java)
+            // NewScenarioConditionActivity 전환
+            val intent = Intent(activity, NewScenarioConditionActivity::class.java)
             startActivity(intent)
         }
     }
