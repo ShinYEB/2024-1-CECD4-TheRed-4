@@ -143,15 +143,15 @@ final class NewScenarioCoverCollectionViewCell: UICollectionViewCell {
             if (item.targetPrice2 == 0)
             {
                 conditionLabel1.text = "상승률"
-                let rate = Float(item.targetPrice1 - item.initialPrice) / Float(item.initialPrice) * 100
+                let rate = 0
                 conditionLabel2.textColor = .customRed
-                conditionLabel2.text = String(Int(rate)) + "%"
+                conditionLabel2.text = String(Int(0)) + "%"
                 conditionLabel3.text = String(item.targetPrice1) + "원 이상일 시"
             }
             else if (item.targetPrice1 == 0)
             {
                 conditionLabel1.text = "하락률"
-                let rate = Float(item.targetPrice2 - item.initialPrice) / Float(item.initialPrice) * 100
+                let rate = 0
                 conditionLabel2.text = String(Int(rate)) + "%"
                 conditionLabel3.text = String(item.targetPrice2) + "원 이하일 시"
             }

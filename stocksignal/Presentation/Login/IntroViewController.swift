@@ -31,9 +31,9 @@ final class IntroViewController: UIViewController {
             make.center.equalToSuperview()
         }
         
-        //test()
+        test()
         
-        autoLogin()
+        //autoLogin()
     }
     
     private let disposeBag = DisposeBag()

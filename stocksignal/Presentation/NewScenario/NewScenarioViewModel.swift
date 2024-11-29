@@ -149,6 +149,8 @@ final class NewScenarioViewModel {
             return nil
         }
         
+        print(1)
+        
         switch standardIndex {
         case 0:
             result["methodType"] = "RATE"
@@ -159,6 +161,8 @@ final class NewScenarioViewModel {
         default:
             return nil
         }
+        
+        print(2)
         
         if buttonIndex == 0 || footerIndex == 0 {
             return nil

@@ -78,6 +78,14 @@ class NewScenarioViewController: UIViewController {
         
         buyButtonTrigger.onNext(())
         
+        // UITapGestureRecognizer 추가
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false // 다른 터치 이벤트도 처리되도록 설정
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true) // 현재 뷰에서 포커스를 제거하여 키보드 닫기
     }
     
     private func setUI() {

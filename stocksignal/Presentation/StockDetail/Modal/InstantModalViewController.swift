@@ -261,6 +261,7 @@ class InstantModalViewController: UIViewController {
             self?.availableQuantityLabel.text = "판매가능 최대 " + (formatter.string(from: NSNumber(value: self!.quantity)) ?? "0") + " 주"
             
             self?.confirmButton.backgroundColor = .customBlue.withAlphaComponent(0.8)
+            self?.confirmButton.setTitle("판매하기", for: .normal)
         }.disposed(by: disposeBag)
         
         buyButton.rx.tap.bind {[weak self] _ in
@@ -282,6 +283,7 @@ class InstantModalViewController: UIViewController {
             self?.availableQuantityLabel.text = "구매가능 " + (formatter.string(from: NSNumber(value: self!.cash)) ?? "0") + "원 / 최대 " + (formatter.string(from: NSNumber(value: self!.cash / self!.currentPrice)) ?? "0") + "주"
             
             self?.confirmButton.backgroundColor = .customRed.withAlphaComponent(0.8)
+            self?.confirmButton.setTitle("구매하기", for: .normal)
         }.disposed(by: disposeBag)
         
         confirmButton.rx.tap.bind {[weak self] _ in
