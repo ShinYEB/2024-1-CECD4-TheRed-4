@@ -124,7 +124,34 @@
 <div markdown="1">
 
 ```
-
+.
+├── Application
+│   ├── AppDelegate
+│   ├── Assets
+│   ├── LaunchScreen
+│   ├── Config
+│   ├── Info
+│   ├── Model
+│   └── SceneDelegate
+├── Data
+│   ├── Network
+│   └── Repositories
+├── Domain
+│   ├── Entities
+│   ├── Interfaces
+│   └── UseCases
+└── Presentation
+    ├── Alarm
+    ├── Chatbot
+    ├── Home
+    ├── Intro
+    ├── Login
+    ├── Main
+    ├── MyPage
+    ├── NewScenario
+    ├── Practice
+    ├── Search
+    └── StockDetail
 ```
 
 </div>
