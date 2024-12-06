@@ -171,7 +171,7 @@
 <br>
 
 ## 📱 데모 영상
-[🔗 데모 영상 확인](image/데모.mp4 "데모 영상 확인")
+[🔗 데모 영상 확인](https://proysm.notion.site/DEMO-154b4ca715b080b2ad95d1168621a154?pvs=4 "데모 영상 확인")
 
 <br>
 
