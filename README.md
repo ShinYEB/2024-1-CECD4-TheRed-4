@@ -162,7 +162,31 @@
 <div markdown="1">
 
 ```
-
+.
+├── application
+│   ├── GlobalApplication.kt
+│   ├── u
+│   └── ui
+│       └── theme
+├── data
+│   ├── database
+│   ├── network
+│   └── repositories
+├── domain
+│   ├── entites
+│   ├── interfaces
+│   └── usecases
+└── presentation
+    ├── alarm
+    ├── chatbot
+    ├── home
+    ├── login
+    ├── main
+    ├── mypage
+    ├── mystock
+    ├── newscenario
+    ├── search
+    └── stockinfo
 ```
 
 </div>
