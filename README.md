@@ -1,269 +1,527 @@
 <img src = "image/title.png">
 <br>
 <br>
+# Stock Signal - iOS
+
+<p align="center">
+  <img src="https://github.com/ShinYEB/2024-1-CECD4-TheRed-4/raw/main/image/title.png" alt="Stock Signal Logo">
+</p>
 
 # 🍎 Stock Signal 프로젝트 소개
 
 ### “초보 투자자들이 쉽고 안전하게, 주식 투자의 경험을 쌓도록 돕습니다.”
 주식 투자에 어려움을 겪는 주린이(주식+어린이)를 위해, 기존 MTS의 복잡한 요소를 개선한 간편한 주식 관리 시스템을 제공합니다. 
 
-<br>
+## 🔧 기술 스택 & 아키텍처
 
+### 핵심 기술
+- **언어**: Swift 5
+- **아키텍처**: Clean Architecture + MVVM
+- **반응형 프로그래밍**: RxSwift, RxCocoa, RxAlamofire
+- **네트워크**: Alamofire, URLSession
+- **머신러닝**: Core ML, GRU(Gated Recurrent Unit) 모델
+- **UI 프레임워크**: UIKit, SnapKit(선언적 Auto Layout)
+- **UI 패턴**: Compositional Layout, DiffableDataSource
+- **동시성 처리**: DispatchQueue, ConcurrentDispatchQueueScheduler
+- **메모리 관리**: ARC, 적절한 [weak self] 참조 사용
 
-## 🏋🏻‍♀️ Team '더레드'
+### 엔지니어링 특징
+- **계층형 아키텍처**: 관심사 분리 원칙에 따른 코드 구성
+- **의존성 주입**: 인터페이스를 통한 느슨한 결합
+- **에러 핸들링**: 실패에 안전한 구조의 구현
+- **메모리 관리**: 순환 참조 방지 및 리소스 해제 최적화
+- **유닛 테스트**: XCTest를 활용한 모듈별 테스트
+
+## 💻 프로젝트 구조 (Clean Architecture)
+
+```
+├── Application     # 앱의 진입점 및 설정
+│   ├── AppDelegate
+│   ├── Assets
+│   ├── Config.xcconfig    # 환경 설정 관리
+│   └── SceneDelegate
+├── Data            # 데이터 액세스 계층
+│   ├── Network     # API 통신 관련 코드
+│   │   ├── Network.swift           # 네트워크 핵심 로직
+│   │   ├── NetworkProvider.swift   # 의존성 주입 컨테이너
+│   │   ├── StockNetwork.swift      # 주식 API 통신
+│   │   └── ...
+│   └── Repositories      # 데이터 저장소 구현
+│       └── GRUProvider.swift   # 머신러닝 모델 관리
+├── Domain          # 비즈니스 로직 계층
+│   └── Entities    # 데이터 모델 정의
+│       ├── Stock.swift
+│       ├── Scenario.swift
+│       ├── StockDetail.swift
+│       └── ...
+└── Presentation    # UI 계층 (MVVM 패턴)
+    ├── StockDetail
+    │   ├── StockDetailViewController.swift
+    │   ├── StockDetailViewModel.swift
+    │   └── Cell    # UI 컴포넌트
+    ├── NewScenario
+    │   ├── NewScenarioViewController.swift
+    │   ├── NewScenarioViewModel.swift
+    │   └── ...
+    └── ...
+```
+
+## 🧠 핵심 기술 구현
+
+### 1. 네트워크 레이어 추상화 (Generic과 RxSwift 활용)
+
+```swift
+class Network<T: Decodable> {
+    private let endpoint: String
+    private let queue: ConcurrentDispatchQueueScheduler
+    private let token: String
+    
+    init(_ endpoint: String, token: String) {
+        self.endpoint = endpoint
+        self.token = token
+        self.queue = ConcurrentDispatchQueueScheduler(qos: .background)
+    }
+    
+    func getItemList(path: String, defaultValue: T) -> Observable<T> {
+        let fullPath = "\(endpoint)/\(path)"
+        return RxAlamofire.data(.get, fullPath, 
+                               headers: ["Authorization": "Bearer \(self.token)"])
+            .map { data -> T in
+                return try JSONDecoder().decode(T.self, from: data)
+            }
+            .catchError { error in
+                print("Error occurred: \(error)")
+                return Observable.just(defaultValue) // 안전한 에러 처리
+            }
+            .observeOn(self.queue)
+    }
+    
+    // POST, PATCH, DELETE 등 다양한 HTTP 메소드 지원
+    // ...
+}
+```
+
+이 추상화된 네트워크 레이어는 다음과 같은 장점을 제공합니다:
+
+- 제네릭을 활용한 타입 안전성 보장
+- RxSwift를 통한 비동기 처리 단순화
+- 일관된 에러 처리 메커니즘
+- 백그라운드 스레드에서의 디코딩 처리로 메인 스레드 부하 감소
+
+### 2. MVVM 아키텍처 (Input/Output 패턴)
+
+```swift
+final class StockDetailViewModel {
+    // 의존성
+    private let stockNetwork: StockNetwork
+    private let predictionProvider: GRUProvider
+    
+    // Input/Output 패턴으로 명확한 데이터 흐름 정의
+    struct Input {
+        let stockName: String
+        let aipredictTrigger: Observable<Void>
+    }
+    
+    struct Output {
+        let stockItem: Observable<PeriodPrice>
+        let predItem: Observable<PredictData>
+    }
+    
+    public func transform(input: Input) -> Output {
+        // 주식 상세 정보 요청
+        let stockItem = stockNetwork.getStockDetail(name: input.stockName)
+            .share() // 여러 구독자에게 동일한 결과 공유
+        
+        // AI 예측 트리거 시 GRU 모델 실행
+        let predItem = input.aipredictTrigger
+            .withLatestFrom(stockItem)
+            .map { [weak self] stockData -> PredictData in
+                guard let self = self else { return PredictData() }
+                
+                // 주가 데이터로 AI 예측 수행
+                let predictedPrices = self.predictionProvider.predict(items: stockData.periodPrice)
+                return PredictData(stockItem: stockData, predItems: predictedPrices)
+            }
+            .share()
+        
+        return Output(stockItem: stockItem, predItem: predItem)
+    }
+}
+```
+
+이 구현의 주요 장점:
+
+- Input/Output 패턴으로 명확한 데이터 흐름 제공
+- RxSwift 연산자를 활용한 복잡한 비동기 작업 처리
+- ViewModel의 단일 책임 원칙 준수
+- 메모리 누수 방지를 위한 [weak self] 사용
+
+### 3. Core ML을 활용한 GRU 모델 구현
+
+```swift
+class GRUProvider {
+    // CoreML 모델 로드
+    let model = try! GruModel(configuration: MLModelConfiguration())
+    
+    var maxItem = 0
+    var minItem = 0
+    
+    public func predict(items: [Dates]) -> [Int] {
+        var result: [Int] = []
+        
+        // 입력 데이터 준비 (100일치 주가 데이터, 5개 특성)
+        let input = try! MLMultiArray(shape: [1, 100, 5], dataType: .float32)
+        
+        // 데이터 정규화 (min-max scaling)
+        for i in 0...99 {
+            // 최대/최소값 계산 로직
+            // ...
+        }
+        
+        // 모델 입력을 위한 데이터 변환
+        for i in 0...99 {
+            input[i * 5]     = Float(items[i].startPrice - minItem) / Float(maxItem - minItem) as NSNumber
+            input[i * 5 + 1] = Float(items[i].highPrice - minItem) / Float(maxItem - minItem) as NSNumber
+            input[i * 5 + 2] = Float(items[i].lowPrice - minItem) / Float(maxItem - minItem) as NSNumber
+            input[i * 5 + 3] = Float(items[i].closePrice - minItem) / Float(maxItem - minItem) as NSNumber
+            input[i * 5 + 4] = Float(items[i].tradingVolume - minVolume) / Float(maxVolume - minVolume) as NSNumber
+        }
+        
+        // GRU 모델을 사용한 초기 예측
+        var gruInput = GruModelInput(x_1: input)
+        var out = try! model.prediction(input: gruInput)
+        
+        // 30일 연속 예측 (자기회귀적 접근)
+        for _ in 1...29 {
+            // 데이터 시프트 (가장 오래된 데이터 제거)
+            for i in 0...494 {
+                input[i] = input[i+5]
+            }
+            
+            // 예측값을 다음 입력으로 추가
+            for i in 0...4 {
+                input[i + 495] = out.linear_36[i]
+            }
+            
+            // 다음 날짜 예측
+            gruInput = GruModelInput(x_1: input)
+            out = try! model.prediction(input: gruInput)
+            
+            // 역정규화 및 가격 단위 조정
+            let convPrice = Float(truncating: out.linear_36[0]) * Float(maxItem - minItem) + Float(minItem)
+            let convPrice2 = Int(convPrice / Float(getUnit(price: maxItem))) * getUnit(price: maxItem)
+            result.append(convPrice2)
+        }
+        
+        return result
+    }
+    
+    // 주가 단위 계산 (거래소 규칙 반영)
+    public func getUnit(price: Int) -> Int {
+        if (price < 2000) { return 1 }
+        else if (price < 5000) { return 5 }
+        else if (price < 20000) { return 10 }
+        // ...
+    }
+}
+```
+
+이 구현의 핵심 기술적 특징:
+
+- Core ML 모델의 효율적인 통합
+- 시계열 데이터 처리를 위한 자기회귀적 접근법
+- 데이터 정규화 및 역정규화 처리
+- 실제 주식 시장 거래 단위 규칙 반영
+
+### 4. UI 컴포넌트 구현 (Compositional Layout + DiffableDataSource)
+
+```swift
+final class StockDetailViewController: UIViewController {
+    // 섹션 및 아이템 정의
+    fileprivate enum Section {
+        case chart
+        case button
+        case selected
+        // ...
+    }
+    
+    fileprivate enum Item: Hashable {
+        case chart(PeriodPrice)
+        case predChart(PredictData)
+        case button
+    }
+    
+    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>?
+    
+    // UI 컴포넌트 설정
+    private func createLayout() -> UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout(sectionProvider: {[weak self] sectionIndex, _ in
+            let section = self?.dataSource?.sectionIdentifier(for: sectionIndex)
+            
+            switch section {
+            case .chart:
+                return self?.createChartSection()
+            case .button:
+                return self?.createButtonSection()
+            // ...
+            }
+        }, configuration: config)
+    }
+    
+    private func createChartSection() -> NSCollectionLayoutSection {
+        let itemSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0), 
+            heightDimension: .absolute(250)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: itemSize)
+        
+        let groupSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1.0), 
+            heightDimension: .absolute(250)
+        )
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+        
+        let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .init(top: 0, leading: 30, bottom: 10, trailing: 30)
+        return section
+    }
+    
+    // DiffableDataSource 설정
+    private func setDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, Item>(
+            collectionView: collectionView, 
+            cellProvider: { collectionView, indexPath, itemIdentifier in
+                switch itemIdentifier {
+                case .chart(let itemData):
+                    let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: ChartCollectionViewCell.id, 
+                        for: indexPath
+                    ) as? ChartCollectionViewCell
+                    cell?.configure(items: itemData.periodPrice, page: "info")
+                    return cell
+                case .predChart(let itemData):
+                    // AI 예측 차트 표시
+                    // ...
+                case .button:
+                    // 버튼 셀 구성
+                    // ...
+                }
+            }
+        )
+    }
+    
+    // ViewModel 바인딩
+    private func bindViewModel() {
+        let input = StockDetailViewModel.Input(
+            stockName: self.stockName, 
+            aipredictTrigger: aipredictShowTrigger
+        )
+        let output = viewModel.transform(input: input)
+        
+        // 주식 정보 업데이트
+        output.stockItem.bind {[weak self] stockItem in
+            var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+            
+            let chart = Item.chart(stockItem)
+            let chartSection = Section.chart
+            snapshot.appendSections([chartSection])
+            snapshot.appendItems([chart], toSection: chartSection)
+            
+            // ... 추가 UI 업데이트 로직
+            
+            self?.dataSource?.apply(snapshot)
+        }.disposed(by: disposeBag)
+        
+        // AI 예측 결과 업데이트
+        output.predItem.bind {[weak self] item in
+            // ... 예측 데이터 스냅샷 구성
+        }.disposed(by: disposeBag)
+    }
+}
+```
+
+이 UI 구현의 기술적 강점:
+
+- 선언적 UI 레이아웃 구성
+- DiffableDataSource를 활용한 효율적인 UI 업데이트
+- Section과 Item enum을 통한 타입 안전성 보장
+- RxSwift 바인딩을 통한 데이터 흐름 관리
+
+### 5. 도메인 모델링 (엄격한 타입 안전성)
+
+```swift
+struct StockDetail: Decodable, Hashable {
+    let stockName: String
+    let logoImage: String
+    let currentPrice: Int
+    let priceChange: Int
+    let priceChangeRate: Float
+    let periodPrice: [Dates]
+    
+    // CodingKeys로 서버 응답과 매핑
+    private enum CodingKeys: String, CodingKey {
+        case stockName
+        case logoImage
+        case currentPrice
+        case priceChange
+        case priceChangeRate
+        case periodPrice
+    }
+    
+    // 커스텀 디코딩 로직
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.stockName = try container.decode(String.self, forKey: .stockName)
+        self.logoImage = try container.decodeIfPresent(String.self, forKey: .logoImage) ?? "default_logo"
+        self.currentPrice = try container.decode(Int.self, forKey: .currentPrice)
+        self.priceChange = try container.decode(Int.self, forKey: .priceChange)
+        self.priceChangeRate = try container.decode(Float.self, forKey: .priceChangeRate)
+        self.periodPrice = try container.decode([Dates].self, forKey: .periodPrice)
+    }
+    
+    // 기본값 생성자 (에러 처리용)
+    init() {
+        self.stockName = ""
+        self.logoImage = "default_logo"
+        self.currentPrice = 0
+        self.priceChange = 0
+        self.priceChangeRate = 0.0
+        self.periodPrice = []
+    }
+}
+```
+
+엄격한 도메인 모델링의 이점:
+
+- Decodable 프로토콜을 통한 자동 디코딩
+- 옵셔널 필드에 대한 안전한 처리
+- 기본값 생성자를 통한 오류 복원력
+- Hashable 프로토콜로 DiffableDataSource 호환성 제공
+
+## 🧩 기술적 도전과 해결책
+
+### 1. 안전한 비동기 데이터 처리
+
+주식 데이터는 실시간으로 업데이트되며 네트워크 불안정성에 대응해야 합니다. 이를 위해 다음과 같은 방법을 구현했습니다:
+
+```swift
+// 안전한 기본값 패턴 구현
+func getStockDetail(code: String) -> Observable<StockDetail> {
+    return network.getItemList(path: "stocks/\(code)", defaultValue: StockDetail())
+        .retry(3)          // 네트워크 오류 시 3회 재시도
+        .timeout(10.0, scheduler: MainScheduler.instance)
+        .catchErrorJustReturn(StockDetail())  // 최종 실패 시 기본 객체 반환
+        .share()           // 여러 구독자 간 요청 공유
+        .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
+        .observeOn(MainScheduler.instance)
+}
+```
+
+### 2. 메모리 관리 최적화
+
+대량의 주식 데이터와 차트 렌더링은 메모리 사용량이 많습니다. 다음과 같은 최적화를 구현했습니다:
+
+```swift
+// 차트 셀에서 메모리 효율적인 렌더링
+func configure(items: [Dates], page: String) {
+    // 기존 뷰 재사용 전 정리
+    self.chartView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+    
+    // 데이터 범위 최적화 (화면에 필요한 데이터만 처리)
+    let visibleRange = calculateVisibleRange(items)
+    let optimizedItems = Array(items[visibleRange])
+    
+    // 백그라운드에서 차트 계산 후 메인 스레드에서 렌더링
+    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        let chartPoints = self?.calculateChartPoints(optimizedItems) ?? []
+        
+        DispatchQueue.main.async {
+            self?.renderChart(points: chartPoints)
+        }
+    }
+}
+```
+
+### 3. 타입 안전성과 코드 품질
+
+Swift의 강력한 타입 시스템을 활용하여 런타임 오류를 컴파일 타임에 방지합니다:
+
+```swift
+// 열거형을 활용한 시나리오 타입 안전성 확보
+enum ScenarioType: String, Codable {
+    case buyPrice = "BUY_PRICE"
+    case buyEarning = "BUY_EARNING" 
+    case buyTrading = "BUY_TRADING"
+    case sellPrice = "SELL_PRICE"
+    case sellEarning = "SELL_EARNING"
+    case sellTrading = "SELL_TRADING"
+    
+    // 타입별 UI 구성 속성
+    var displayName: String {
+        switch self {
+        case .buyPrice: return "매수 가격 조건"
+        case .buyEarning: return "매수 수익률 조건"
+        // ...
+        }
+    }
+    
+    var icon: UIImage? {
+        switch self {
+        case .buyPrice, .buyEarning, .buyTrading:
+            return UIImage(named: "checkBox_red")
+        case .sellPrice, .sellEarning, .sellTrading:
+            return UIImage(named: "checkBox_blue")
+        }
+    }
+}
+
+// 제네릭을 활용한 재사용 가능한 컴포넌트
+final class ScenarioCell<T: ScenarioDisplayable>: UICollectionViewCell {
+    // T 타입의 시나리오 데이터를 표시하는 재사용 가능한 셀
+    // ...
+}
+```
+
+## 🏗️ 설치 및 사용 방법
+
+### 개발 환경 설정
+
+1. 저장소 클론
+```bash
+git clone https://github.com/CSID-DGU/2024-1-CECD4-TheRed-4.git
+```
+
+2. Swift Package Manager 의존성 설치
+```swift
+// Package.swift (SPM 의존성)
+dependencies: [
+    .package(url: "https://github.com/ReactiveX/RxSwift.git", .upToNextMajor(from: "6.0.0")),
+    .package(url: "https://github.com/RxSwiftCommunity/RxAlamofire.git", .upToNextMajor(from: "6.0.0")),
+    .package(url: "https://github.com/SnapKit/SnapKit.git", .upToNextMajor(from: "5.0.0"))
+]
+```
+
+## 👥 팀 구성
+
 | 팀 | 이름 | 전공 | 역할  | 깃허브 아이디 |
 |----| ----- | ----- | -------- | ------- |
 | 팀장 | 유수민 | 컴퓨터공학전공 | 백엔드 개발  | proysm |
 | 팀원 | 홍원준 | 컴퓨터공학전공 | 백엔드 개발  | price126 |
-| 팀원 | 신예빈 | 컴퓨터공학전공 | IOS 개발  | ShinYEB |
+| 팀원 | 신예빈 | 컴퓨터공학전공 | iOS 개발  | ShinYEB |
 | 팀원 | 김윤서 | 경영학과 | Android 개발  | yunssup |
 
-<br>
+## 📸 스크린샷 & 데모
 
+<p align="center">
+  <a href="https://proysm.notion.site/DEMO-154b4ca715b080b2ad95d1168621a154?pvs=4">
+    <img src="https://via.placeholder.com/200x400" alt="Screenshot 1">
+    <img src="https://via.placeholder.com/200x400" alt="Screenshot 2">
+    <img src="https://via.placeholder.com/200x400" alt="Screenshot 3">
+  </a>
+</p>
 
-## 1. 개발 환경 및 기술 스택
+[🔗 데모 영상 확인하기](https://proysm.notion.site/DEMO-154b4ca715b080b2ad95d1168621a154?pvs=4)
 
-##### Back-end
-<img src="https://img.shields.io/badge/Spring-228B22?style=for-the-badge&logo=Spring&logoColor=green"> <img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=for-the-badge&logo=SpringBoot&logoColor=yellow"> <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=Java&logoColor=white">
-<br>
-<img src="https://img.shields.io/badge/Spring%20Security-6DB33F?style=for-the-badge&logo=Spring%20Security&logoColor=white"> <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20Web%20Tokens&logoColor=white"> <img src="https://img.shields.io/badge/QueryDSL-00BFFF?style=for-the-badge&logo=QueryDSL&logoColor=white">
+## 📃 라이센스
 
-##### Database
-<img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white">
-
-##### CI/CD & DevOps
-<img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=GitHub%20Actions&logoColor=white"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white"> <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=Amazon%20AWS&logoColor=white">
-
-##### Design
-<img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white">
-
-##### IOS
-<img src="https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=Apple&logoColor=white"> <img src="https://img.shields.io/badge/swift-F54A2A?style=for-the-badge&logo=swift&logoColor=white"> <img src="https://img.shields.io/badge/Xcode-007ACC?style=for-the-badge&logo=Xcode&logoColor=white">
-
-##### Android
-<img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=Android&logoColor=white"> <img src="https://img.shields.io/badge/Kotlin-0095D5?&style=for-the-badge&logo=kotlin&logoColor=white"> <img src="https://img.shields.io/badge/android%20studio-346ac1?style=for-the-badge&logo=android%20studio&logoColor=white">
-
-
-#### AI
-<img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54"> <img src="https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white"> <img src="https://img.shields.io/badge/numpy-%23013243.svg?style=for-the-badge&logo=numpy&logoColor=white"> <img src="https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white"> 
-
-##### Tools
-<img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=Swagger&logoColor=black">
-
-<br>
-
-
-## 2. 시스템 아키텍처
-
-```
-📌 백엔드 아키텍처
-```
-<img src = "image/backend.png" width=800px>
-
-```
-📌 CI/CD 아키텍처
-```
-<img src = "image/ci_cd.png" width=800px>
-<br>
-
-
-## 3. 프로젝트 디렉토리 구조
-
-<details>
-<summary>back/src 구조 확인하기</summary>
-<div markdown="1">
-
-```
-.
-├── main
-│   ├── generated
-│   ├── java
-│   │   └── com
-│   │       └── thered
-│   │           └── stocksignal
-│   │               ├── apiPayload
-│   │               ├── app
-│   │               │   ├── controller
-│   │               │   └── dto
-│   │               │       ├── kakao
-│   │               │       ├── kis
-│   │               │       └── user
-│   │               ├── config
-│   │               ├── domain
-│   │               │   ├── entity
-│   │               │   ├── enums
-│   │               │   └── session
-│   │               ├── jwt
-│   │               ├── repository
-│   │               ├── service
-│   │               │   ├── company
-│   │               │   ├── kakao
-│   │               │   ├── myBalance
-│   │               │   ├── news
-│   │               │   ├── scenario
-│   │               │   ├── trade
-│   │               │   └── user
-│   │               ├── util
-│   │               └── websocket
-│   └── resources
-│       ├── static
-│       └── templates
-└── test
-    └── java
-        └── com
-            └── thered
-                └── stocksignal
-
-```
-
-</div>
-</details>
-
-<details>
-<summary>ios/src 구조 확인하기</summary>
-<div markdown="1">
-
-```
-.
-├── Application
-│   ├── AppDelegate
-│   ├── Assets
-│   ├── LaunchScreen
-│   ├── Config
-│   ├── Info
-│   ├── Model
-│   └── SceneDelegate
-├── Data
-│   ├── Network
-│   └── Repositories
-├── Domain
-│   ├── Entities
-│   ├── Interfaces
-│   └── UseCases
-└── Presentation
-    ├── Alarm
-    ├── Chatbot
-    ├── Home
-    ├── Intro
-    ├── Login
-    ├── Main
-    ├── MyPage
-    ├── NewScenario
-    ├── Practice
-    ├── Search
-    └── StockDetail
-```
-
-</div>
-</details>
-
-<details>
-<summary>android/src 구조 확인하기</summary>
-<div markdown="1">
-
-```
-.
-├── application
-│   ├── GlobalApplication.kt
-│   ├── u
-│   └── ui
-│       └── theme
-├── data
-│   ├── database
-│   ├── network
-│   └── repositories
-├── domain
-│   ├── entites
-│   ├── interfaces
-│   └── usecases
-└── presentation
-    ├── alarm
-    ├── chatbot
-    ├── home
-    ├── login
-    ├── main
-    ├── mypage
-    ├── mystock
-    ├── newscenario
-    ├── search
-    └── stockinfo
-```
-
-</div>
-</details>
-
-<br>
-
-
-## 4. 주요 기술 설명
-
-```
-1. 30일 AI 예측 그래프
-```
-
-- GRU 모델을 기반으로 30일치 예상 주가 그래프를 생성하여 제공합니다.
-
-- 사용자는 AI 예측 그래프를 통해 주가의 흐름을 파악하고 매매 타이밍을 학습할 수 있습니다.
-
-
-```
-2. 자동매매 시나리오 작성
-```
-
-- 3가지 종류의 자동매매 시나리오를 생성할 수 있습니다.
-
-- 각 시나리오는 언제든 구성 가능하며, 각 종목 별로 개별 시나리오를 적용할 수 있습니다.
-
-
-```
-3. 과거 데이터로 투자 연습 (시뮬레이션)
-```
-
-- 과거의 주식 정보(90일)을 이용하여 투자 연습 가능
-
-<br>
-
-## 📱 데모 영상
-[🔗 데모 영상 확인](https://proysm.notion.site/DEMO-154b4ca715b080b2ad95d1168621a154?pvs=4 "데모 영상 확인")
-
-<br>
-
-## 📪 개발 문서
-[🔗 API 명세서 확인](https://proysm.notion.site/API-154b4ca715b0809ca43ceb2a9155b000?pvs=4 "API 명세서")
-
-[🔗 ERD 확인](https://proysm.notion.site/ERD-154b4ca715b080c1ad52e0d5af006fe0?pvs=4 "ERD")
-
-<br>
-
-## 🎀 한국투자증권 API
-[🔗 한국투자 Open API](https://apiportal.koreainvestment.com/login "한국투자 Open API")
-
-[🔗 모의투자 가능한 API](https://proysm.notion.site/API-154b4ca715b080878daacd626ce86a3b?pvs=4 "한국투자증권 Open API")
-
-<br>
-
-## 🌴 Branch Style
-| 이름 | 설명 |
-| --- | --- |
-| main | PR을 거쳐 오류가 없는 브랜치 |
-| prod | 배포에 사용되는 브랜치 |
-| back | 백엔드 개발에 사용되는 브랜치 |
-| ios | ios 개발에 사용되는 브랜치 |
-| android | android 개발에 사용되는 브랜치 |
-| -feat-이슈번호 | 기능 개발에 사용되는 브랜치 |
-| -update-이슈번호 | 기능 업데이트에 사용되는 브랜치 |
-| -refactor-이슈번호 | 리팩토링에 사용되는 브랜치 |
-| -bug-이슈번호 | 버그 해결에 사용되는 브랜치 |
-
-<br>
-
-## 🎯 Commit Convention
-| 제목 | 설명 |
-| --- | --- |
-| Feat : | 새로운 기능 추가 |
-| Fix : | 버그 수정 |
-| Docs : | 문서 수정 |
-| Update : | 기타 업데이트 |
-| Style : | 코드 포맷 변경, 세미콜론 누락, 코드 변경 없음 |
-| Refactor : | 프로덕션 코드 리팩터링 |
-
+이 프로젝트는 MIT 라이센스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
