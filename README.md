@@ -23,9 +23,7 @@
 ### 엔지니어링 특징
 - **계층형 아키텍처**: 관심사 분리 원칙에 따른 코드 구성
 - **의존성 주입**: 인터페이스를 통한 느슨한 결합
-- **에러 핸들링**: 실패에 안전한 구조의 구현
 - **메모리 관리**: 순환 참조 방지 및 리소스 해제 최적화
-- **유닛 테스트**: XCTest를 활용한 모듈별 테스트
 
 ## 💻 프로젝트 구조 (Clean Architecture)
 
@@ -226,7 +224,6 @@ class GRUProvider {
 - Core ML 모델의 효율적인 통합
 - 시계열 데이터 처리를 위한 자기회귀적 접근법
 - 데이터 정규화 및 역정규화 처리
-- 실제 주식 시장 거래 단위 규칙 반영
 
 ### 4. UI 컴포넌트 구현 (Compositional Layout + DiffableDataSource)
 
@@ -392,90 +389,6 @@ struct StockDetail: Decodable, Hashable {
 - 옵셔널 필드에 대한 안전한 처리
 - 기본값 생성자를 통한 오류 복원력
 - Hashable 프로토콜로 DiffableDataSource 호환성 제공
-
-## 🧩 기술적 도전과 해결책
-
-### 1. 안전한 비동기 데이터 처리
-
-주식 데이터는 실시간으로 업데이트되며 네트워크 불안정성에 대응해야 합니다. 이를 위해 다음과 같은 방법을 구현했습니다:
-
-```swift
-// 안전한 기본값 패턴 구현
-func getStockDetail(code: String) -> Observable<StockDetail> {
-    return network.getItemList(path: "stocks/\(code)", defaultValue: StockDetail())
-        .retry(3)          // 네트워크 오류 시 3회 재시도
-        .timeout(10.0, scheduler: MainScheduler.instance)
-        .catchErrorJustReturn(StockDetail())  // 최종 실패 시 기본 객체 반환
-        .share()           // 여러 구독자 간 요청 공유
-        .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-        .observeOn(MainScheduler.instance)
-}
-```
-
-### 2. 메모리 관리 최적화
-
-대량의 주식 데이터와 차트 렌더링은 메모리 사용량이 많습니다. 다음과 같은 최적화를 구현했습니다:
-
-```swift
-// 차트 셀에서 메모리 효율적인 렌더링
-func configure(items: [Dates], page: String) {
-    // 기존 뷰 재사용 전 정리
-    self.chartView.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
-    
-    // 데이터 범위 최적화 (화면에 필요한 데이터만 처리)
-    let visibleRange = calculateVisibleRange(items)
-    let optimizedItems = Array(items[visibleRange])
-    
-    // 백그라운드에서 차트 계산 후 메인 스레드에서 렌더링
-    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-        let chartPoints = self?.calculateChartPoints(optimizedItems) ?? []
-        
-        DispatchQueue.main.async {
-            self?.renderChart(points: chartPoints)
-        }
-    }
-}
-```
-
-### 3. 타입 안전성과 코드 품질
-
-Swift의 강력한 타입 시스템을 활용하여 런타임 오류를 컴파일 타임에 방지합니다:
-
-```swift
-// 열거형을 활용한 시나리오 타입 안전성 확보
-enum ScenarioType: String, Codable {
-    case buyPrice = "BUY_PRICE"
-    case buyEarning = "BUY_EARNING" 
-    case buyTrading = "BUY_TRADING"
-    case sellPrice = "SELL_PRICE"
-    case sellEarning = "SELL_EARNING"
-    case sellTrading = "SELL_TRADING"
-    
-    // 타입별 UI 구성 속성
-    var displayName: String {
-        switch self {
-        case .buyPrice: return "매수 가격 조건"
-        case .buyEarning: return "매수 수익률 조건"
-        // ...
-        }
-    }
-    
-    var icon: UIImage? {
-        switch self {
-        case .buyPrice, .buyEarning, .buyTrading:
-            return UIImage(named: "checkBox_red")
-        case .sellPrice, .sellEarning, .sellTrading:
-            return UIImage(named: "checkBox_blue")
-        }
-    }
-}
-
-// 제네릭을 활용한 재사용 가능한 컴포넌트
-final class ScenarioCell<T: ScenarioDisplayable>: UICollectionViewCell {
-    // T 타입의 시나리오 데이터를 표시하는 재사용 가능한 셀
-    // ...
-}
-```
 
 ## 🏗️ 설치 및 사용 방법
 
