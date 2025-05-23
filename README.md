@@ -1,11 +1,6 @@
 <img src = "image/title.png">
 <br>
 <br>
-# Stock Signal - iOS
-
-<p align="center">
-  <img src="https://github.com/ShinYEB/2024-1-CECD4-TheRed-4/raw/main/image/title.png" alt="Stock Signal Logo">
-</p>
 
 # 🍎 Stock Signal 프로젝트 소개
 
@@ -512,13 +507,6 @@ dependencies: [
 
 ## 📸 스크린샷 & 데모
 
-<p align="center">
-  <a href="https://proysm.notion.site/DEMO-154b4ca715b080b2ad95d1168621a154?pvs=4">
-    <img src="https://via.placeholder.com/200x400" alt="Screenshot 1">
-    <img src="https://via.placeholder.com/200x400" alt="Screenshot 2">
-    <img src="https://via.placeholder.com/200x400" alt="Screenshot 3">
-  </a>
-</p>
 
 [🔗 데모 영상 확인하기](https://proysm.notion.site/DEMO-154b4ca715b080b2ad95d1168621a154?pvs=4)
 
